@@ -1,0 +1,26 @@
+language: objective-c
+osx_image: xcode8.1
+rvm:
+- 2.3.1
+install:
+- gem install xcpretty
+script:
+- xcodebuild -project tun2socks.xcodeproj -scheme "tun2socks-macOS" | xcpretty
+- xcodebuild -project tun2socks.xcodeproj -scheme "tun2socks-iOS" | xcpretty
+after_success:
+- "./docs/build_docs.sh"
+before_deploy:
+- carthage build --no-skip-current
+- carthage archive tun2socks lwip
+deploy:
+  provider: releases
+  skip_cleanup: true
+  api_key:
+    secure: srFcDC3pQEinNV5XS9XsglspaU6Oz+OxdchqR49ubuMriFYJTDgAa6YBI+rJUmPzjVuWWy/LF5LSHDAuW7V8ZlZ6MVkJOnhwLabLSNJmONWdbbK+YNzCeQ5+KoxMERgd20VnFADzijJZ4Qug8Hr3ixIO0u0ma8yTlYKEkvU5rd6IqTrYazdZBQqiIhlB0TsBehanJDG3YIS+2chIIsNze/QVmJHrq0EmByDaFId9Egn72AYECClpaYCDc6nb7Gt3PjtAvCL47ZwHk2W4O1XjyZHSWzCXm78u7WfmNRzPnl2VvDW8AepVXaPL01vvMYs/bigXhaCGgH9n++fh9PqGWSbjvKt/aqirzi3fFh5aYId6KgSqPM/ZaGOPo2DokNnnBQTdd2kFBGCFuSieKMfn4xJj7XCItl7dYEKnUijQxkmmfAhyh2n+Bnj2IqhKbJjo4Xzv5e+ikBNAh1Jr1aTj/z73R9iMNYlTlkZ6zHnnKZOd8fji3cOuF1Io7Uvp0GRwZKnvizwCVHOkvM6S8IWEOiEVnBzdCanGwWWmoE3tTN5OFE56UBhhw+pTdjNW3WoV9XpAtQezLNKhD8vENUePUgFT+qKTXBT1Ynm4nxf7orcTw2ghO31vHcBf/vCu4jZJ5eZBMGmwk3hNokFYbWD3WXhz3NPzTAXyomU032brfbU=
+  file: tun2socks.framework.zip
+  on:
+    repo: zhuhaow/tun2socks
+    tags: true
+env:
+  global:
+    secure: AWLpWR/5CUlRZ69LfJR0MlWofEwNYwWNE+drb9bLFWwYoIsvk/hAzTHjkAm87aKsLdGqjHRFLX3E5dfrC3570gfyxFfFgpwMkwEyplc5w0AXhgnIdSU1iPFrTf828I7E+SvQ65m+I7rmnTWsVqkQ4+rTIWTpos5hYqkTnC9wLLLFLTi/b0raLNTQoYzEPtSRs93ZLcoABnTBa6MrSbHzI+oPTPSUdjN97N51URcB31VP1aF91fNiI32sdsnnmN0cuj7be22i280c5VvCv9D6XSeOjofkuLj1hnuyhXu38TwrauCpKJ79kvNu4Guop+4jQ2Mh5+leYiPZA7mu900kngN53WrHKp26IIHNRY+7Vw2qFDwkzgIW0djToDQNUFFDWmyGfuv6Ede7AyfZDrg3Vr3lD9YQEhJIU38AULU5BGIcK+c8OiGGiy/+63z0E4ZI8QhVIS/M/xJ7+DnxOYg2GvTL9x79yDDpnWAcqQvRgVnCvWsSMm/aUMN3Ah2GTWqfRaR6mXyJv0PZ6bAYr4YTzu065x6oCSDjaavcP7N/aW/TXT4dtxueUBQCgOjz2L3eotOHfxhLikHM+dbWG3xNDWqiD4b8hajm+dLd86oGza43hlhka3KDwPCYqX3XsKUEuVe/yWyELLihJrBG+rd62zqNZYWNkj03S8E+iQD9Ojo=

@@ -1,0 +1,25 @@
+language: objective-c
+osx_image: xcode8.1
+cache: 
+directories:
+- Carthage
+install:
+- bin/bootstrap-if-needed
+- gem install scan
+script:
+- scan --scheme Resolver-macOS
+- scan --scheme Resolver-iOS
+after_success:
+- bash <(curl -s https://codecov.io/bash)
+before_deploy:
+- carthage build --no-skip-current
+- carthage archive Resolver
+deploy:
+  provider: releases
+  skip_cleanup: true
+  api_key:
+    secure: C5qDpqAPLHc3W5MWaqkSG/LKk9r0cJ9Etn15dnBwwQoByGiMu2HcJB+GJry6143qU8xEddoahuYf7KUzl/NsR9E2nKv4ZDBWSQh6yvJVzf0q2PTikEn8OHqqvcUa9V9p+xnqnIa5A3HB7xcD7ACSnNO2zC2uNP+7+HBVJbZymLdBBpelwJFKidTXHC+4PlW3vxpJ6jbjXXqNbTF9bJnuKW/+Hj7MSGJs6QbxerDlsVtN5aGNu7CHziPe8RKG500vcpNqnwJYCJBn+FESjJIwr+J9zj+ANjZTgJ7oRekDg/Ghgu+T9NU8PTxzPuYJahprQDOJaXWEOv2A9fCN+2p1zW1ZifD3C0pQsqvCtgnbrNcfMXYLhLNih2pMRsYxIgnJD4MiheLJTRhh2ZmE4rMwGvzntsj7q3+UzjN2HRLpv7j1+QlgsXUp720P5C5gyq6k3fG4O2ReFzV6Wa67/MbKCcZdSLHvXuOqKzgDOfPLAbzMEVBFGdO7FkH943tnKP7uGt1aSD93tKpbQA0bLlUGYeCgw/LfVOC4VL0ecx+NCUmtxVh8VbCW+UGtSAssja6FkqbsECCHa7lqiKGjFk3J/GKjxdbQx13wlVHgg0lPe+SAwJqB1JeZtqrWn6+YIA7InXbnG1bAquQ85BdGBUynD1H+jCBCIZ8tGo4lrLu0piE=
+  file: Resolver.framework.zip
+  on:
+    repo: zhuhaow/Resolver
+    tags: true

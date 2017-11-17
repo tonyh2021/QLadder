@@ -1,0 +1,8 @@
+github "robbiehanson/CocoaAsyncSocket" "7.6.2"
+github "CocoaLumberjack/CocoaLumberjack" "3.3.0"
+github "lexrus/MMDB-Swift" "0.2.7"
+github "zhuhaow/Resolver" "0.1.3"
+github "zhuhaow/Sodium-framework" "v1.0.10.1"
+github "zhuhaow/YamlSwift" "3e880fee0e68653f8304392cf0a9b7fc4b376a38"
+github "zhuhaow/tun2socks" "0.6.1"
+git "https://github.com/zhuhaow/NEKit" "eb456c6074fc19f2414c071f5b4a251f297e8a4a"

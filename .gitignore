@@ -1,0 +1,37 @@
+# VSCode
+.vscode/
+jsconfig.json
+
+# IntelliJ/Webstorm
+.idea
+
+# NodeJS
+npm-debug.log
+lib-rn
+yarn-error.log
+
+# OS X
+.DS_Store
+xcuserdata
+
+# Exponent
+.exponent
+
+# Jest
+coverage
+
+# build
+build
+
+*.map
+*.iml
+/android/.gradle
+/android/.idea
+/android/app/app.iml
+/android/local.properties
+/node_modules
+/android/app/.project
+/android/.project
+/android/.settings
+/android/app/.settings
+/android/app/.classpath

@@ -20,7 +20,7 @@ class QLTabBarController: UITabBarController {
         super.viewDidLoad()
         
         UITabBarItem.appearance().setTitleTextAttributes([NSAttributedStringKey.foregroundColor : QLColor.C3], for: .normal)
-        UITabBarItem.appearance().setTitleTextAttributes([NSAttributedStringKey.foregroundColor : QLColor.C1], for: .selected)
+        UITabBarItem.appearance().setTitleTextAttributes([NSAttributedStringKey.foregroundColor : QLColor.C3], for: .selected)
         
         //自定义tabbar的item
         for (index, item) in (self.tabBar.items?.enumerated())! {

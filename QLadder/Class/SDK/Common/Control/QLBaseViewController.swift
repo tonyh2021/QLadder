@@ -15,5 +15,4 @@ class QLBaseViewController: UIViewController {
         
         self.view.backgroundColor = QLColor.C2
     }
-
 }

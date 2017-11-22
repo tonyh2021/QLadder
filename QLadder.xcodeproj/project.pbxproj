@@ -45,6 +45,9 @@
 		D8866C001FBD8552002E406C /* QLNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8866BFF1FBD8552002E406C /* QLNavigationController.swift */; };
 		D8866C021FBD856A002E406C /* QLTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8866C011FBD856A002E406C /* QLTabBarController.swift */; };
 		D8EBED261FBEF91A00477A97 /* QLDebugViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8EBED251FBEF91A00477A97 /* QLDebugViewController.swift */; };
+		D8EBED2C1FC2C84300477A97 /* VPNManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8EBED2B1FC2C84300477A97 /* VPNManager.swift */; };
+		D8EBED321FC3D09600477A97 /* NEKitRule.conf in Resources */ = {isa = PBXBuildFile; fileRef = D8EBED311FC3D09600477A97 /* NEKitRule.conf */; };
+		D8EBED351FC4055000477A97 /* AppConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8EBED341FC4055000477A97 /* AppConfig.swift */; };
 		DF324D411690EAA5E4EDD089 /* Pods_QLadderTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A773E43AB7F368E6A353D9F7 /* Pods_QLadderTests.framework */; };
 		EFBCC7A37FA972D8AF6434A8 /* Pods_QLadderUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2592B8F9266210F74A9B00D1 /* Pods_QLadderUITests.framework */; };
 /* End PBXBuildFile section */
@@ -133,6 +136,9 @@
 		D8866BFF1FBD8552002E406C /* QLNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QLNavigationController.swift; sourceTree = "<group>"; };
 		D8866C011FBD856A002E406C /* QLTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QLTabBarController.swift; sourceTree = "<group>"; };
 		D8EBED251FBEF91A00477A97 /* QLDebugViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QLDebugViewController.swift; sourceTree = "<group>"; };
+		D8EBED2B1FC2C84300477A97 /* VPNManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VPNManager.swift; sourceTree = "<group>"; };
+		D8EBED311FC3D09600477A97 /* NEKitRule.conf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = NEKitRule.conf; sourceTree = "<group>"; };
+		D8EBED341FC4055000477A97 /* AppConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConfig.swift; sourceTree = "<group>"; };
 		F94862F15FCEBB7D7F3DD0D6 /* Pods_PacketTunnel.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PacketTunnel.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F95177D1B41FAEF4A74163C7 /* Pods_QLadder.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_QLadder.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -236,6 +242,7 @@
 		D8866B7C1FBC396F002E406C /* QLadder */ = {
 			isa = PBXGroup;
 			children = (
+				D8EBED301FC3D09600477A97 /* Resource */,
 				D8866BDF1FBD7844002E406C /* Class */,
 				D8866BBC1FBC3A25002E406C /* QLadder.entitlements */,
 				D8866B811FBC396F002E406C /* Main.storyboard */,
@@ -317,6 +324,8 @@
 		D8866BED1FBD8000002E406C /* SDK */ = {
 			isa = PBXGroup;
 			children = (
+				D8EBED2D1FC2C87A00477A97 /* Utils */,
+				D8EBED2A1FC2C84300477A97 /* Manager */,
 				D8866BEE1FBD8000002E406C /* Common */,
 			);
 			path = SDK;
@@ -345,6 +354,7 @@
 			isa = PBXGroup;
 			children = (
 				D8866BF11FBD8000002E406C /* QLColorDefine.swift */,
+				D8EBED341FC4055000477A97 /* AppConfig.swift */,
 			);
 			path = Define;
 			sourceTree = "<group>";
@@ -382,6 +392,29 @@
 			children = (
 			);
 			path = View;
+			sourceTree = "<group>";
+		};
+		D8EBED2A1FC2C84300477A97 /* Manager */ = {
+			isa = PBXGroup;
+			children = (
+				D8EBED2B1FC2C84300477A97 /* VPNManager.swift */,
+			);
+			path = Manager;
+			sourceTree = "<group>";
+		};
+		D8EBED2D1FC2C87A00477A97 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
+		D8EBED301FC3D09600477A97 /* Resource */ = {
+			isa = PBXGroup;
+			children = (
+				D8EBED311FC3D09600477A97 /* NEKitRule.conf */,
+			);
+			path = Resource;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -547,6 +580,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D8866B881FBC396F002E406C /* LaunchScreen.storyboard in Resources */,
+				D8EBED321FC3D09600477A97 /* NEKitRule.conf in Resources */,
 				D8866B851FBC396F002E406C /* Assets.xcassets in Resources */,
 				D8866B831FBC396F002E406C /* Main.storyboard in Resources */,
 			);
@@ -698,11 +732,13 @@
 			inputPaths = (
 				"${SRCROOT}/Pods/Target Support Files/Pods-QLadder/Pods-QLadder-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/Alamofire/Alamofire.framework",
+				"${BUILT_PRODUCTS_DIR}/CocoaLumberjack/CocoaLumberjack.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftColor/SwiftColor.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Alamofire.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CocoaLumberjack.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftColor.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -789,6 +825,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				D8866C021FBD856A002E406C /* QLTabBarController.swift in Sources */,
+				D8EBED351FC4055000477A97 /* AppConfig.swift in Sources */,
+				D8EBED2C1FC2C84300477A97 /* VPNManager.swift in Sources */,
 				D8EBED261FBEF91A00477A97 /* QLDebugViewController.swift in Sources */,
 				D8866BF41FBD8053002E406C /* QLBaseViewController.swift in Sources */,
 				D8866BF21FBD8001002E406C /* QLColorDefine.swift in Sources */,

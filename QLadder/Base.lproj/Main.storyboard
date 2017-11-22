@@ -99,33 +99,26 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="QM1-Mu-Rjn">
-                                <rect key="frame" x="67" y="573" width="240" height="45"/>
-                                <color key="backgroundColor" red="1" green="0.50196081400000003" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                            </view>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="SuW-0Z-2UT">
-                                <rect key="frame" x="158" y="366" width="46" height="30"/>
+                                <rect key="frame" x="131" y="318" width="112" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Button"/>
                                 <connections>
-                                    <segue destination="CJk-tK-s8H" kind="show" id="JQs-lf-b59"/>
+                                    <action selector="connect:" destination="BYZ-38-t0r" eventType="touchUpInside" id="f2G-qp-po4"/>
                                 </connections>
                             </button>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                        <constraints>
-                            <constraint firstItem="QM1-Mu-Rjn" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="67" id="TAR-aT-yqh"/>
-                            <constraint firstItem="QM1-Mu-Rjn" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="509" id="ZgM-qr-vqy"/>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="QM1-Mu-Rjn" secondAttribute="trailing" constant="68" id="aaR-t2-kJh"/>
-                            <constraint firstItem="QM1-Mu-Rjn" firstAttribute="bottom" secondItem="6Tk-OE-BBY" secondAttribute="bottom" id="ru0-RN-HS1"/>
-                        </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
                     <navigationItem key="navigationItem" id="suy-nB-Gdr"/>
+                    <connections>
+                        <outlet property="connectButton" destination="SuW-0Z-2UT" id="uwQ-2V-1xp"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-287" y="-913"/>
+            <point key="canvasLocation" x="-287.19999999999999" y="-913.49325337331345"/>
         </scene>
         <!--Debug View Controller-->
         <scene sceneID="H1D-u8-f0h">

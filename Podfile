@@ -5,6 +5,7 @@ use_frameworks!
 
 def common
     pod 'SwiftColor'
+    pod 'CocoaLumberjack/Swift'
 end
 
 target "QLadder" do
@@ -15,7 +16,7 @@ end
 
 
 target "PacketTunnel" do
-    
+    common
 end
 
 target "QLadderTests" do

@@ -160,6 +160,8 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
         //        proxySettings.proxyAutoConfigurationJavaScript = "function FindProxyForURL(url, host) {return \"SOCKS 127.0.0.1:\(proxyPort)\";}"
         proxySettings.httpEnabled = true
         proxySettings.httpServer = NEProxyServer(address: "127.0.0.1", port: proxyPort)
+        proxySettings.httpsEnabled = true
+        proxySettings.httpsServer = NEProxyServer(address: "127.0.0.1", port: proxyPort)
         proxySettings.excludeSimpleHostnames = true
         // This will match all domains
         proxySettings.matchDomains = [""]

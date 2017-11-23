@@ -80,9 +80,9 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
         
         for each in (value["rule"].array! ){
             let adapter:NEKit.AdapterFactory
-            if each["adapter"].string! == "direct"{
+            if (each["adapter"].string! == "direct") {
                 adapter = directAdapterFactory
-            }else{
+            } else {
                 adapter = ssAdapterFactory
             }
             
@@ -90,12 +90,12 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
             switch ruleType {
             case "domainlist":
                 var rule_array : [NEKit.DomainListRule.MatchCriterion] = []
-                for dom in each["criteria"].array!{
+                for dom in each["criteria"].array! {
                     let raw_dom = dom.string!
                     let index = raw_dom.index(raw_dom.startIndex, offsetBy: 1)
                     let index2 = raw_dom.index(raw_dom.startIndex, offsetBy: 2)
-                    let typeStr = raw_dom.substring(to: index)
-                    let url = raw_dom.substring(from: index2)
+                    let typeStr = String(raw_dom[..<index])
+                    let url = String(raw_dom[index2...])
                     
                     if (typeStr == "s") {
                         rule_array.append(DomainListRule.MatchCriterion.suffix(url))

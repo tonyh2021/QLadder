@@ -130,7 +130,7 @@ extension VpnManager {
         }
     }
     
-    func loadProviderManager(_ complete: @escaping (NETunnelProviderManager?) -> Void){
+    func loadProviderManager(_ complete: @escaping (NETunnelProviderManager?) -> Void) {
         NETunnelProviderManager.loadAllFromPreferences { (managers, error) in
             if let managers = managers {
                 if managers.count > 0 {
@@ -197,24 +197,6 @@ extension VpnManager {
             manager.connection.stopVPNTunnel()
         }
     }
-    
-    /// Post an empty message so we could attach to packet tunnel process
-    public func postMessage() {
-    
-        loadProviderManager {
-            if let session = $0?.connection as? NETunnelProviderSession,
-                let message = "Hello".data(using: String.Encoding.utf8), $0?.connection.status != .invalid
-            {
-                do {
-                    try session.sendProviderMessage(message) { response in
-                        
-                    }
-                } catch {
-                    print("Failed to send a message to the provider")
-                }
-            }
-        }
-    }
 }
 
 // Generate and Load ConfigFile
@@ -230,9 +212,9 @@ extension VpnManager {
     fileprivate func setConnectionConfig(_ manager:NETunnelProviderManager) {
         var conf = [String:AnyObject]()
         conf["ss_address"] = "xxx.xxx.xxx.xxx" as AnyObject?//这里填写你的ss-server地址
-        conf["ss_port"] = 8990 as AnyObject?//ss-server端口
+        conf["ss_port"] = xxxx as AnyObject?//ss-server端口
         conf["ss_method"] = "AES256CFB" as AnyObject? // 大写 没有横杠 看Extension中的枚举类设定 否则引发fatal error
-        conf["ss_password"] = "xxxxxxxx" as AnyObject?// ss-server 密码
+        conf["ss_password"] = "xxxxxx" as AnyObject?// ss-server 密码
         conf["ymal_conf"] = getRuleConf() as AnyObject?
         let orignConf = manager.protocolConfiguration as! NETunnelProviderProtocol
         orignConf.providerConfiguration = conf

@@ -31,7 +31,6 @@ class QLHomeViewController: QLBaseViewController, VpnManagerDelegate {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        VpnManager.shared.postMessage()
         status = VpnManager.shared.vpnStatus
     }
     

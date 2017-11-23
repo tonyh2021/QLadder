@@ -15,7 +15,7 @@ Any question is welcome.
 - Support the excellent projects mentioned above([NEKit](https://github.com/zhuhaow/NEKit), [Potatso](https://github.com/Potatso/Potatso), etc. ).
 - Buy me a cup of coke.
 
-![](https://lettleprince.github.io/images/support/wechat-coke.png)
+![coke](https://lettleprince.github.io/images/support/wechat-coke-240.png)
 
 ## License
 

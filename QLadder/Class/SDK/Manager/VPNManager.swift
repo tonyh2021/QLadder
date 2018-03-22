@@ -22,7 +22,7 @@ public enum VpnStatus {
 }
 
 protocol VpnManagerDelegate: class {
-    func vpnManager(_ vpnManager: VpnManager, didChangeStatus status: VpnStatus)
+    func manager(_ manager: VpnManager, didChangeStatus status: VpnStatus)
 }
 
 class VpnManager {
@@ -34,7 +34,7 @@ class VpnManager {
     
     fileprivate(set) var vpnStatus = VpnStatus.off {
         didSet {
-            delegate?.vpnManager(self, didChangeStatus: self.vpnStatus)
+            delegate?.manager(self, didChangeStatus: vpnStatus)
         }
     }
     
@@ -73,13 +73,13 @@ class VpnManager {
         
         switch manager.connection.status {
         case .connected:
-            self.vpnStatus = .on
+            vpnStatus = .on
         case .connecting, .reasserting://reasserting  暂时无法获得确切状态
-            self.vpnStatus = .connecting
+            vpnStatus = .connecting
         case .disconnecting:
-            self.vpnStatus = .disconnecting
+            vpnStatus = .disconnecting
         case .disconnected, .invalid://invalid 无效状态，配置有错
-            self.vpnStatus = .off
+            vpnStatus = .off
         }
     }
     
@@ -211,14 +211,21 @@ extension VpnManager {
     
     fileprivate func setConnectionConfig(_ manager:NETunnelProviderManager) {
         var conf = [String:AnyObject]()
-        conf["ss_address"] = "xxx.xxx.xxx.xxx" as AnyObject?//这里填写你的ss-server地址
-        conf["ss_port"] = xxxx as AnyObject?//ss-server端口
-        conf["ss_method"] = "AES256CFB" as AnyObject? // 大写 没有横杠 看Extension中的枚举类设定 否则引发fatal error
-        conf["ss_password"] = "xxxxxx" as AnyObject?// ss-server 密码
-        conf["ymal_conf"] = getRuleConf() as AnyObject?
-        let orignConf = manager.protocolConfiguration as! NETunnelProviderProtocol
-        orignConf.providerConfiguration = conf
-        manager.protocolConfiguration = orignConf
+//        conf["ss_address"] = "201.244.92.221" as AnyObject?//这里填写你的ss-server地址
+//        conf["ss_port"] = 8899 as AnyObject?//ss-server端口
+//        conf["ss_method"] = "AES256CFB" as AnyObject? // 大写 没有横杠 看Extension中的枚举类设定 否则引发fatal error
+//        conf["ss_password"] = "1234" as AnyObject?// ss-server 密码
+        if let proxy = ConfigManager.shared.currentProxy {
+            conf["ss_address"] = proxy.host as AnyObject?
+            conf["ss_port"] = proxy.port as AnyObject?
+            conf["ss_method"] = "AES256CFB" as AnyObject? // 大写 没有横杠 看Extension中的枚举类设定 否则引发fatal error
+            conf["ss_password"] = proxy.password as AnyObject?
+            
+            conf["ymal_conf"] = getRuleConf() as AnyObject?
+            let orignConf = manager.protocolConfiguration as! NETunnelProviderProtocol
+            orignConf.providerConfiguration = conf
+            manager.protocolConfiguration = orignConf
+        }
     }
 
 }

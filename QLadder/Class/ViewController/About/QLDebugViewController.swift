@@ -7,11 +7,53 @@
 //
 
 import UIKit
+import Alamofire
+import WebKit
 
 class QLDebugViewController: QLBaseViewController {
-
+    
+    private var buddhas: [Buddha] = []
+    
+    @IBOutlet weak var tableView: UITableView!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        navigationItem.title = "Debug"
+        
+        let nib = UINib(nibName: QDBuddhaCell.identifier(), bundle: nil)
+        self.tableView.register(nib, forCellReuseIdentifier: QDBuddhaCell.identifier())
+        
+        QueryManager.shared.fetchBuddhas(page: 1) { (buddhas, errorMessage) in
+            self.buddhas += buddhas
+            self.tableView.reloadData()
+        }
+    }
+
+    @objc private func rightBarButtonItemDidClick() {
+        let vc = QLDebugViewController()
+        vc.hidesBottomBarWhenPushed = true
+        navigationController?.pushViewController(vc, animated: true)
+    }
+}
+
+extension QLDebugViewController: UITableViewDelegate, UITableViewDataSource {
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        print(buddhas.count)
+        return buddhas.count
     }
     
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        if let cell = tableView.dequeueReusableCell(withIdentifier: QDBuddhaCell.identifier()) as? QDBuddhaCell {
+            let buddha = buddhas[indexPath.row] as Buddha
+            cell.buddha = buddha
+            return cell
+        }
+        return UITableViewCell()
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 100
+    }
 }

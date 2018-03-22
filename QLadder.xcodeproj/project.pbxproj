@@ -9,6 +9,9 @@
 /* Begin PBXBuildFile section */
 		0116629339E64F2C3974AB90 /* Pods_QLadder.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F95177D1B41FAEF4A74163C7 /* Pods_QLadder.framework */; };
 		1BB905E40E906E2AF0240D57 /* Pods_PacketTunnel.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F94862F15FCEBB7D7F3DD0D6 /* Pods_PacketTunnel.framework */; };
+		D80F5B19205FBF7400251694 /* QueryManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D80F5B18205FBF7400251694 /* QueryManager.swift */; };
+		D80F5B1B205FBFB700251694 /* Buddha.swift in Sources */ = {isa = PBXBuildFile; fileRef = D80F5B1A205FBFB700251694 /* Buddha.swift */; };
+		D859A39F205BA3B800B089FC /* Proxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = D859A39E205BA3B800B089FC /* Proxy.swift */; };
 		D8866B831FBC396F002E406C /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D8866B811FBC396F002E406C /* Main.storyboard */; };
 		D8866B851FBC396F002E406C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D8866B841FBC396F002E406C /* Assets.xcassets */; };
 		D8866B881FBC396F002E406C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D8866B861FBC396F002E406C /* LaunchScreen.storyboard */; };
@@ -40,14 +43,27 @@
 		D8866BE61FBD7844002E406C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8866BE01FBD7844002E406C /* AppDelegate.swift */; };
 		D8866BF21FBD8001002E406C /* QLColorDefine.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8866BF11FBD8000002E406C /* QLColorDefine.swift */; };
 		D8866BF41FBD8053002E406C /* QLBaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8866BF31FBD8053002E406C /* QLBaseViewController.swift */; };
-		D8866BFC1FBD83B7002E406C /* QLHomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8866BFA1FBD83B7002E406C /* QLHomeViewController.swift */; };
-		D8866BFE1FBD83D0002E406C /* QLAboutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8866BFD1FBD83D0002E406C /* QLAboutViewController.swift */; };
 		D8866C001FBD8552002E406C /* QLNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8866BFF1FBD8552002E406C /* QLNavigationController.swift */; };
 		D8866C021FBD856A002E406C /* QLTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8866C011FBD856A002E406C /* QLTabBarController.swift */; };
-		D8EBED261FBEF91A00477A97 /* QLDebugViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8EBED251FBEF91A00477A97 /* QLDebugViewController.swift */; };
+		D89A2A5920633E140000D6A0 /* QDBuddhaViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D89A2A5720633E140000D6A0 /* QDBuddhaViewController.swift */; };
+		D89A2A5A20633E140000D6A0 /* QDBuddhaViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D89A2A5820633E140000D6A0 /* QDBuddhaViewController.xib */; };
+		D89A2A5F20636A710000D6A0 /* QDBuddhaListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D89A2A5D20636A700000D6A0 /* QDBuddhaListViewController.swift */; };
+		D89A2A6020636A710000D6A0 /* QDBuddhaListViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D89A2A5E20636A700000D6A0 /* QDBuddhaListViewController.xib */; };
+		D8D45F0920624CA400DEEF1D /* QLHomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8D45EFF20624CA400DEEF1D /* QLHomeViewController.swift */; };
+		D8D45F0A20624CA400DEEF1D /* QLNewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8D45F0020624CA400DEEF1D /* QLNewViewController.swift */; };
+		D8D45F0B20624CA400DEEF1D /* QLNewViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D8D45F0120624CA400DEEF1D /* QLNewViewController.xib */; };
+		D8D45F0C20624CA400DEEF1D /* QLDebugViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D8D45F0320624CA400DEEF1D /* QLDebugViewController.xib */; };
+		D8D45F0D20624CA400DEEF1D /* QLAboutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8D45F0420624CA400DEEF1D /* QLAboutViewController.swift */; };
+		D8D45F0E20624CA400DEEF1D /* QLDebugViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8D45F0620624CA400DEEF1D /* QLDebugViewController.swift */; };
+		D8D45F0F20624CA400DEEF1D /* QLMeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8D45F0820624CA400DEEF1D /* QLMeViewController.swift */; };
+		D8D45F1220624CC500DEEF1D /* QDBuddhaCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8D45F1020624CC500DEEF1D /* QDBuddhaCell.swift */; };
+		D8D45F1320624CC500DEEF1D /* QDBuddhaCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = D8D45F1120624CC500DEEF1D /* QDBuddhaCell.xib */; };
 		D8EBED2C1FC2C84300477A97 /* VPNManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8EBED2B1FC2C84300477A97 /* VPNManager.swift */; };
 		D8EBED321FC3D09600477A97 /* NEKitRule.conf in Resources */ = {isa = PBXBuildFile; fileRef = D8EBED311FC3D09600477A97 /* NEKitRule.conf */; };
 		D8EBED351FC4055000477A97 /* AppConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8EBED341FC4055000477A97 /* AppConfig.swift */; };
+		D8FF912F1FC6CCD400AFA494 /* ConfigManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8FF912E1FC6CCD400AFA494 /* ConfigManager.swift */; };
+		D8FF91361FCBFE9F00AFA494 /* LaunchViewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8FF91351FCBFE9F00AFA494 /* LaunchViewManager.swift */; };
+		D8FF91391FCD0BF900AFA494 /* UIView+Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8FF91381FCD0BF800AFA494 /* UIView+Color.swift */; };
 		DF324D411690EAA5E4EDD089 /* Pods_QLadderTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A773E43AB7F368E6A353D9F7 /* Pods_QLadderTests.framework */; };
 		EFBCC7A37FA972D8AF6434A8 /* Pods_QLadderUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2592B8F9266210F74A9B00D1 /* Pods_QLadderUITests.framework */; };
 /* End PBXBuildFile section */
@@ -101,6 +117,9 @@
 		A46D421CF339E3F9B47E3DFF /* Pods-QLadderTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-QLadderTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-QLadderTests/Pods-QLadderTests.debug.xcconfig"; sourceTree = "<group>"; };
 		A773E43AB7F368E6A353D9F7 /* Pods_QLadderTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_QLadderTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BEA8410ADD1CCB5860EDF120 /* Pods-PacketTunnel.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PacketTunnel.debug.xcconfig"; path = "Pods/Target Support Files/Pods-PacketTunnel/Pods-PacketTunnel.debug.xcconfig"; sourceTree = "<group>"; };
+		D80F5B18205FBF7400251694 /* QueryManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueryManager.swift; sourceTree = "<group>"; };
+		D80F5B1A205FBFB700251694 /* Buddha.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Buddha.swift; sourceTree = "<group>"; };
+		D859A39E205BA3B800B089FC /* Proxy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Proxy.swift; sourceTree = "<group>"; };
 		D8866B7A1FBC396F002E406C /* QLadder.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = QLadder.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D8866B821FBC396F002E406C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		D8866B841FBC396F002E406C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -131,14 +150,27 @@
 		D8866BE01FBD7844002E406C /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		D8866BF11FBD8000002E406C /* QLColorDefine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QLColorDefine.swift; sourceTree = "<group>"; };
 		D8866BF31FBD8053002E406C /* QLBaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QLBaseViewController.swift; sourceTree = "<group>"; };
-		D8866BFA1FBD83B7002E406C /* QLHomeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QLHomeViewController.swift; sourceTree = "<group>"; };
-		D8866BFD1FBD83D0002E406C /* QLAboutViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QLAboutViewController.swift; sourceTree = "<group>"; };
 		D8866BFF1FBD8552002E406C /* QLNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QLNavigationController.swift; sourceTree = "<group>"; };
 		D8866C011FBD856A002E406C /* QLTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QLTabBarController.swift; sourceTree = "<group>"; };
-		D8EBED251FBEF91A00477A97 /* QLDebugViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QLDebugViewController.swift; sourceTree = "<group>"; };
+		D89A2A5720633E140000D6A0 /* QDBuddhaViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QDBuddhaViewController.swift; sourceTree = "<group>"; };
+		D89A2A5820633E140000D6A0 /* QDBuddhaViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = QDBuddhaViewController.xib; sourceTree = "<group>"; };
+		D89A2A5D20636A700000D6A0 /* QDBuddhaListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QDBuddhaListViewController.swift; sourceTree = "<group>"; };
+		D89A2A5E20636A700000D6A0 /* QDBuddhaListViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = QDBuddhaListViewController.xib; sourceTree = "<group>"; };
+		D8D45EFF20624CA400DEEF1D /* QLHomeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QLHomeViewController.swift; sourceTree = "<group>"; };
+		D8D45F0020624CA400DEEF1D /* QLNewViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QLNewViewController.swift; sourceTree = "<group>"; };
+		D8D45F0120624CA400DEEF1D /* QLNewViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = QLNewViewController.xib; sourceTree = "<group>"; };
+		D8D45F0320624CA400DEEF1D /* QLDebugViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = QLDebugViewController.xib; sourceTree = "<group>"; };
+		D8D45F0420624CA400DEEF1D /* QLAboutViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QLAboutViewController.swift; sourceTree = "<group>"; };
+		D8D45F0620624CA400DEEF1D /* QLDebugViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QLDebugViewController.swift; sourceTree = "<group>"; };
+		D8D45F0820624CA400DEEF1D /* QLMeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QLMeViewController.swift; sourceTree = "<group>"; };
+		D8D45F1020624CC500DEEF1D /* QDBuddhaCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QDBuddhaCell.swift; sourceTree = "<group>"; };
+		D8D45F1120624CC500DEEF1D /* QDBuddhaCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = QDBuddhaCell.xib; sourceTree = "<group>"; };
 		D8EBED2B1FC2C84300477A97 /* VPNManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VPNManager.swift; sourceTree = "<group>"; };
 		D8EBED311FC3D09600477A97 /* NEKitRule.conf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = NEKitRule.conf; sourceTree = "<group>"; };
 		D8EBED341FC4055000477A97 /* AppConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConfig.swift; sourceTree = "<group>"; };
+		D8FF912E1FC6CCD400AFA494 /* ConfigManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigManager.swift; sourceTree = "<group>"; };
+		D8FF91351FCBFE9F00AFA494 /* LaunchViewManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchViewManager.swift; sourceTree = "<group>"; };
+		D8FF91381FCD0BF800AFA494 /* UIView+Color.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Color.swift"; sourceTree = "<group>"; };
 		F94862F15FCEBB7D7F3DD0D6 /* Pods_PacketTunnel.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PacketTunnel.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F95177D1B41FAEF4A74163C7 /* Pods_QLadder.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_QLadder.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -213,6 +245,15 @@
 				7DBE0C10D11AACDD81575E70 /* Pods-QLadderUITests.release.xcconfig */,
 			);
 			name = Pods;
+			sourceTree = "<group>";
+		};
+		D859A39D205BA3B800B089FC /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				D859A39E205BA3B800B089FC /* Proxy.swift */,
+				D80F5B1A205FBFB700251694 /* Buddha.swift */,
+			);
+			path = Model;
 			sourceTree = "<group>";
 		};
 		D8866B711FBC396F002E406C = {
@@ -307,23 +348,17 @@
 			isa = PBXGroup;
 			children = (
 				D8866BE01FBD7844002E406C /* AppDelegate.swift */,
+				D859A39D205BA3B800B089FC /* Model */,
 				D8866BED1FBD8000002E406C /* SDK */,
-				D8866BF71FBD83B7002E406C /* ViewController */,
-				D8866BE11FBD7844002E406C /* Model */,
+				D8D45EFD20624CA400DEEF1D /* ViewController */,
 			);
 			path = Class;
-			sourceTree = "<group>";
-		};
-		D8866BE11FBD7844002E406C /* Model */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Model;
 			sourceTree = "<group>";
 		};
 		D8866BED1FBD8000002E406C /* SDK */ = {
 			isa = PBXGroup;
 			children = (
+				D8FF91371FCD0BD600AFA494 /* Extension */,
 				D8EBED2D1FC2C87A00477A97 /* Utils */,
 				D8EBED2A1FC2C84300477A97 /* Manager */,
 				D8866BEE1FBD8000002E406C /* Common */,
@@ -359,45 +394,65 @@
 			path = Define;
 			sourceTree = "<group>";
 		};
-		D8866BF71FBD83B7002E406C /* ViewController */ = {
+		D8D45EFD20624CA400DEEF1D /* ViewController */ = {
 			isa = PBXGroup;
 			children = (
-				D8866BF81FBD83B7002E406C /* About */,
-				D8866BF91FBD83B7002E406C /* Home */,
+				D8D45EFE20624CA400DEEF1D /* Home */,
+				D8D45F0220624CA400DEEF1D /* About */,
+				D8D45F0720624CA400DEEF1D /* Me */,
 			);
-			name = ViewController;
-			path = QLadder/Class/ViewController;
-			sourceTree = SOURCE_ROOT;
-		};
-		D8866BF81FBD83B7002E406C /* About */ = {
-			isa = PBXGroup;
-			children = (
-				D8866BFD1FBD83D0002E406C /* QLAboutViewController.swift */,
-				D8EBED251FBEF91A00477A97 /* QLDebugViewController.swift */,
-			);
-			path = About;
+			path = ViewController;
 			sourceTree = "<group>";
 		};
-		D8866BF91FBD83B7002E406C /* Home */ = {
+		D8D45EFE20624CA400DEEF1D /* Home */ = {
 			isa = PBXGroup;
 			children = (
-				D8866BFA1FBD83B7002E406C /* QLHomeViewController.swift */,
-				D8866BFB1FBD83B7002E406C /* View */,
+				D8D45EFF20624CA400DEEF1D /* QLHomeViewController.swift */,
+				D8D45F0020624CA400DEEF1D /* QLNewViewController.swift */,
+				D8D45F0120624CA400DEEF1D /* QLNewViewController.xib */,
 			);
 			path = Home;
 			sourceTree = "<group>";
 		};
-		D8866BFB1FBD83B7002E406C /* View */ = {
+		D8D45F0220624CA400DEEF1D /* About */ = {
 			isa = PBXGroup;
 			children = (
+				D8D45F0420624CA400DEEF1D /* QLAboutViewController.swift */,
+				D8D45F0320624CA400DEEF1D /* QLDebugViewController.xib */,
+				D8D45F0620624CA400DEEF1D /* QLDebugViewController.swift */,
+				D89A2A5720633E140000D6A0 /* QDBuddhaViewController.swift */,
+				D89A2A5820633E140000D6A0 /* QDBuddhaViewController.xib */,
+				D89A2A5D20636A700000D6A0 /* QDBuddhaListViewController.swift */,
+				D89A2A5E20636A700000D6A0 /* QDBuddhaListViewController.xib */,
+				D8D45F0520624CA400DEEF1D /* View */,
+			);
+			path = About;
+			sourceTree = "<group>";
+		};
+		D8D45F0520624CA400DEEF1D /* View */ = {
+			isa = PBXGroup;
+			children = (
+				D8D45F1020624CC500DEEF1D /* QDBuddhaCell.swift */,
+				D8D45F1120624CC500DEEF1D /* QDBuddhaCell.xib */,
 			);
 			path = View;
+			sourceTree = "<group>";
+		};
+		D8D45F0720624CA400DEEF1D /* Me */ = {
+			isa = PBXGroup;
+			children = (
+				D8D45F0820624CA400DEEF1D /* QLMeViewController.swift */,
+			);
+			path = Me;
 			sourceTree = "<group>";
 		};
 		D8EBED2A1FC2C84300477A97 /* Manager */ = {
 			isa = PBXGroup;
 			children = (
 				D8EBED2B1FC2C84300477A97 /* VPNManager.swift */,
+				D8FF912E1FC6CCD400AFA494 /* ConfigManager.swift */,
+				D8FF91351FCBFE9F00AFA494 /* LaunchViewManager.swift */,
+				D80F5B18205FBF7400251694 /* QueryManager.swift */,
 			);
 			path = Manager;
 			sourceTree = "<group>";
@@ -415,6 +470,14 @@
 				D8EBED311FC3D09600477A97 /* NEKitRule.conf */,
 			);
 			path = Resource;
+			sourceTree = "<group>";
+		};
+		D8FF91371FCD0BD600AFA494 /* Extension */ = {
+			isa = PBXGroup;
+			children = (
+				D8FF91381FCD0BF800AFA494 /* UIView+Color.swift */,
+			);
+			path = Extension;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -531,12 +594,12 @@
 					};
 					D8866B8D1FBC396F002E406C = {
 						CreatedOnToolsVersion = 9.1;
-						ProvisioningStyle = Automatic;
+						ProvisioningStyle = Manual;
 						TestTargetID = D8866B791FBC396F002E406C;
 					};
 					D8866B981FBC396F002E406C = {
 						CreatedOnToolsVersion = 9.1;
-						ProvisioningStyle = Automatic;
+						ProvisioningStyle = Manual;
 						TestTargetID = D8866B791FBC396F002E406C;
 					};
 					D8866BAE1FBC39D8002E406C = {
@@ -580,8 +643,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				D8866B881FBC396F002E406C /* LaunchScreen.storyboard in Resources */,
+				D89A2A5A20633E140000D6A0 /* QDBuddhaViewController.xib in Resources */,
 				D8EBED321FC3D09600477A97 /* NEKitRule.conf in Resources */,
+				D8D45F0B20624CA400DEEF1D /* QLNewViewController.xib in Resources */,
+				D8D45F0C20624CA400DEEF1D /* QLDebugViewController.xib in Resources */,
+				D89A2A6020636A710000D6A0 /* QDBuddhaListViewController.xib in Resources */,
 				D8866B851FBC396F002E406C /* Assets.xcassets in Resources */,
+				D8D45F1320624CC500DEEF1D /* QDBuddhaCell.xib in Resources */,
 				D8866B831FBC396F002E406C /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -733,12 +801,16 @@
 				"${SRCROOT}/Pods/Target Support Files/Pods-QLadder/Pods-QLadder-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/Alamofire/Alamofire.framework",
 				"${BUILT_PRODUCTS_DIR}/CocoaLumberjack/CocoaLumberjack.framework",
+				"${BUILT_PRODUCTS_DIR}/Fuzi/Fuzi.framework",
+				"${BUILT_PRODUCTS_DIR}/Kingfisher/Kingfisher.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftColor/SwiftColor.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Alamofire.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CocoaLumberjack.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Fuzi.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Kingfisher.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftColor.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -825,15 +897,26 @@
 			buildActionMask = 2147483647;
 			files = (
 				D8866C021FBD856A002E406C /* QLTabBarController.swift in Sources */,
+				D8FF912F1FC6CCD400AFA494 /* ConfigManager.swift in Sources */,
 				D8EBED351FC4055000477A97 /* AppConfig.swift in Sources */,
+				D8D45F0E20624CA400DEEF1D /* QLDebugViewController.swift in Sources */,
+				D8D45F0A20624CA400DEEF1D /* QLNewViewController.swift in Sources */,
+				D859A39F205BA3B800B089FC /* Proxy.swift in Sources */,
+				D80F5B19205FBF7400251694 /* QueryManager.swift in Sources */,
 				D8EBED2C1FC2C84300477A97 /* VPNManager.swift in Sources */,
-				D8EBED261FBEF91A00477A97 /* QLDebugViewController.swift in Sources */,
+				D8FF91391FCD0BF900AFA494 /* UIView+Color.swift in Sources */,
 				D8866BF41FBD8053002E406C /* QLBaseViewController.swift in Sources */,
 				D8866BF21FBD8001002E406C /* QLColorDefine.swift in Sources */,
-				D8866BFC1FBD83B7002E406C /* QLHomeViewController.swift in Sources */,
+				D89A2A5920633E140000D6A0 /* QDBuddhaViewController.swift in Sources */,
+				D8D45F0F20624CA400DEEF1D /* QLMeViewController.swift in Sources */,
+				D8D45F1220624CC500DEEF1D /* QDBuddhaCell.swift in Sources */,
+				D8FF91361FCBFE9F00AFA494 /* LaunchViewManager.swift in Sources */,
 				D8866BE61FBD7844002E406C /* AppDelegate.swift in Sources */,
 				D8866C001FBD8552002E406C /* QLNavigationController.swift in Sources */,
-				D8866BFE1FBD83D0002E406C /* QLAboutViewController.swift in Sources */,
+				D89A2A5F20636A710000D6A0 /* QDBuddhaListViewController.swift in Sources */,
+				D8D45F0D20624CA400DEEF1D /* QLAboutViewController.swift in Sources */,
+				D8D45F0920624CA400DEEF1D /* QLHomeViewController.swift in Sources */,
+				D80F5B1B205FBFB700251694 /* Buddha.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -933,6 +1016,8 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 6232V88552;
+				ENABLE_BITCODE = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -990,6 +1075,8 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 6232V88552;
+				ENABLE_BITCODE = NO;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -1016,9 +1103,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = QLadder/QLadder.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer: chunyu zhao (JNW34ZPMFS)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: chunyu zhao (JNW34ZPMFS)";
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = 6232V88552;
+				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
@@ -1028,7 +1116,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.qding.ladder.enterprise;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "230a16b8-0478-4702-98d2-7ca11b824b03";
+				PROVISIONING_PROFILE = "c54e53df-b639-4cf3-9ba2-c3be76e5daa2";
 				PROVISIONING_PROFILE_SPECIFIER = "ladder-dev";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1042,10 +1130,11 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = QLadder/QLadder.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer: chunyu zhao (JNW34ZPMFS)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Beijing Qianding Internet Technology Co., Ltd.";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Beijing Qianding Internet Technology Co., Ltd.";
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = 6232V88552;
+				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
@@ -1055,7 +1144,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.qding.ladder.enterprise;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "46f0a0cb-84fd-44cd-83dd-33fb37c8c4e5";
+				PROVISIONING_PROFILE = "c9a3035a-f1ee-497b-b346-1448d4c504d7";
 				PROVISIONING_PROFILE_SPECIFIER = "ladder-enterprise";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1068,12 +1157,14 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = 6232V88552;
 				INFOPLIST_FILE = QLadderTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.qding.QLadderTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/QLadder.app/QLadder";
@@ -1086,12 +1177,14 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = 6232V88552;
 				INFOPLIST_FILE = QLadderTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.qding.QLadderTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/QLadder.app/QLadder";
@@ -1103,12 +1196,14 @@
 			baseConfigurationReference = 9404C956A4229F434537CF56 /* Pods-QLadderUITests.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = 6232V88552;
 				INFOPLIST_FILE = QLadderUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.qding.QLadderUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "2c70bdec-9ec4-453b-a06a-d2cf11a5e0bb";
+				PROVISIONING_PROFILE_SPECIFIER = devProvisioning4All;
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = QLadder;
@@ -1120,12 +1215,14 @@
 			baseConfigurationReference = 7DBE0C10D11AACDD81575E70 /* Pods-QLadderUITests.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 6232V88552;
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = 736T58M9ZN;
 				INFOPLIST_FILE = QLadderUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.qding.QLadderUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "8524809c-0aff-412a-adfc-213c41e88403";
+				PROVISIONING_PROFILE_SPECIFIER = qding_all_development;
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = QLadder;
@@ -1138,7 +1235,7 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = PacketTunnel/PacketTunnel.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer: chunyu zhao (JNW34ZPMFS)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: chunyu zhao (JNW34ZPMFS)";
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = 6232V88552;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -1150,7 +1247,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.qding.ladder.enterprise.tunnel;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "1cdbce42-60a3-47be-8999-57f70c05d773";
+				PROVISIONING_PROFILE = "fad5ac66-f134-4252-94e1-9643ee5f8bc1";
 				PROVISIONING_PROFILE_SPECIFIER = "ladder tunnel-dev";
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 4.0;
@@ -1163,8 +1260,8 @@
 			baseConfigurationReference = 6FBBC7B7C96FF6CD3C1F2E01 /* Pods-PacketTunnel.release.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = PacketTunnel/PacketTunnel.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer: chunyu zhao (JNW34ZPMFS)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Beijing Qianding Internet Technology Co., Ltd.";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Beijing Qianding Internet Technology Co., Ltd.";
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = 6232V88552;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -1176,7 +1273,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.qding.ladder.enterprise.tunnel;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "f334f58e-5eb0-4631-9fb0-bdefe26e1a64";
+				PROVISIONING_PROFILE = "c4bf8664-718a-4ea0-9761-1a83f69eb1cc";
 				PROVISIONING_PROFILE_SPECIFIER = "ladder tunnel-enterprise";
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 4.0;

@@ -10,8 +10,9 @@ end
 
 target "QLadder" do
     common
-    
-    pod 'Alamofire'
+    pod 'Alamofire', '4.5.1'
+    pod 'Fuzi'
+    pod 'Kingfisher'
 end
 
 

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="QLNewViewController" customModule="QLadder" customModuleProvider="target">
+            <connections>
+                <outlet property="hostTextField" destination="U4W-aH-VNX" id="8Nm-0o-ZUM"/>
+                <outlet property="passwdTextField" destination="OKd-T9-vdO" id="DlS-uG-eFM"/>
+                <outlet property="portTextField" destination="9Ax-jE-moj" id="cDT-vl-1K1"/>
+                <outlet property="view" destination="iN0-l3-epB" id="RNH-2z-BKI"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="地址" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="U4W-aH-VNX">
+                    <rect key="frame" x="30" y="120" width="165" height="30"/>
+                    <nil key="textColor"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                    <textInputTraits key="textInputTraits" returnKeyType="next" enablesReturnKeyAutomatically="YES" textContentType="username"/>
+                </textField>
+                <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="端口" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="9Ax-jE-moj">
+                    <rect key="frame" x="245" y="120" width="100" height="30"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="100" id="VJM-T0-pgE"/>
+                    </constraints>
+                    <nil key="textColor"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                    <textInputTraits key="textInputTraits"/>
+                </textField>
+                <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="密码" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="OKd-T9-vdO">
+                    <rect key="frame" x="30" y="180" width="315" height="30"/>
+                    <nil key="textColor"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                    <textInputTraits key="textInputTraits" autocorrectionType="no"/>
+                </textField>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=":" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="irU-hV-o6i">
+                    <rect key="frame" x="215" y="120" width="10" height="30"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="10" id="aCM-E5-Wi2"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                    <nil key="textColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="YvF-hm-vYI">
+                    <rect key="frame" x="172" y="240" width="31" height="30"/>
+                    <state key="normal" title="添加"/>
+                    <connections>
+                        <action selector="addDidClick:" destination="-1" eventType="touchUpInside" id="ngH-Gd-7z9"/>
+                    </connections>
+                </button>
+            </subviews>
+            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <constraints>
+                <constraint firstItem="irU-hV-o6i" firstAttribute="top" secondItem="U4W-aH-VNX" secondAttribute="top" id="1lW-6i-UV6"/>
+                <constraint firstItem="irU-hV-o6i" firstAttribute="bottom" secondItem="U4W-aH-VNX" secondAttribute="bottom" id="34F-Tg-0mW"/>
+                <constraint firstItem="OKd-T9-vdO" firstAttribute="top" secondItem="U4W-aH-VNX" secondAttribute="bottom" constant="30" id="EIr-tT-wpM"/>
+                <constraint firstItem="irU-hV-o6i" firstAttribute="leading" secondItem="U4W-aH-VNX" secondAttribute="trailing" constant="20" id="F9F-DW-eTE"/>
+                <constraint firstItem="U4W-aH-VNX" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" constant="100" id="LoY-EC-0mX"/>
+                <constraint firstItem="OKd-T9-vdO" firstAttribute="leading" secondItem="U4W-aH-VNX" secondAttribute="leading" id="QTW-SQ-Fu8"/>
+                <constraint firstItem="OKd-T9-vdO" firstAttribute="trailing" secondItem="9Ax-jE-moj" secondAttribute="trailing" id="R0s-xI-1m3"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="9Ax-jE-moj" secondAttribute="trailing" constant="30" id="eNy-DH-6Am"/>
+                <constraint firstItem="YvF-hm-vYI" firstAttribute="top" secondItem="OKd-T9-vdO" secondAttribute="bottom" constant="30" id="fZl-2f-i2e"/>
+                <constraint firstItem="9Ax-jE-moj" firstAttribute="leading" secondItem="irU-hV-o6i" secondAttribute="trailing" constant="20" id="mE5-be-LRN"/>
+                <constraint firstItem="9Ax-jE-moj" firstAttribute="centerY" secondItem="U4W-aH-VNX" secondAttribute="centerY" id="o3O-vJ-IoZ"/>
+                <constraint firstItem="YvF-hm-vYI" firstAttribute="centerX" secondItem="OKd-T9-vdO" secondAttribute="centerX" id="uQN-Bg-4wr"/>
+                <constraint firstItem="U4W-aH-VNX" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="30" id="xjS-gp-WjO"/>
+            </constraints>
+            <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
+            <point key="canvasLocation" x="34.5" y="54.5"/>
+        </view>
+    </objects>
+</document>

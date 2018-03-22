@@ -1,0 +1,2285 @@
+FlowerWrong=>Can I ask you a question about utun with Potatso-iOS project?zhuhaow=>问吧
+FlowerWrong=>https://github.com/shadowsocks/Potatso-iOS/issues/18#issuecomment-229556311
+FlowerWrong=>我看了Potatso-iOS 源码整理出来这个图，但发现有些地方走不通。NEPacketTunnelProvider会配置一个http proxy，但是又有utun0。不知道数据到底是怎么走的。
+zhuhaow=>没有完全读过他的代码
+zhuhaow=>不过我这么猜
+zhuhaow=>utun0出来的数据被重新组成TCPflow
+zhuhaow=>然后送入proxy中
+zhuhaow=>http proxy设置了以后支持http proxy的地方
+zhuhaow=>也就是比NSStream更高层的调用
+zhuhaow=>都会自动使用代理
+zhuhaow=>这样就不会走到utun0去
+zhuhaow=>也不是猜
+zhuhaow=>只有重新封装成TCP flow后的处理是猜的
+zhuhaow=>其他都是一定的
+zhuhaow=>顺带一说，他实现的UDP的转发完全是错的，只在某些情况下可用
+zhuhaow=>你知道那个全局代理到底改变了什么么
+FlowerWrong=>稍等，我画个图
+FlowerWrong=>[![iosnet2.png](https://files.gitter.im/zhuhaow/NEKit/9rTB/thumb/iosnet2.png)](https://files.gitter.im/zhuhaow/NEKit/9rTB/iosnet2.png)
+zhuhaow=>不是这样的
+zhuhaow=>走代理的并不会到tun这一级去啊
+zhuhaow=>HTTP这一级就连到代理了
+zhuhaow=>你能看到DNS的结果么，google.com是被污染的
+zhuhaow=>我不知道他是怎么处理这个的
+FlowerWrong=>对
+FlowerWrong=>这个dns是有问题的。
+zhuhaow=>如果他通过代理连这个IP，自然是连不上的
+zhuhaow=>但是通过代理连本机解析出来的IP这样做是不对的，虽然我发现很多人喜欢这样
+zhuhaow=>你试试www.google.com可以不可以
+zhuhaow=>另外我完全没懂全局模式是在干嘛，是指无视所有规则的意思么
+FlowerWrong=>我也没懂。我去看看代码。
+zhuhaow=>还有个问题，你试一下，twitter.app可以用么
+FlowerWrong=>全局模式 google.com 是可以的
+zhuhaow=>我看了一下，他处理了污染的情况
+zhuhaow=>但是仅仅是在代理服务器这边
+zhuhaow=>如果是tun这边的话，被污染了应该没法连了
+FlowerWrong=>[![1.pic.jpg](https://files.gitter.im/zhuhaow/NEKit/OC3C/thumb/1.pic.jpg)](https://files.gitter.im/zhuhaow/NEKit/OC3C/1.pic.jpg)
+FlowerWrong=>全局模式，twitter.app报这个错误
+FlowerWrong=>没这个地址吧
+zhuhaow=>不是，我说的是twitter这个app
+FlowerWrong=>。。。抱歉
+FlowerWrong=>可以用
+zhuhaow=>因为我只知道twitter这个地址是被污染并且是无视代理规则的
+zhuhaow=>不是网页访问twitter
+FlowerWrong=>twitter app 可以的
+FlowerWrong=>刚发了一条twitter
+zhuhaow=>嗯，在shadowsocks-libev里面做了
+zhuhaow=>虽然不知道是怎么做的
+zhuhaow=>你要是不怕麻烦的话
+zhuhaow=>去下个Fing
+zhuhaow=>然后点第二个tab，进去输google.com看看IP是多少
+FlowerWrong=>全局的意思可能是都走代理，即使 baidu.com
+zhuhaow=>因为我从来没用过shadowsocks，所以之前我不太搞得清楚他的功能究竟是到了什么样子，我现在大概清楚了
+zhuhaow=>其实potatso真的是非常简单
+zhuhaow=>他就是包了一下shadowsocks，所有的逻辑都已经做好了，他只是做了个生成配置文件的GUI
+FlowerWrong=>ss我知道，我写过客户端。就是转发socks5的请求，加密解密
+FlowerWrong=>不是喔
+zhuhaow=>不是，我说的是shadowsocks-libev提供的功能
+zhuhaow=>其实非常多
+FlowerWrong=>https://zh.wikipedia.org/wiki/SOCKS#SOCKS5
+zhuhaow=>你说的我都知道
+zhuhaow=>但是他还有很多很多配套的东西都打包到shadowsocks-libev里了
+zhuhaow=>你如果把fing的结果给我看一下，我应该能发现问题了
+FlowerWrong=>fing那个好像没效果，浏览器打开baidu.com，ip显示是代理服务器的。
+zhuhaow=>我估计，google.com的解析结果不知道为什么虽然是被污染的，但是却被当成未被污染的了
+zhuhaow=>fing在我这可以用啊
+FlowerWrong=>[![2.pic.jpg](https://files.gitter.im/zhuhaow/NEKit/Hn4e/thumb/2.pic.jpg)](https://files.gitter.im/zhuhaow/NEKit/Hn4e/2.pic.jpg)
+zhuhaow=>google.com.hk呢？
+FlowerWrong=>也是一样的
+FlowerWrong=>我再去啃啃代码。
+FlowerWrong=>过不过tun那里，我的图有问题吗
+zhuhaow=>可能是fing不支持cname的原因
+
+```
+ └────────────────┘                                       
+ │      TUN       │◀───────────────────────────┘          
+ ┌────────┴───────┐                            │          
+          │                                    │          
+          │                                    │          
+          │                                    │          
+└─────────▲────────────┘            └────────────────────┘
+│                      │            │                    │
+│        Proxy         ◀────────────│                    │
+│                      │            │        APP         │
+┌──────────────────────┐            │                    │
+                                    ┌────────────────────┐
+zhuhaow=>```
+zhuhaow=>应该是这样的
+zhuhaow=>app调用的库支持代理的，访问网络直接走代理
+zhuhaow=>不支持的才到tun
+zhuhaow=>再去重新装成tcp流走代理
+FlowerWrong=>"再去重新装成tcp流走代理" 这个应该不会走配置的那个http代理了吧。走自己本地启动的代理。
+zhuhaow=>嗯，这里就是完全由potasto随意控制了
+zhuhaow=>会直接发到ss
+zhuhaow=>fing无法检测到IP的原因是因为DNS直接就查不到东西，比如fb.com
+zhuhaow=>不知道这里具体是怎么处理的
+zhuhaow=>但是估计是DNS出了问题
+FlowerWrong=>明白了一部分，谢谢。大概可以串联起来了。余下问题应该是potasto怎么处理的dns
+zhuhaow=>这库核心就是ShadowPath，下面有Antinat(SOCKS5 proxy)，Privoxy(HTTP proxy)和shadowsocks-libev
+zhuhaow=>Potatso又加了一个tun2socks来把TCP转为TCP流
+zhuhaow=>然后这些东西接收到数据就直接转发给shadowsocks-libev
+zhuhaow=>shadowsocks-libev负责处理规则，连接远程服务器等等
+zhuhaow=>包括DNS也是shadowsocks-libev处理
+FlowerWrong=>dns不是
+FlowerWrong=>utun0 -> tun2socks －》Antinat(SOCKS5 proxy) －》shadowsocks-libev
+FlowerWrong=>不遵从代理应该是这么走的
+zhuhaow=>应该不需要ANtinat
+FlowerWrong=>我看的代码，ANtinat 的fd是作为参数传递给tun2socks的
+FlowerWrong=>作者应该是为了加自定义http代理功能
+FlowerWrong=>utun0 -> tun2socks －》Antinat(SOCKS5 proxy) －》http代理
+zhuhaow=>不是，我明白了
+zhuhaow=>Antinat应该是为了和ss通信的
+zhuhaow=>ss建立了SOCKS5代理
+zhuhaow=>好像也不对
+zhuhaow=>诶，这个不是重点，反正DNS也不在这些里面
+FlowerWrong=>https://github.com/cykor/Surf/blob/master/NE.pdf
+FlowerWrong=>这个不知道是谁写的，可靠性也不知道
+zhuhaow=>像是一个联手项目，并没有打算真正用的那种
+zhuhaow=>基于Apple官方的那个demo改的
+FlowerWrong=>那个pdf分析了surge和surf，可能是surf的作者
+zhuhaow=>surf是什么
+FlowerWrong=>https://itunes.apple.com/cn/app/a.big.t/id1051326718?mt=8
+FlowerWrong=>a.big.t
+zhuhaow=>有可能这个是他尝试的时候写的，然后就开始认真写闭源的了
+FlowerWrong=>😄，可能真是
+zhuhaow=>分析的对的，因为我觉得只有这一种实现方式
+zhuhaow=>不过给他一画感觉格外复杂
+zhuhaow=>好吧，所有的DNS请求都没有被劫持，我完全不知道究竟是怎么回事了
+FlowerWrong=>我也是看到没有劫持，只是转发了
+zhuhaow=>你在fing里面试试twitter.com，Facebook.com或者其他被污染的地址试试
+FlowerWrong=>得到的结果是被污染的
+zhuhaow=>哇，这还能通过tun使用……原理上不通啊
+FlowerWrong=>确实是被污染的，和我在电脑上host得到的地址一样
+FlowerWrong=>ss需要发送域名和端口给他，这域名和端口从哪里来。确定这个应该就可以了
+zhuhaow=>如果没有劫持DNS的话连到SOCKS5代理的时候会发给他啊，这个没问题的，问题是重建的TCP流是一个污染过的目标IP
+zhuhaow=>根本就没法获取真实域名了
+zhuhaow=>surge的处理是这样的，只有返回IP被污染的时候，或者这个域名明确的在某个规则里的时候
+zhuhaow=>DNS会返回一个虚假的IP
+zhuhaow=>这样就可以反查了
+zhuhaow=>但是没劫持的话就无从知道真实域名了
+FlowerWrong=>就是建立一个hash，查询域名对应fakeip
+zhuhaow=>我有点怀疑Twitter已经不再采用自己的SPDY库而是直接调用系统的NSURLConnection之类的东西了
+FlowerWrong=>但potatso好像没有
+zhuhaow=>毕竟iOS应该已经支持了
+zhuhaow=>这样就会走代理了
+zhuhaow=>原来Twitter用的自己的那个CocoaSPDY不支持代理设置
+zhuhaow=>自己搞个socket
+zhuhaow=>Potatso好像不能关掉packet功能
+FlowerWrong=>但如果走tun，发送给ss服务器的domain和端口从哪里来的呢
+zhuhaow=>永远不知道，但是如果IP是真实的也不是不能连，虽然我在NEKit是一定要反查出域名的
+zhuhaow=>我写的说明你可以看一下https://github.com/zhuhaow/NEKit
+FlowerWrong=>https://github.com/zhuhaow/NEKit#dnsserver 嗯，这种比较好理解。
+FlowerWrong=>但如果不知道，我发的ip是污染的。那么ss服务器也不能返回的。肯定有什么地方我们没发现
+zhuhaow=>我有99%的把握twitter的不知那个版本开始支持代理了
+zhuhaow=>这个连接是走代理的，所以污染不污染无所谓了
+zhuhaow=>等等，又不确定了
+zhuhaow=>好的，我确定了，twitter并没有走tun接口
+zhuhaow=>可以用mail.app实验，因为这个是只走SOCKS5代理，而iOS是不能设置SOCKS5代理的
+FlowerWrong=>额，那其实这个tun没用是吧
+zhuhaow=>获取到的是Unknown，没有连接信息
+zhuhaow=>而twitter的连接居然有http请求头
+zhuhaow=>他偷懒了，这个tun在ip不被污染的情况下是可以用的
+zhuhaow=>当然并不能解释为何google.com上不去
+FlowerWrong=>google.com他好像说是match domain的问题，我这边全局后可以上
+FlowerWrong=>https://github.com/shadowsocks/Potatso-iOS/commit/8e3a51b75e0e3a65774d81524a15b914457ef7ab
+FlowerWrong=>这个commit
+zhuhaow=>这里怎么了
+FlowerWrong=>google
+FlowerWrong=>能上去
+zhuhaow=>他把规则放到http这里去了？
+FlowerWrong=>我试了下mail.app，好像真有问题
+FlowerWrong=>是的
+zhuhaow=>奇怪啊。难道tun还要先转成http connect连http代理
+zhuhaow=>严格来说规则放http是对的
+zhuhaow=>因为没有规定http代理中一个socket收到的多个请求连接的是同一个host
+FlowerWrong=>mail.app可以发邮件，代发，我全局开了vpn
+FlowerWrong=>不会吧
+zhuhaow=>但是chrome和苹果的实现都是保证请求连到同一个host的
+zhuhaow=>gmail么？
+zhuhaow=>不翻墙也可以上的
+FlowerWrong=>苹果自带的mail
+zhuhaow=>如果是gmail的imap不用翻墙的
+zhuhaow=>你可以ping一下
+zhuhaow=>慢一点而已
+FlowerWrong=>看了代码，确定tun没有再转发到http
+FlowerWrong=>utun0 -> tun2socks －》Antinat(SOCKS5 proxy) －》shadowsocks-libev
+FlowerWrong=>这样走的
+FlowerWrong=>privoxy http proxy -> shadowsocks-libev
+FlowerWrong=>遵从代理是这么走的
+zhuhaow=>搞不懂。难道antinat又判断了一遍？
+zhuhaow=>或者他觉得tun的东西反正不多干脆都走代理
+FlowerWrong=>有什么方法可以测试吗
+FlowerWrong=>写个spdy协议的东西？
+zhuhaow=>测试什么
+zhuhaow=>antinat唯一的作用就是结合tun的
+zhuhaow=>ss以socks5代理的形式运行
+zhuhaow=>http代理由
+zhuhaow=>privoxy翻译为socks5
+FlowerWrong=>测试tun的作用，确定作者其实没有用tun。只用了http proxy
+zhuhaow=>antinat把裸的tcp流包了一个socks5
+FlowerWrong=>tun对于污染的dns没有实际效果
+zhuhaow=>应该用了吧。不然那个tun2socks干什么的
+zhuhaow=>你如果想试试规则
+zhuhaow=>可以设一个不能连的ss服务器
+zhuhaow=>再看看mail还能不能用
+zhuhaow=>国内的邮箱
+FlowerWrong=>我开全局，mail可以用，但浏览器就不能用了
+zhuhaow=>感觉好像tun都变直连了
+FlowerWrong=>😄
+FlowerWrong=>全局mail都还能用，我试了下，本地电脑起ss server，mail没有代理过去
+zhuhaow=>那这个tun2socks除了占资源没有任何用
+zhuhaow=>而且badvpn这个tun2socks实现的也够复杂的
+FlowerWrong=>感觉越来越复杂了
+lemon4ex=>来晚了，来晚了,NEKit啥时候弄个完整点的demo，不会用
+zhuhaow=>等我有空的时候，其实有一个现成的，但是太乱了
+lemon4ex=>@zhuhaow 坐等坐等，如果没空整理，乱点也可以，可以先看着，总比木有好😊
+Billllll=>@zhuhaow 我今天小试了一下, NEKit-macOS编译能通过, 能运行, 但是流量没有走代理, 强制指定socks5代理也不能访问, 端口确实是在监听的, 求指导
+zhuhaow=>@Billllll 因为NEKit-macOS只是一个framework，自身并不会运行啊
+zhuhaow=>@Billllll 如果你说那个demo，那么你需要写个配置文件啊，看下代码和那个配置文件的例子
+zhuhaow=>@Billllll 而且demo并没有用到NetworkExtension
+Billllll=>@zhuhaow 抱歉, 我表达错了, 我编的是demo, 配置文件也是对的
+Billllll=>我先后试过ss和http两种adapter, 都不行~ 是我理解错了什么吗?
+
+zhuhaow=>我不知道。晚上再说吧
+Billllll=>@zhuhaow 好的, 多谢
+zhuhaow=>@Billllll 话说你是不是配置文件放的地方不对
+Billllll=>HOME目录下, 应该没错
+zhuhaow=>@all https://github.com/zhuhaow/Specht有个demo
+YuQiang=>NEKit-iOS 版本编译没法通过
+zhuhaow=>我可以啊。什么错误？
+YuQiang=>NEKit/src/RawSocket/GCDTCPSocket.swift:47:47: Value of optional type 'String?' not unwrapped; did you mean to use '!' or '?'?  NEKit/src/RawSocket/GCDTCPSocket.swift:213:25: Cannot convert value of type '[NSObject : AnyObject]!' to expected argument type '[String : NSNumber]?'
+zhuhaow=>是最新版本的么，git pull一下？
+YuQiang=>最新的，重新clone 最新的了
+zhuhaow=>应该好了，GCDAsyncSocket更新了新版本，而我的Cartfile没有fix住版本号
+YuQiang=>@zhuhaow 好了，多谢！
+zhuhaow=>最新版本的NEKit和Specht已经可以用HTTP proxy server了，不需要再用PAC写SOCKS5代理了
+zhuhaow=>@all
+lemon4ex=>carthage update 后，显示编译失败：
+(2 failures)  编译环境，XCode7.2，10.11.1，是swift新语法编译不过么？
+	CompileSwiftSources normal arm64 com.apple.xcode.tools.swift.compiler
+	CompileSwift normal arm64 /Users/lemon4ex/Desktop/NEKit/Carthage/Checkouts/CocoaLumberjack/Classes/CocoaLumberjack.swift
+lemon4ex=>The following build commands failed:
+zhuhaow=>failure 信息是什么？
+FlowerWrong=>@zhuhaow 可以画个数据流图吗？到现在都还没搞清楚。
+zhuhaow=>@FlowerWrong readme看了么？
+FlowerWrong=>@zhuhaow 我是指https://github.com/zhuhaow/Specht 这个应用，其他单独部分的应用都是清楚的，但是specht在mac下怎么工作一直没弄清楚。之前讨论过potatso，我还是一团浆糊。哈哈。
+zhuhaow=>@FlowerWrong 今明我会把所有东西整理好发布一下
+FlowerWrong=>thx
+icodesign=>awesome
+icodesign=>@zhuhaow 有在实际的 App 中使用了吗
+zhuhaow=>@icodesign Specht算么？就是没人用所以我才写了Specht推广一下NEKit的。
+icodesign=>好像用了 CocoaAsyncSocket?
+zhuhaow=>嗯
+icodesign=>那个东西有内存问题
+zhuhaow=>其实我不确定，因为我用CocoaAsyncSocket写的代理已经跑了快两年了
+zhuhaow=>现在不知道是不是修复了，又更新了这么多版本
+icodesign=>你的代理是 Mac 上的还是 iOS
+zhuhaow=>但是考虑到Mac上内存不吃紧，所以没注意过
+icodesign=>一开始我也用它，但是稍微一跑就崩
+zhuhaow=>我在iOS上也用了一年多
+zhuhaow=>不会有问题
+zhuhaow=>问题是不是在simulator里?
+icodesign=>你用 simulator？
+zhuhaow=>不用
+icodesign=>simulator 不行吧，跑不起 NE
+zhuhaow=>我之前一个非NE的iOS app
+zhuhaow=>并不会有问题
+icodesign=>那肯定
+zhuhaow=>https://github.com/robbiehanson/CocoaAsyncSocket/issues/349
+icodesign=>NE 5/6M 内存限制
+zhuhaow=>可能是simulator的问题
+icodesign=>它的 NSData 缓存太大，而且还改不了
+zhuhaow=>这个应该没问题，因为如果是用NE的话，NEKit只有连接本地用CocoaAsyncSocket
+icodesign=>这个库的 License 是？
+zhuhaow=>BSD3
+icodesign=>高峰期会直接跑掉 2M 多内存
+zhuhaow=>有可能
+zhuhaow=>不过内存不会紧张到这个地步，而且iOS10里面内存限制是10M
+icodesign=>最近在打算重构 Potatso，之前各种库用的，导致很不稳定，也不好扩展
+icodesign=>没错，iOS 10 就不会了
+zhuhaow=>Potatso根本就无法重构啊……
+icodesign=>为毛不可以。。。
+zhuhaow=>因为所有的东西都搅在一起
+icodesign=>所以才要重构
+zhuhaow=>很多都是基于现成的硬改的
+icodesign=>没错
+zhuhaow=>这种太难重构了
+icodesign=>直接放弃原来的
+zhuhaow=>这就不是重构了……
+zhuhaow=>不过我很欢迎你用NEKit重构
+icodesign=>但是思想还是一样的
+FlowerWrong=>@zhuhaow   type: shadowsocks  => type: ss  in https://github.com/zhuhaow/SpechtLite#configuration-file
+zhuhaow=>@FlowerWrong 呃，我蠢了，改过来了，谢谢
+YuQiang=>iOS 下测试。 HTTP代理能正常访问，SS代理无法访问，没有任何报错提示
+    adapter: shadowsocksproxy
+  - type: all
+rule:
+    auth: false
+    port: xxxx
+    host: 120.26.x.x
+    type: HTTP
+  - id: httpproxy
+    password: xxxxxx
+    port: xxxx
+    host: 116.251.x.x
+    method: AES-256-CFB
+    type: ss
+  - id: shadowsocksproxy
+adapter:
+YuQiang=>port: 9090
+YuQiang=>另外两个小问题反馈下：1.iOS 下 NETunnelProviderManager.enabled 需要设置为true才能运行VPN，2. SS Adapter 密码为全数字的时候会报错
+zhuhaow=>1. 这个就和NEKit无关了；2. 这个明天会修正
+zhuhaow=>2已经修正了
+zhuhaow=>我最近再改一改SpechtLite然后会写一些测试了，虽然NE不能测，但是其他部分还是可以测一下的
+zhuhaow=>ss问题已经修正
+YuQiang=>赞！
+YuQiang=>更新到0.2.2版本还是有问题，以下是shadowsocks 的日志
+2016-08-13 08:46:34 ERROR    [Errno 104] Connection reset by peer
+2016-08-13 08:46:33 INFO     connecting play.itunes.apple.com:443 from 125.120.28.48:51575
+2016-08-13 08:46:29 ERROR    [Errno 110] Connection timed out
+YuQiang=>2016-08-13 08:46:19 INFO     connecting www.baidu.com:80 from 125.120.28.48:51573
+YuQiang=>carthage update 添加 --no-use-binaries  就正常了，赞！
+zhuhaow=>可能是有些编译好的东西实在太古老了
+zhuhaow=>更新了readme了
+FlowerWrong=>[![屏幕快照 2016-08-13 下午10.41.59.png](https://files.gitter.im/zhuhaow/NEKit/SqAX/thumb/____-2016-08-13-__10.41.59.png)](https://files.gitter.im/zhuhaow/NEKit/SqAX/____-2016-08-13-__10.41.59.png)
+FlowerWrong=>启动失败，然后按照https://github.com/zhuhaow/Specht#some-tips 手动plugkit -a了还是不行
+FlowerWrong=>有人知道什么原因吗？
+zhuhaow=>试试kill neagent
+zhuhaow=>另一个可能的yuany@是bundle identifier的问题，比如group app权限不对啊什么的
+zhuhaow=>所以在跑起来之前我不建议改任何原本的东西
+FlowerWrong=>thx，bundle identifier的问题。可以跑了
+FlowerWrong=>@zhuhaow 请问下，为什么`curl https://www.facebook.com` 走TUN（log：Accepted a new socket from IP stack.），而`curl http://www.facebook.com` 直接走的是http代理。
+zhuhaow=>因为你没设https_proxy？
+FlowerWrong=>@zhuhaow 我蠢了！！！
+FlowerWrong=>[![ne.png](https://files.gitter.im/zhuhaow/NEKit/hFFC/thumb/ne.png)](https://files.gitter.im/zhuhaow/NEKit/hFFC/ne.png)
+FlowerWrong=>@zhuhaow 这个数据流图理解正确吗？
+FlowerWrong=>[![ne.png](https://files.gitter.im/zhuhaow/NEKit/FMt4/thumb/ne.png)](https://files.gitter.im/zhuhaow/NEKit/FMt4/ne.png)
+zhuhaow=>后面基本是对的，就是mainProxy其实只用来处理tun2socks的请求，其他的代理根据监听的端口直接到对应的GCDProxyServer上
+zhuhaow=>这个接口我可能会改一下，不叫mainProxy，有点令人误解
+zhuhaow=>可能把它放到TCPStack里去
+FlowerWrong=>@zhuhaow store request log to database?看其他app都有这个功能。
+zhuhaow=>我只会提供一些event，这个和NEKit无关
+Finb=>拜读了一下源码，这TM加个UI不就是成品么~
+zhuhaow=>@Finb 我都写到这份上了居然没人关注你说我多伤心
+FlowerWrong=>赶紧上线一个
+zhuhaow=>@FlowerWrong 不想折腾，写到我觉得满意还挺花时间的
+zhuhaow=>@FlowerWrong 不过我最近event这块写完了如果觉得写个UI也不麻烦有可能会上线
+FlowerWrong=>😄，通病，都觉得做ui麻烦
+FlowerWrong=>对于我来说，这个产品就差一个log和reject，最好加个icloud同步，还有一个default route，就差不多了，不用特别复杂的ui，也用不上。
+bjzhou=>为啥Proxifier代理服务器设成NEKit的ss代理上不了
+zhuhaow=>配置文件
+bjzhou=>配置文件全走的ss代理，源码调了下走到ShadowsocksAdapter了，但是好像没有数据返回
+zhuhaow=>配置文件发我看一下
+bjzhou=>等会发你
+bjzhou=>proxifier蛮奇怪，他会dns解析之后再发给上级代理
+bjzhou=>
+zhuhaow=>不要在这里把密码发出来啊……
+bjzhou=>...
+bjzhou=>忘了。。
+zhuhaow=>删了吧
+```
+    adapter: speed
+  - type: all
+rule:
+        delay: 60
+      - id: direct
+        delay: 300
+      - id: jp2
+        delay: 300
+      - id: hk1
+    adapters:
+    type: SPEED
+  - id: speed
+    password: xxx
+    method: rc4-md5
+    port: xxx
+    host: jp2.bcloud.work
+    type: ss
+  - id: jp2
+    password: xxx
+    method: rc4-md5
+    port: xxx
+    host: hk1.bcloud.work
+    type: ss
+  - id: hk1
+adapter:
+port: 9090
+
+bjzhou=>```
+zhuhaow=>你可以用浏览器试试9090的http代理和9091的socks5代理是不是可以用
+bjzhou=>试过了直接设置系统代理是没问题的
+zhuhaow=>direct不要加delay
+zhuhaow=>平白多了60延迟
+bjzhou=>不加delay好像会解析到ss去
+zhuhaow=>不会啊，delay 0我都用了很久了
+bjzhou=>那我试试，没问题就改回来
+bjzhou=>不知道proxifier干了啥，Surge+Proxifier是没问题的
+bjzhou=>不过因为上级代理收到的不是host，而是Proxifier解析好的ip，所以基于host的规则全是无效的，基于ip的规则可以正常使用
+zhuhaow=>应该不会有什么问题才对
+zhuhaow=>SpechtLite没有被proxifier吧
+zhuhaow=>我从来没用过
+bjzhou=>主要是用在terminal和其他不支持系统代理的app
+zhuhaow=>试试看能不能在Proxifier里面加rule保证SpechtLite没有被代理
+bjzhou=>排除了的
+zhuhaow=>他的设置里有Resolve hostnames through proxy可以开，不过工作原理和NEKit的一样，都是fake IP
+zhuhaow=>我不知道原因了
+zhuhaow=>很难猜啊
+zhuhaow=>SpechtLite check update能成功么？
+bjzhou=>我在用NEkit源码调。。。研究着玩。。
+zhuhaow=>没有调用Network Extension？
+bjzhou=>开发者账号过期了，不想续...
+zhuhaow=>似乎没有什么问题
+zhuhaow=>按理说这两个之间不会有联系才对
+zhuhaow=>你这样用NEKit做的事应该和Surge一样的
+![pic](http://obxw9raj1.bkt.clouddn.com/c6cab081098469c8eee674b706a6d0bf)
+bjzhou=>给SpechtLite加了两个小功能，要不要提个pr
+zhuhaow=>这个set as system proxy要求管理员权限么？
+FlowerWrong=>要的
+来吧，非常欢迎
+zhuhaow=>算了，无所谓了
+bjzhou=>第一次运行需要，后面就不用了
+FlowerWrong=>把shell的也一起设置了吧
+bjzhou=>shell只能是copy之后手动粘贴到terminal里吧
+zhuhaow=>可以加到rc里，不过我非常不建议
+bjzhou=>加到rc还是算了
+zhuhaow=>哇，这实现手法好dirty啊，只有用applescript+shell这一招么
+bjzhou=>要不然每次都请求管理员权限...
+zhuhaow=>……
+bjzhou=>方案是抄的原来的ShadowsocksX
+
+FlowerWrong=>Surge for mac应该也是这么干的
+zhuhaow=>我可能还会改一下代码，谢谢啦
+bjzhou=>![sss](http://obxw9raj1.bkt.clouddn.com/e722f51539338dca053d7b01ee89193c)
+bjzhou=>左边是设成系统代理的请求，右边是proxifier发过来的，有啥区别...
+bjzhou=>还在纠结proxifier的问题...
+zhuhaow=>区别在于proxifier发过来的并不是代理请求
+zhuhaow=>他发过来的是直接的请求
+zhuhaow=>可以看成是透明代理
+zhuhaow=>但是NEKit是不支持透明代理的，proxifier设置里面可以改么？
+bjzhou=>应该不能，没找到相关设置
+zhuhaow=>说老实话我觉得NEKit应该也是支持透明代理的
+zhuhaow=>不知道哪里有问题
+zhuhaow=>我会再看一下这个问题
+zhuhaow=>24号之后要有半个多月基本不能上网，不知道之前能不能解决这些问题
+zhuhaow=>有些东西我好像理解错了
+zhuhaow=>proxifier先发送了CONNECT然后自己再发的所有请求
+zhuhaow=>那就和透明代理什么没关系了，这样的话应该是不会有问题才对
+nie11kun=>我加进来了😄
+zhuhaow=>ss那边能看到连接请求么
+nie11kun=>这个还没看
+nie11kun=>我直接粘贴的配置
+nie11kun=>网址也是加了\.com的
+nie11kun=>又给我自动修复了😳
+zhuhaow=>chacha20这个加密方式我不记得我测试过没有
+zhuhaow=>所以有可能是不能用的……
+nie11kun=>这样呀
+zhuhaow=>所以你要看看ss那边的连接请求看看是什么问题
+nie11kun=>那我先试试别的加密方式的ss
+zhuhaow=>AES-CFB这个应该是唯一测试过的
+zhuhaow=>RC4应该也可以用
+zhuhaow=>chacha主要是换了libsodium的缘故，不知道好用不好用
+nie11kun=>果然这样，人次
+nie11kun=>rc4OK了
+zhuhaow=>你私聊我一下给我个chacha20的服务器
+zhuhaow=>我有空的时候修复一下
+nie11kun=>可以
+CoderJin=>[![blob](https://files.gitter.im/zhuhaow/NEKit/rCnK/thumb/blob.png)](https://files.gitter.im/zhuhaow/NEKit/rCnK/blob)
+CoderJin=>这个是怎么回事?
+CoderJin=>[![blob](https://files.gitter.im/zhuhaow/NEKit/y9Vw/thumb/blob.png)](https://files.gitter.im/zhuhaow/NEKit/y9Vw/blob)
+zhuhaow=>ls -la ~/.SpechtLite
+test  ok !!
+CoderJin=>type ss  method AES-256-CFB 
+jostyee=>@zhuhaow 有没有做过SpechtLite和Surge的可以参照？
+zhuhaow=>？
+jostyee=>特性或者性能上的
+jostyee=>我想找个支持HTTP/2的client，刚看了下SpechtLite也没说有
+zhuhaow=>并没有，不理解这种功能存在的意义
+bjzhou=>建议NEKit里的ProxyServer的address改成可选类型，这样客户端传空的时候局域网内其他设备也可以设置这个代理，不然只有本机才能设代理
+zhuhaow=>更新了，但是其实如果用NE的话必须要设地址才行，不然会连不上
+zhuhaow=>原因不明
+bjzhou=>可以啊
+bjzhou=>https://github.com/bjzhou/NEKit/commit/ac063026d2c2f35a675abc1e02a6066255920bf9
+bjzhou=>这是我的改动，试了可以用
+zhuhaow=>诶，我当时试了很久都不行
+zhuhaow=>好吧，反正改了，要用的可以自行选择
+YuQiang=>iOS 下 list 的大小受限制，过大的list文件导致VPN无法启动
+zhuhaow=>无解，别搞太大的list，有这么大的需求？
+YuQiang=>我把gfwlist翻译成list格式了..
+zhuhaow=>多大啊
+YuQiang=>4464行
+zhuhaow=>崩了也正常，即便是字符应该都有150K了吧
+zhuhaow=>如果一定要用也可以的，时间换空间，不要预先编译正则表达式，每次匹配的时候现编译
+zhuhaow=>可以再结合adblock里面用到的算法
+zhuhaow=>感觉是纯折腾，不知道图啥
+bjzhou=>拆分成几个list不就好了吗...
+YuQiang=>我本意是想用gfwlist 替代Country rule的
+zhuhaow=>为何要这样，基本没有几个国外网站的访问是能以正常速度访问的
+zhuhaow=>而且我还专门写了SpeedAdapter
+zhuhaow=>gfwlist根本没有意义，几乎所有AWS和Cloudflare的网站都无法正常访问，他能涵盖几个
+YuQiang=>之前测试 Country rule 不是有奇怪的访问慢的情况么.. 就尝试着用list替代..
+zhuhaow=>拆成多少个list都不会减少内存啊
+zhuhaow=>说到这个都忘了，我现在就把那个问题修复一下
+bjzhou=>其实那个所谓的gfwlist根本不靠谱，一堆乱七八糟的域名，真正用得上的倒不一定有
+zhuhaow=>那个也是没办法的，毕竟现在是CDN+云的时代，而封的都是所有的主流供应商
+YuQiang=>这倒是. AWS 被封了一堆IP号段
+bjzhou=>基于ip段的规则感觉是有必要有的
+zhuhaow=>明天到9月10号我都无法更新，只能手机上网
+zhuhaow=>其实现在写也写完了，但是懒得写
+zhuhaow=>DNS解析的问题在master里面已经修复了
+YuQiang=>OK 
+YuQiang=>master 版本访问速度貌似正常了，不过VPN很容易就crash退出
+zhuhaow=>crash log给我看一下
+zhuhaow=>master已经支持ip list了
+YuQiang=>
+lioliy=>Spechtlite支持ssr吗
+zhuhaow=>暂不。有广泛需求么？
+nie11kun=>ssr可能适合以后可能干扰的情况下用吧
+nie11kun=>可以加入一个记录当前流量访问日志功能吗，类似surge的recent request
+nie11kun=>感觉有时候方便自己确认需要代理或直连
+lioliy=>ssr应该挺有用吧，现在很多站都是ssr的服务端了，并且不容易被检测出来。
+zhuhaow=>等我回来了就加ssr
+zhuhaow=>现有的NEKit实现这个是不难。不过想要任何GUI功能的可以自己提pull request，我这里优先级很低，而且最近很忙，可以慢慢等
+nie11kun=>OK
+bjzhou=>访问日志的功能提pull request了，我之前自己做了下，有人需要就提下pr吧，点show log会打开系统控制台，log样式·Request: pd-st.itunes.apple.com, Type: DirectAdapter, Rule: <CountryRule countryCode:CN match:true>·
+nie11kun=>顶
+nie11kun=>应该可以看到本机的所有流量记录吧
+zhuhaow=>谢谢pr，但是NEKit这部分不会merge
+zhuhaow=>我的设想是尽量的non-opinionated 
+zhuhaow=>所以NEKit最终会完全去除对cocoalumberjack的依赖
+zhuhaow=>而是采用event的方法
+zhuhaow=>如果想要获取现在的log的信息，应当监听adaptersocket的SocketOpened事件
+zhuhaow=>方法可以参考DebugOberserver
+bjzhou=>ok,有空改改
+bjzhou=>改了，不过需要先merge下NEKit，添加了init，不然SpechtLite编不过
+zhuhaow=>无论如何现在SpechtLite都编译不过，除非把cartfile改成master，我先不merge了，等我回去发布了NEKit就merge
+bjzhou=>对
+zhuhaow=>真的有需求？
+zhuhaow=>完全无法理解，ssr就是ss加上一堆莫名其妙的头或者毫无意义的传输协议
+bjzhou=>一直以为ssr属于邪教，明明没啥用还一堆人相信...
+zhuhaow=>我还以为是什么实质的增强，看了一堆什么插件扩展完全没看到任何有用的东西，都快去看源码了，看到一句兼容ss
+lioliy=>不懂，但很多都说站支持ssr和推荐使用ssr，ssr服务器用户也挺多的。。。
+lioliy=>好像ssr主要就多了个 obfs什么的插件吧https://github.com/breakwa11/shadowsocks-rss/wiki/obfs
+lioliy=>反馈一下当前版本SpechtLite（0.2.1）的bug，tetegram挂代理无论（http和socks）连接不上![](http://7xrn7f.com1.z0.glb.clouddn.com/16-8-30/96776815.jpg)，全局代理后qq的图片收不到![](http://7xrn7f.com1.z0.glb.clouddn.com/16-8-30/99564710.jpg)，Safari好像也有很小网页出现中断。。
+zhuhaow=>telegram有可能并不走代理，qq图片我会看一下，你是不是用了speed adapter？
+lioliy=>是
+zhuhaow=>估计是有点小bug
+lioliy=>嗯，测了下不用speed adapter bug仍存在
+zhuhaow=>诶，这就难搞了，是不是代理服务器连接不稳定？
+maocuu=>lwip 2.0.0 RC2 released ,  including dual-stack IPv6 support
+maocuu=>@zhuhaow  NEKit 解决了 DNS 投毒的问题吗？
+zhuhaow=>可以自行解决
+zhuhaow=>自定义dns解析方式
+maocuu=>自定义远程dns？
+zhuhaow=>或者利用iprange的规则
+zhuhaow=>可以使用任何方式做dns解析啊
+zhuhaow=>自定义host，dnscrypt都可与
+zhuhaow=>ipv6会在功能稳定以后添加
+zhuhaow=>主要是我连调试环境都没有
+maocuu=>哦，只研究过 potatso ，他是有个 dns 有毒的列表，本地 dns解析（twitter等）到这些ip就走代理了。       类似 ChinaDNS。     这样的好处就是国内 taobao 能解析到最有的ip
+zhuhaow=>NEKit也可以
+maocuu=>自定义dns解析方式，就是自己实现一个 DNSResolverProtocol ？
+zhuhaow=>是
+YuQiang=>SSR就是在头上加了一些混淆，避免SS被识别并屏蔽。
+zhuhaow=>并不觉得这样有很大意义，我高度怀疑gfw真的有能力分析数据流，成本太高
+bjzhou=>gfw一般只封ss服务器ip，不会分析数据流
+YuQiang=>SS 不了解，VPN确实是会识别，之前有个VPS用得好好的，手贱搭建了个PPTP用，没两天IP彻底被封
+bjzhou=>只分析明文吧
+zhuhaow=>pptp流量特征比较明显吧。尤其是端口号
+zhuhaow=>我知道的加密被封只有证书验证的openvpn
+zhuhaow=>估计是握手阶段的特征太明显了
+YuQiang=>openvpn也是有明显特征的 
+maocuu=>NEkit Framework 磁盘上的 14.7 MB  太大了，放不到 iOS 上面的 network extension 里面。
+YuQiang=>根据大家反馈SS出现不稳定的情况，我猜测是会对一些流量大的IP进行识别分析
+YuQiang=>iOS 可以的呀，我已经有成型APP在等待审核了。就是app 有点大，60多M,另外手机耗电有点高。 
+maocuu=>真的可以吗？我加上 NEKit 后，调试空的 network extension 都不行。
+zhuhaow=>app大是swift的原因
+zhuhaow=>至于iOS我重来没试过 但是mac上也没10M内存啊
+zhuhaow=>耗电我感觉surge也有点高
+YuQiang=>估计是其他原因导致调试不成功，可以把保存私信发我，可能我遇到过。 
+zhuhaow=>不知道为什么
+YuQiang=>缓存一些规则结果理论上有可能好一些吗？  比如Country缓存下最近的IP
+zhuhaow=>相较整个请求过程这么过程根本就可以忽略
+zhuhaow=>没法优化出什么
+zhuhaow=>我唯一能想到的是休眠的问题
+zhuhaow=>但是我完全想不到什么能够阻止系统休眠的东西
+YuQiang=>不理解为什么系统休眠增加功耗
+zhuhaow=>不是。iOS系统休眠很频繁，但是如果程序一直阻止休眠的话就会显著耗电了
+zhuhaow=>可以参考NEProvider的方法，sleep和wake
+zhuhaow=>问题是我想不出需要做什么
+zhuhaow=>有一个事情我想是应该做的。就是tcpstack里面的那个timer，我应该是写了一个pause和resume的方法的，但我不记得specht里面我用没用
+zhuhaow=>还有就是之前说的，不要处理packet，只用ne设一下系统代理，绝对会显著降低功耗
+走packet某些场景下访问卡的问题依旧存在。 
+YuQiang=>现在就是没走packet ，耗电占比15%左右（手机使用基本不离手）
+maocuu=>@zhuhaow  最新版里面  DirectAdapterFactory() 不存在？没办法调用。
+zhuhaow=>耗电占比高是必然的。因为所有的网络访问的耗电都算他头上了
+zhuhaow=>卡的问题只有我慢慢调了
+zhuhaow=>你看看是不是我没标成public？
+zhuhaow=>NEKit目前只支持swift
+maocuu=>class DirectAdapterFactory: AdapterFactory {}
+zhuhaow=>不过卡是网络经常卡住不动还是CPU占用过高？
+zhuhaow=>忘了加public了……提个pull request吧
+zhuhaow=>我现在改不了代码
+nie11kun=>最近在学iOS开发，希望早日可以做贡献😄
+maocuu=>@zhuhaow  提交了pull request 不知道对不对，我是  iOS 新手。
+zhuhaow=>已merge。谢谢了
+maocuu=>'DirectAdapterFactory' cannot be constructed because it has no accessible initializers
+zhuhaow=>只有master更新了。还没发布
+zhuhaow=>@nie11kun 欢迎
+maocuu=>@zhuhaow  shadowsocks 好像不支持 ota
+zhuhaow=>不支持。这些无关紧要的功能我真是懒得支持
+maocuu=>支持 https 代理？
+maocuu=> @zhuhaow    'HTTPAuthentication' cannot be constructed because it has no accessible initializers @zhuhaow  
+zhuhaow=>支持https
+zhuhaow=>……又是忘记public了
+bjzhou=>NEKit有好多地方该public的没public
+zhuhaow=>嗯，因为一开始我想限制一些东西的，所以public的特别小心，很多东西写的时候都没public，之后就忘了
+zhuhaow=>而且我自己只用一个Parser去处理配置，所以注意不到
+zhuhaow=>我后来已经public了很多东西了。但是还是忘了一些
+zhuhaow=>你们发现我没public的告诉我一声
+zhuhaow=>默认没有public，太容易忘记了
+bjzhou=>之前看好像DNSServer相关的有几个地方没public，具体忘记了
+maocuu=>NEKit  是不是无法使用 hangouts 打电话，测试 surge 和 potatso 可以。
+zhuhaow=>不觉得这和NEKit有太大关系，很有可能是规则设的不对所以没走代理
+zhuhaow=>比如域名污染到国内IP了但是没用IPRange
+maocuu=>IPRange 怎么解决dns污染到国内 ip？
+zhuhaow=>被污染到的域名只会被解析到那么几个IP，全部设成走代理就可以了
+bjzhou=>没开发证书，编出来的版本怎么给别人用。。。
+      PacketProvider.PacketTunnelProvider.(startTunnelWithOptions ([Swift.String : __ObjC.NSObject]?, completionHandler : (__ObjC.NSError?) -> ()) -> ()).(closure #1) in PacketTunnelProvider.o
+  "type metadata accessor for NEKit.Port", referenced from:
+      PacketProvider.PacketTunnelProvider.(startTunnelWithOptions ([Swift.String : __ObjC.NSObject]?, completionHandler : (__ObjC.NSError?) -> ()) -> ()).(closure #1) in PacketTunnelProvider.o
+maocuu=>"type metadata accessor for NEKit.GCDHTTPProxyServer", referenced from:
+maocuu=>这是啥问题？昨天还好的，今天编译出这个问题，
+
+
+
+clang: error: linker command failed with exit code 1 (use -v to see invocation)
+ld: symbol(s) not found for architecture arm64
+      PacketProvider.PacketTunnelProvider.stopTunnelWithReason (__C.NEProviderStopReason, completionHandler : () -> ()) -> () in PacketTunnelProvider.o
+      PacketProvider.PacketTunnelProvider.startTunnelWithOptions ([Swift.String : __ObjC.NSObject]?, completionHandler : (__ObjC.NSError?) -> ()) -> () in PacketTunnelProvider.o
+maocuu=>  "NEKit.RawSocketFactory.TunnelProvider.unsafeMutableAddressor : weak __ObjC.NETunnelProvider?", referenced from:
+zhuhaow=>clean一下
+maocuu=>carthage clean ？
+maocuu=>xcode 菜单 product 下面的 clean。。。  新手。
+zhuhaow=>mac的话，除非需要用network extension 不然应该不用证书
+bjzhou=>我自己可以用，但发给别人说用不了，不知道怎么弄
+zhuhaow=>不要签名试一试
+zhuhaow=>对方电脑要允许运行未知开发者的程序
+maocuu=>规则改成全部走 ss，也没办法  hangouts 打电话
+zhuhaow=>iOS上？
+maocuu=>是的
+
+zhuhaow=>那就是hangouts不走代理你又没处理packet？
+maocuu=>照抄 Specht  里面的 startTunnelWithOptions
+zhuhaow=>enableProcessPacket设成true了？
+maocuu=>嗯
+zhuhaow=>没有log很难猜啊。Specht的NEKit不是最新版的
+maocuu=>估计是 packet 的问题，全局的规则下，telegram 也刷不出来
+zhuhaow=>mail可以收邮件么
+maocuu=>gmail app可以收，mail没有配置账户
+zhuhaow=>gmail肯定可以的。mail并不遵循http代理。如果packet有问题应该就访问不了了。你现在的NEKit什么版本的
+maocuu=>最新版本的IKEv2，我自己fork的。
+maocuu=>最新版本的NEkit
+zhuhaow=>NEKit如何和IKEv2结合
+maocuu=>写错了。
+
+zhuhaow=>0.3.0之前有一个很大的DNS的bug
+zhuhaow=>最新版已经修了
+zhuhaow=>你试试不设置http代理还能不能上网
+maocuu=>我自己fork的上面 head 打了个 tag ，拿来用的。
+
+//        proxySettings.HTTPSServer = NEProxyServer(address: "127.0.0.1", port: proxyPort)
+//        proxySettings.HTTPSEnabled = true
+//        proxySettings.HTTPServer = NEProxyServer(address: "127.0.0.1", port: proxyPort)
+maocuu=>注释掉 //        proxySettings.HTTPEnabled = true
+maocuu=>还可以上网
+maocuu=>全局代理工作正常的。
+zhuhaow=>我现在无法调试，你可以用DebugObserver看看发生了什么
+Sep  1 17:22:45 iPhone6plus PacketProvider[4432] <Warning>: Adapter socket <ShadowsocksAdapter host:149.154.175.100 port:443)> connected to remote wi
+Sep  1 17:22:45 iPhone6plus PacketProvider[4432] <Warning>: Adapter socket <ShadowsocksAdapter host:149.154.175.50 port:443)> connected to remote with response <ConnectResponse>.
+Sep  1 17:22:45 iPhone6plus Telegram[4229] <Error>: tcp_connection_destination_perform_socket_connect 4737 connectx to 0.0.7.209:80@0 failed: [65] No route to host
+Sep  1 17:22:45 iPhone6plus Telegram[4229] <Error>: tcp_connection_destination_perform_socket_connect 4737 connectx to 0.0.7.209:80@0 failed: [65] No route to host
+Sep  1 17:22:45 iPhone6plus PacketProvider[4432] <Warning>: Proxy socket <DirectProxySocket host:149.154.175.50 port: 443)> received request <ConnectRequest host:149.154.175.50 port:443>.
+Sep  1 17:22:45 iPhone6plus Telegram[4229] <Error>: tcp_connection_destination_perform_socket_connect 4735 connectx to 0.0.7.209:80@0 failed: [65] No route to host
+Sep  1 17:22:45 iPhone6plus Telegram[4229] <Error>: tcp_connection_destination_perform_socket_connect 4735 connectx to 0.0.7.209:80@0 failed: [65] No route to host
+Sep  1 17:22:45 iPhone6plus PacketProvider[4432] <Warning>: Proxy socket <DirectProxySocket host:149.154.175.100 port: 443)> received request <ConnectRequest host:149.154.175.100 port:443>.
+Sep  1 17:22:45 iPhone6plus PacketProvider[4432] <Warning>: Proxy socket <DirectProxySocket host:149.154.175.100 port: 443)> received request <ConnectRequest host:149.154.175.100 port:443>.
+Sep  1 17:22:45 iPhone6plus locationd[64] <Notice>: Gesture EnabledForTopClient: 1 (SiriCalled)
+Sep  1 17:22:45 iPhone6plus PacketProvider[4432] <Warning>: Adapter socket <ShadowsocksAdapter host:91.108.56.150 port:443)> connected to remote with response <ConnectResponse>.
+Sep  1 17:22:44 iPhone6plus Telegram[4229] <Error>: tcp_connection_destination_perform_socket_connect 4732 connectx to 0.0.7.209:80@0 failed: [65] No route to host
+Sep  1 17:22:44 iPhone6plus PacketProvider[4432] <Warning>: Proxy socket <DirectProxySocket host:91.108.56.150 port: 443)> received request <ConnectRequest host:91.108.56.150 port:443>.
+Sep  1 17:22:44 iPhone6plus Telegram[4229] <Error>: tcp_connection_destination_perform_socket_connect 4732 connectx to 0.0.7.209:80@0 failed: [65] No route to host
+Sep  1 17:22:44 iPhone6plus PacketProvider[4432] <Warning>: Adapter socket <ShadowsocksAdapter host:91.108.56.150 port:443)> connected to remote with response <ConnectResponse>.
+Sep  1 17:22:44 iPhone6plus PacketProvider[4432] <Warning>: Adapter socket <ShadowsocksAdapter host:149.154.175.50 port:443)> connected to remote with response <ConnectResponse>.
+Sep  1 17:22:44 iPhone6plus PacketProvider[4432] <Warning>: Adapter socket <ShadowsocksAdapter host:91.108.56.150 port:443)> connected to remote with response <ConnectResponse>.
+Sep  1 17:22:44 iPhone6plus PacketProvider[4432] <Warning>: Adapter socket <ShadowsocksAdapter host:149.154.167.91 port:443)> connected to remote with response <ConnectResponse>.
+Sep  1 17:22:44 iPhone6plus PacketProvider[4432] <Warning>: Proxy socket <DirectProxySocket host:91.108.56.150 port: 443)> received request <ConnectRequest host:91.108.56.150 port:443>.
+Sep  1 17:22:44 iPhone6plus PacketProvider[4432] <Warning>: Proxy socket <DirectProxySocket host:149.154.175.50 port: 443)> received request <ConnectRequest host:149.154.175.50 port:443>.
+Sep  1 17:22:44 iPhone6plus PacketProvider[4432] <Warning>: Proxy socket <DirectProxySocket host:91.108.56.150 port: 443)> received request <ConnectRequest host:91.108.56.150 port:443>.
+Sep  1 17:22:44 iPhone6plus PacketProvider[4432] <Warning>: Proxy socket <DirectProxySocket host:149.154.167.91 port: 443)> received request <ConnectRequest host:149.154.167.91 port:443>.
+Sep  1 17:22:44 iPhone6plus locationd[64] <Notice>: Gesture EnabledForTopClient: 1 (SiriCalled)
+maocuu=>Sep  1 17:22:44 iPhone6plus networkd[92] <Error>: -[NETClient sendMessage:replyHandler:] attempting to send an XPC message to a suspended client Telegram.4229! This is a bug!
+maocuu=>这里又可用的信息吗？
+maocuu=>这里有可用的信息吗？
+Sep  1 17:23:08 iPhone6plus Telegram[4229] <Error>: tcp_connection_destination_perform_socket_connect 4773 connectx to 0.0.7.209:80@0 failed: [65] No route to host
+Sep  1 17:23:08 iPhone6plus Telegram[4229] <Error>: tcp_connection_destination_perform_socket_connect 4773 connectx to 0.0.7.209:80@0 failed: [65] No route to host
+Sep  1 17:23:08 iPhone6plus PacketProvider[4432] <Warning>: Proxy socket <DirectProxySocket host:91.108.56.150 port: 443)> received request <ConnectRequest host:91.108.56.150 port:443>.
+maocuu=>Sep  1 17:23:08 iPhone6plus PacketProvider[4432] <Warning>: Proxy socket <DirectProxySocket host:91.108.56.150 port: 443)> received request <ConnectRequest host:91.108.56.150 port:443>.
+zhuhaow=>这个0.0.7.209应该就是问题所在了
+zhuhaow=>但是telegram为什么会报这个错
+
+然后看看具体这个请求match到什么规则上了
+zhuhaow=>你把debug level设到verbose 或者debug
+zhuhaow=>91.108这个ip连接不成功
+maocuu=>连上vpn的时候有个错误： PacketProvider[4468] <Critical>: NWTCPSocket got an error when writing data: Optional(Error Domain=NSPOSIXErrorDomain Code=22 "Invalid argument")
+zhuhaow=>感觉这个可能有点关系。但是我不确定
+zhuhaow=>主要是这个错误毫无信息量
+FlowerWrong=>看到twitter上ssr作者表示不再维护，建议使用ss
+maocuu=>breakwa11 很早就不在 github发布客户端了。 需要使用 zeronet 来下载 ssr的客户端。一直在更新的。
+zhuhaow=>上他那个卖服务的网站上不就下下来了
+YuQiang=>
+YuQiang=>NEKit 加 REJECT Adapter 有必要吗？
+zhuhaow=>有可能会有程序处理的不好无限重连，不过我可以加上，设个reject的延迟就好了
+zhuhaow=>乘着上午能上网都加上了
+zhuhaow=>几乎所有东西都public了，有空我要好好整理一下，可能要用accessor了，好麻烦
+YuQiang=>list rule 是匹配域名还是请求的整个路径？
+zhuhaow=>域名
+zhuhaow=>只有http才有可能匹配路径
+CloudnuY=>已经把Telegram的IP段直接用type: list写进去，adapter直接写到了代理上，然后在Telegram里面使用自动、http模式、socks模式都还是不走代理……
+zhuhaow=>ip的话要用iplist
+zhuhaow=>不过你要试直接用all就好了
+CloudnuY=>用all一样，不管Telegram用自动还是手动配置到SpechtLite的监听端口还是无法连接
+也没法调
+但我现在不能上网
+原因尚不明
+zhuhaow=>现在已知telegram和qq手机图片不可用
+CloudnuY=>测试了一下，使用all到代理，无其他规则的时候，直接访问域名可以打开比如http://www.baidu.com/ ，而用百度的IP地址直接访问比如http://61.135.169.121/ 则无法打开。使用all到Direct则没有此问题。目测是proxy模块对IP直接访问不友好
+CloudnuY=>手机QQ的图片好像是QQ用HTTPDNS获取到图片服务器的IP地址之后直接用IP访问的，同样的问题
+zhuhaow=>代理用的是什么代理
+CloudnuY=>代理用的ss
+bjzhou=>这么看好像IP访问的都存在问题？
+bjzhou=>之前proxifier也是解析成IP之后发给SpechtLite，结果访问不了
+zhuhaow=>找到问题就好了。但是我看了一下代码感觉没有问题，可惜我现在不能调，明天上午看能不能上网
+zhuhaow=>如果你们愿意调试可以看一下ssadapter里面的disconnect
+zhuhaow=>几个可能的问题
+zhuhaow=>ss不支持区分ipv4，v6和domain，感觉不太像
+zhuhaow=>要么就是我发送ipv4地址的代码错了
+}
+    case AES128CFB = "AES-128-CFB", AES192CFB = "AES-192-CFB", AES256CFB = "AES-256-CFB", CHACHA20 = "chacha20", SALSA20 = "salsa20", RC4MD5 = "rc4-md5"
+YuQiang=>public enum CryptoAlgorithm: String {
+YuQiang=>不同的加密方式有习惯的大小写方式，不过建议YAML配置文件能兼容大小写，目前是需要大小写完全匹配
+YuQiang=>Telegram 和 QQ 图片问题与SS应该没关系，测试使用 ALL 也是无法访问的。
+zhuhaow=>嗯 会merge
+zhuhaow=>all的话如果IP不能访问自然还是不能访问
+YuQiang=>恩，我的意思是可以大概率排除SS相关问题，也可能是我误解你的回复了。 
+YuQiang=>不好意思，是我逻辑错误了.. 我ALL 之后 走的还是SS代理，收回刚才的判断
+YuQiang=>ALL 之后 direct 是可以正常访问QQ图片的
+
+YuQiang=>刚刚测试  匹配 ALL 之后 走 http 代理 同样无法访问QQ图片，域名访问百度正常，IP访问百度不正常
+YuQiang=>通过NEKit http代理访问IP的header是这样的
+
+Accept-Encoding: gzip, deflate
+DNT: 1
+Accept-Language: zh-cn
+User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 9_3_5 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13G36 Safari/601.1
+Cookie: BDSVRTM=20
+Connection: keep-alive
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Host: 61.135.169.121
+GET / HTTP/1.1
+
+Content-Length: 0
+Host: 61.135.169.121:80
+YuQiang=>CONNECT 61.135.169.121:80 HTTP/1.1
+zhuhaow=>看不出问题。明天我试试
+YuQiang=>正常的header 是没有这一段的
+Content-Length: 0
+Host: 61.135.169.121:80
+YuQiang=>CONNECT 61.135.169.121:80 HTTP/1.1
+zhuhaow=>我会直接发connect请求 这样之后的请求都不是代理请求了
+zhuhaow=>只有第一个是代理请求
+YuQiang=>我不特别懂这块，但同样的配置下，域名访问的header就不会有connect 这一段
+YuQiang=>貌似有connect这一段header会导致请求类型无法被识别
+zhuhaow=>按理说域名应该是一样的才对
+YuQiang=>至少通过Charles监控到的域名请求是没有connect这段header的
+bjzhou=>之前也调试过，接收到connect之后，下次发来的header就不会当作header来处理了，而是会当做content来处理
+```
+            }
+                port = 80
+                host = urlInfo[0]
+            } else {
+                self.port = port
+                }
+                    return nil
+                guard let port = Int(urlInfo[1]) else {
+                host = urlInfo[0]
+            if urlInfo.count == 2 {
+            }
+                return nil
+            guard urlInfo.count <= 1 else {
+let urlInfo = url.componentsSeparatedByString(":")
+```
+bjzhou=>HTTPHeader里这段代码写的有问题吧
+bjzhou=>带端口号的访问不了
+zhuhaow=>……好像写反了
+bjzhou=>没，1改成2就好了
+zhuhaow=>这样的话一直以来是怎么访问的……
+YuQiang=>😶
+YuQiang=>早上看了这段代码,没发现..
+bjzhou=>只有HTTP协议用到了吧，SOCKS协议没用到？
+zhuhaow=>我已经发现ss似乎不支持发送IP了
+```
+
+        }
+            helloData.appendData(responseData)
+            responseData = encryptData(responseData)
+            var responseData = NSData(bytes: response, length: response.count)
+            response += [UInt8](request.host.utf8)
+            response.append(UInt8(request.host.utf8.count))
+            var response: [UInt8] = [0x03]
+        } else {
+            helloData.appendData(responseData)
+            responseData = encryptData(responseData)
+            var responseData = NSData(bytes: response, length: response.count)
+            response += Utils.IP.IPv6ToBytes(request.host)!
+            var response: [UInt8] = [0x04]
+        } else if request.isIPv6() {
+            helloData.appendData(responseData)
+            responseData = encryptData(responseData)
+            var responseData = NSData(bytes: response, length: response.count)
+            response += Utils.IP.IPv4ToBytes(request.host)!
+            var response: [UInt8] = [0x01]
+if request.isIPv4() {
+zhuhaow=>```
+zhuhaow=>这里，直接用最后一段的话都可以用了
+bjzhou=>前面两段多此一举了😂?
+zhuhaow=>是的，理论上是没用，这个是之前我写的SOCKS5代理那里挪过来的
+zhuhaow=>所以多此一举了
+zhuhaow=>代理的话必须要支持这个
+bjzhou=>果然好了。。。
+bjzhou=>之前怀疑过这段代码，但想了想既然写成这样那应该没什么问题....
+zhuhaow=>其实ss这里也有问题，他本身是个简化了socks5代理，但是没有把这个0x03的标识给简化掉
+zhuhaow=>所以我就觉得既然要多写这一段自然是要区分的
+bjzhou=>试试HTTP代理行不行，之前试了好像HTTP代理也有问题
+YuQiang=>昨天测试HTTP代理也是不行的
+zhuhaow=>我这里可以啊
+YuQiang=>QQ图片也可以？ 
+zhuhaow=>看来问题就是这个guard
+zhuhaow=>connect是单独判断的没写错
+zhuhaow=>普通http请求一般都是没端口号的默认80，就没问题
+zhuhaow=>一旦是其他端口就崩了
+zhuhaow=>好了，现在master应该可以了
+YuQiang=>这个版本 CryptoAlgorithm 大小写的匹配的也merge 下吧
+zhuhaow=>merge了
+zhuhaow=>没问题我release了
+lioliy=>哦，支持ssr的混淆了吗
+zhuhaow=>不
+CloudnuY=>Specht有没有支持socks4/5代理的计划呢？
+zhuhaow=>原来有，我懒得维护，又删掉了……
+zhuhaow=>有需求么
+zhuhaow=>一般不太有用socks的。加密都用ss了
+CloudnuY=>如果有人喜欢用ssr的话就可以用ssr python搭起来socks通道然后通过specht分线路走了……😂不知道需求大不大
+zhuhaow=>直接用ss连不就完了。有空我会加上socks5
+zhuhaow=>真的有任何证据表明ssr是有意义的么
+CloudnuY=>都是玄学（逃
+
+zhuhaow=>我搜了搜大致上都是介绍ssr怎么安的和软文无差的文章
+CloudnuY=>最近墙有些高，感觉SSR比SS稍微多抗那么点儿干扰，可能是幻觉……
+zhuhaow=>我至今不觉得gfw有能力分析流
+CloudnuY=>自己搭建的服务器上有ss和ssr，连一段时间之后就有一段时间的断流，但是能ping通而且80端口的HTTP服务没问题。过一段时间又恢复了
+zhuhaow=>高端口大量随机流量。特征太明显了
+zhuhaow=>ssr能解决？
+CloudnuY=>我再多试几次
+
+FlowerWrong=>G20最近
+YuQiang=>因为“宽衣”吧😊
+jannerchang=>有 config 的文件没？我怎么编辑的总说错误呢？
+zhuhaow=>看看错误是什么然后改啊
+jannerchang=>怎么发图啊😳
+jannerchang=>说无法分析 yaml
+jannerchang=>我再重新改下试试
+jannerchang=>有 telegram 群否？
+jannerchang=>看来是服务器名称问题
+zhuhaow=>解决了？
+jannerchang=>嗯哪，adapter ID 是不是不能换？
+zhuhaow=>可以随意取啊。不是direct就行
+jannerchang=>我光改了个服务器地址等可以了，改 adapter ID 会有问题
+jannerchang=>哦，可以放多个 ss 服务器不？
+zhuhaow=>你改adapter ID要把引用的都改了
+zhuhaow=>当然可以
+jannerchang=>还是说你的建议是一个服务器一个 yaml 文件？
+zhuhaow=>adapter个数可以随意啊。规则任意组合
+jannerchang=>但是在选择服务器的时候好像是选某一个 yaml 配置的
+jannerchang=>而不是选 adapter
+zhuhaow=>是啊。但是一个配置里面可以有很多adapter。然后基于规则走到不同的adapter去
+jannerchang=>哦，了解啦，一个配置文件可以相当于 surge 的 autogroup
+nie11kun=>@zhuhaow 我这边始终还是连不上chacha20 。rc4正常
+zhuhaow=>我觉得真的是你配置的问题啊。我自己开的chacha20是可以连的
+zhuhaow=>你用别的客户端可以连上？
+jannerchang=>有 telegram 群否？
+zhuhaow=>没有。有什么可以直接私聊
+jannerchang=>😂，就是觉得这个得开网页？
+nie11kun=>surge
+nie11kun=>正常使用中
+nie11kun=>shadow socksX没有ota选项，所以也是连不上
+jannerchang=>原来有 app
+zhuhaow=>app就是包了个网页
+jannerchang=>哦，不如 telegram 方便，不好发图
+zhuhaow=>如果和ota有关的话那和chacha就没关系了
+nie11kun=>这个app说实话不好用，每次打开都要从新加载
+但是如果我没理解错。不支持ota也是可以连的才对
+zhuhaow=>ota有空会考虑支持
+zhuhaow=>这个好像是电脑上拖进去可以发
+zhuhaow=>手机上不行
+zhuhaow=>但是telegram应该没有网页版吧
+zhuhaow=>原理上似乎不可能
+jannerchang=>有吧，手机也有 app 呢 
+zhuhaow=>没找到哪里能发图片的
+nie11kun=>tl客户端是不是得要代理对应网页才能翻出去
+jannerchang=>telegram 全平台都有呢
+jannerchang=>没用过网页版
+nie11kun=>上下行当前流量貌似也挺实用的
+zhuhaow=>Telegram居然有网页版
+zhuhaow=>它的key存在哪里？
+jannerchang=>有哇，tg 很强大
+jannerchang=>不知道
+zhuhaow=>SpechtLite的功能我真的无心再加了
+zhuhaow=>本来是以demo形式存在的
+zhuhaow=>现在已经越来越杂了
+jannerchang=>搞个正式的卖吧
+jannerchang=>😁
+
+zhuhaow=>并不想写GUI
+jannerchang=>配置逻辑搞简单点儿
+zhuhaow=>主要是最近要做的事情太多了
+jannerchang=>慢慢来吧
+zhuhaow=>NEKit本身还有很多东西要做
+zhuhaow=>还有其他的一些事
+zhuhaow=>哦。我明白telegram的原理了
+zhuhaow=>等我回家建一个吧
+jannerchang=>👍
+zhuhaow=>@bjzhou 麻烦签一下CLA，在pull request里面可以看到，然后我merge了
+bjzhou=>好了
+breakwa11=>到家了没？
+zhuhaow=>明天到家
+lioliy=>这个发图可以直接用mark down啊
+zhuhaow=>问题是图传哪里去啊
+zgia=>配置文件没有看懂，弱
+zhuhaow=>明天写个中文的
+zgia=>请问直连的设配器怎么写？
+  - id: shadowsocks-SG4
+    type: direct
+zgia=>  - id: direct
+zgia=>是这么写吗？
+zhuhaow=>不用写。默认有一个direct的adapter
+id就是direct
+zhuhaow=>直接用
+zhuhaow=>我能问一句你们是怎么知道的specht的么
+zhuhaow=>怎么突然多了这么多人
+zgia=>twiter
+zgia=>directiprange
+zgia=>Error when parsing config file: /Users/liyuntian/.SpechtLite/config.yaml. InvalidYamlFile
+zgia=>好惨
+zhuhaow=>你的yaml格式就没对。所以这样了
+zgia=>这个我明白
+zgia=>我就是很感叹。。。。。
+zgia=>我复制了git下的，又试了一次。还是格式错误
+zgia=>找到了，我写错一个字符，本
+zgia=>[![blob](https://files.gitter.im/zhuhaow/NEKit/3HOR/thumb/blob.png)](https://files.gitter.im/zhuhaow/NEKit/3HOR/blob)
+zhuhaow=>增加了中文说明
+zgia=>现在没有问题了，就是连接失败， 我看看哪里写错了
+zgia=>请问log在哪个位置？
+zhuhaow=>你set as system proxy选上
+zhuhaow=>或者自己设好
+zgia=>[![blob](https://files.gitter.im/zhuhaow/NEKit/z5P8/thumb/blob.png)](https://files.gitter.im/zhuhaow/NEKit/z5P8/blob)
+zgia=>[![blob](https://files.gitter.im/zhuhaow/NEKit/PhlM/thumb/blob.png)](https://files.gitter.im/zhuhaow/NEKit/PhlM/blob)
+zgia=>搞定了，多谢你set as system proxy选上
+zgia=>搞定了，多谢你 @zhuhaow 
+zhuhaow=>这个熊猫翻滚的教程在哪看啊
+zhuhaow=>进去没找着啊
+zgia=>熊猫翻滚？
+zgia=>不了解
+FlowerWrong=>我看到twitter有人发
+zhuhaow=>嗯。@zgia 说完之后我去搜到了
+zgia=>@zhuhaow 请问reject也是系统缺省的吗？
+zhuhaow=>并不是。虽然感觉应该加上
+lioliy=>图床呀
+lioliy=>不知道
+lioliy=>现在人的确好多
+因为有很多好事的人。。。
+
+breakwa11=>> 怎么突然多了这么多人
+nie11kun=>举手
+lioliy=>specht有好多人在用？我编译了下，运行时日志是权限不允许，查了下错误说是要购买开发者账号(99刀一年)还要申请私人vpn权限什么的。。。
+99刀加额外申请
+zhuhaow=>应该基本没人用吧，门槛太高
+CoderJin=>@zhuhaow 能用于客户端不?NEKit?
+zhuhaow=>客户端干什么用？
+CoderJin=>vpn
+zhuhaow=>客户段自己连代理自己传数据用？
+CoderJin=>是的
+CoderJin=>Specht 有在客户端上 有测试用过没...我按Specht 的方法 测试客户端 好像不行?
+zhuhaow=>看一下官方的AppProxy
+zhuhaow=>用是可以用的
+zhuhaow=>不过我自己平时也不用
+zhuhaow=>你的不行是怎么不行
+CoderJin=>那我在研究一下 你说可以 那肯定没问题的 ..问题在我这边 我试一下 ?
+CoderJin=>找找其他原因 ..按照你实例 ?
+zhuhaow=>你打开console看看log
+CoderJin=>O k  我再研究一下 
+FlowerWrong=>我用过，因为icmp不能用，所以放弃了
+CoderJin=>
+CoderJin=>
+CoderJin=>[![CF18DB7F-3E39-4AA6-AC0D-C3D98054F972.png](https://files.gitter.im/zhuhaow/NEKit/XEvP/thumb/CF18DB7F-3E39-4AA6-AC0D-C3D98054F972.jpg)](https://files.gitter.im/zhuhaow/NEKit/XEvP/CF18DB7F-3E39-4AA6-AC0D-C3D98054F972.png)
+CoderJin=>[![6B2514B1-64F4-493B-B6EF-83B79E92599B.png](https://files.gitter.im/zhuhaow/NEKit/vfop/thumb/6B2514B1-64F4-493B-B6EF-83B79E92599B.jpg)](https://files.gitter.im/zhuhaow/NEKit/vfop/6B2514B1-64F4-493B-B6EF-83B79E92599B.png)
+
+zhuhaow=>你log过滤一下多截几条
+zhuhaow=>我明白说吧，ne就是个坑，我跌的半死才算爬出一半
+zhuhaow=>你等着满满跌吧
+
+ 
+CoderJin=>@zhuhaow  我检查了很多遍 你那个 demo从本地读取的,我直接放到项目中,读取,看那个 device 中的日志 如上图 ..  
+zhuhaow=>问题是你的log里没信息啊。信息应该会比这个多才对
+CoderJin=>[![2D34BD8F-81F2-42B4-8CAC-EFAA2ED57409.png](https://files.gitter.im/zhuhaow/NEKit/V33G/thumb/2D34BD8F-81F2-42B4-8CAC-EFAA2ED57409.jpg)](https://files.gitter.im/zhuhaow/NEKit/V33G/2D34BD8F-81F2-42B4-8CAC-EFAA2ED57409.png)
+CoderJin=>[![82456947-3611-460A-A667-0F688389C5D6.png](https://files.gitter.im/zhuhaow/NEKit/iXJS/thumb/82456947-3611-460A-A667-0F688389C5D6.jpg)](https://files.gitter.im/zhuhaow/NEKit/iXJS/82456947-3611-460A-A667-0F688389C5D6.png)
+CoderJin=>你那个 demo从本地读取的,我直接放到项目中,读取? 这个应该没问题啦?
+zhuhaow=>没问题啊
+FlowerWrong=>enable YES
+duyuwei=>设为系统代理后，idea开发时连接Redis的时候无法连接，尝试在directlist中增加192.168.0.0/16，还是不成，来问一下~~
+duyuwei=>Redis在局域网
+duyuwei=>看log也没有找到对应的请求
+zhuhaow=>加个country rule 把country是--的设成direct
+zhuhaow=>但是log没有不太正常
+    adapter: direct
+    match: true
+    country: --
+duyuwei=>  - type: country
+duyuwei=>已添加了这条记录
+zhuhaow=>……这样的话可能不是这个的问题，毕竟log没有相关信息
+Sep  9 20:57:18 jin kernel[0] <Notice>: AppleARMPMUCharger: limiting USB input current to 100 mA (measured 223 mA)
+Sep  9 20:57:17 jin nesessionmanager[123] <Notice>: NESMVPNSession[a:53727108-B0D8-4840-99E6-AAD928F4A88E]: status changed to disconnected, last stop reason Configuration was disabled
+Sep  9 20:57:17 jin nesessionmanager[123] <Notice>: NESMVPNSession[a:53727108-B0D8-4840-99E6-AAD928F4A88E]: Received a start command from MyVpn[270], but start was rejected
+Sep  9 20:57:17 jin nesessionmanager[123] <Notice>: NESMVPNSession[a:53727108-B0D8-4840-99E6-AAD928F4A88E]: status changed to disconnecting
+Sep  9 20:56:44 jin Preferences[201] <Warning>: Snapshotting a view that has not been rendered results in an empty snapshot. Ensure your view has been rendered at least once before snapshotting or snapshot after screen updates.
+Sep  9 20:56:44 jin Preferences[201] <Warning>: /BuildRoot/Library/Caches/com.apple.xbs/Sources/ExternalAccessory/ExternalAccessory-329.40.4/EAAccessoryManager.m:__51-[EAAccessoryManager _checkForConnectedAccessories]_block_invoke-632 ending background task
+Sep  9 20:56:43 jin UserEventAgent[23] <Error>: Probe message failed
+Sep  9 20:56:43 jin SpringBoard[54] <Error>:  SecTrustEvaluate  [leaf IssuerCommonName SubjectCommonName]
+Sep  9 20:56:43 jin nehelper[101] <Error>: Configuration for provider com.apple.NetworkExtension.NetworkServiceProxy does not exist (<__NSConcreteUUID 0x13d5021f0> D2CEB35B-05E9-4A11-83A6-A625816B29D8) or is not enabled (0)
+Sep  9 20:56:43 jin SpringBoard[54] <Error>:  SecTrustEvaluate  [leaf IssuerCommonName SubjectCommonName]
+Sep  9 20:56:43 jin nesessionmanager[123] <Notice>: Failed to create a session with type 1 and configuration ID <__NSConcreteUUID 0x13cd23410> 9498508A-4130-4ED6-A01B-9DB2AB999CF4
+Sep  9 20:56:43 jin nesessionmanager[123] <Notice>: Failed to load configuration with ID <__NSConcreteUUID 0x13cd23410> 9498508A-4130-4ED6-A01B-9DB2AB999CF4
+Sep  9 20:56:43 jin nesessionmanager[123] <Notice>: Failed to create a session with type 1 and configuration ID <__NSConcreteUUID 0x13cd23410> E3328AB7-7DA2-4C06-BFB2-E0DAA3931A04
+Sep  9 20:56:43 jin nesessionmanager[123] <Notice>: Failed to load configuration with ID <__NSConcreteUUID 0x13cd23410> E3328AB7-7DA2-4C06-BFB2-E0DAA3931A04
+Sep  9 20:56:43 jin configd[34] <Notice>: network changed
+CoderJin=>Sep  9 20:56:42 jin kernel[0] <Notice>: AppleMesa::handleStateMachine: finger off in pause mode while command pending
+zhuhaow=>你的bundle id是com.apple？
+CoderJin=>项目的->cn.likejin.www.MyVpn ,TunnelProvider ->cn.likejin.www.MyVpn.MyVpnTunnelProvider
+zhuhaow=>系统什么版本
+CoderJin=>我看你 demo 也是这个样子的
+zhuhaow=>你能跑Specht么
+CoderJin=>没有测试 
+CoderJin=>我看土豆丝的也是这样做的 啊
+CoderJin=>你猜测是什么原因 ?
+CoderJin=>[![blob](https://files.gitter.im/zhuhaow/NEKit/h98M/thumb/blob.png)](https://files.gitter.im/zhuhaow/NEKit/h98M/blob)
+CoderJin=>Version 7.3.1 (7D1014)
+zhuhaow=>你先读一下官方的一些文档和demo
+
+zhuhaow=>有很多小东西要设
+zhuhaow=>我不建议不会的人上来就自己设。必然掉坑
+CoderJin=>好
+CoderJin=>我先把Specht 能不能再我这边运行 
+durmilk=>你好，有配置好的yaml文件么？小白实在是一点也看不懂
+zhuhaow=>并没有啊……中文的说明看过了么
+zhuhaow=>telegram应该用什么，channel？
+breakwa11=>不是频道
+breakwa11=>是group
+zhuhaow=>group可以自己加？感觉好像只能我邀请
+breakwa11=>建立后升级为super group，就可以建立公共链接
+breakwa11=>需要至少一个好友才能建立group
+durmilk=>看了，真的一点也不会。
+breakwa11=>建立后升级超级群就好了
+zhuhaow=>好吧，一个好友也没有
+zhuhaow=>你们谁加我一下，就这个id
+breakwa11=>加好友需要交换手机号码
+breakwa11=>交换后就是好友了
+zhuhaow=>这里写着可以选一个username啊
+breakwa11=>那个是搜索好友的列表吧
+zhuhaow=>搜索框里面搜我id搜不出来？
+zhuhaow=>如果真的一点不会我也没办法啊，这本来就是个自定义的东西
+zhuhaow=>https://telegram.me/joinchat/ERFGsQkJ3DXyhi07tkwpSA
+zhuhaow=>telegram group link
+zhuhaow=>https://telegram.me/NEKitGroup
+lioliy=>。。。
+lioliy=>建tg群额
+lioliy=>感觉没必要用tg，gitter挺好的。。
+zhuhaow=>都可以，我都在的
+zhuhaow=>如果gitter这个客户端不是网页的就好了
+maocuu=>@zhuhaow  反应一个问题，使用 SecureHTTPAdapterFactory  （服务器配合 squid）， 代理 https 网站没问题，代理 http 网站好像不行。
+maocuu=>怀疑是 url 自动后 加上 :80 导致的。
+zhuhaow=>是最新版？
+maocuu=>是的。
+zhuhaow=>感觉加上80就不能用说明实现的不标准啊
+maocuu=>我试试调整下squid配置看看。
+zhuhaow=>我感觉配置应该不管这个吧，你还可以试试直接改代码
+zhuhaow=>HTTPAdapter里面
+zhuhaow=>CFHTTPMessageSetHeaderFieldValue(message, "Host", "\(request.host):\(request.port)")
+zhuhaow=>这一行加个判断
+zhuhaow=>看看是不是解决了
+zhuhaow=>是的话我就改一下
+maocuu=>OK、等下试试。
+zhuhaow=>还有上面的url变量
+        CFHTTPMessageSetHeaderFieldValue(message, "Host", "\(request.host):\(request.port)")
+maocuu=>是把
+        CFHTTPMessageSetHeaderFieldValue(message, "Host", "\(request.host)") 吗？
+maocuu=>改成
+zhuhaow=>加个if判断一下是不是等于80
+        }
+            CFHTTPMessageSetHeaderFieldValue(message, "Host", "\(request.host):\(request.port)")
+        }else{
+            CFHTTPMessageSetHeaderFieldValue(message, "Host", "\(request.host)")
+        if request.port == 80 {
+maocuu=>这样？
+zhuhaow=>嗯
+zhuhaow=>还有上面的url
+        }
+            url = NSURL(string: "\(request.host)")!
+        if request.port == 80 {
+        }
+            return
+            disconnect()
+            observer?.signal(.ErrorOccured(HTTPAdapterError.InvalidURL, on: self))
+        guard var url = NSURL(string: "\(request.host):\(request.port)") else {
+maocuu=>
+maocuu=>同样的问题。
+maocuu=>能代理 https 网站，没法代理 http 网站
+maocuu=>400 Bad Request， the plain HTTP request was sent to HTTPS port
+zhuhaow=>这个错误是哪里返回的
+maocuu=>You're speaking plain HTTP to an SSL-enabled server port. 
+maocuu=>这个错误，是通过代理访问某些http 网站的提示错误
+zhuhaow=>感觉你自己的squid设置的有问题
+zhuhaow=>为什么SecureHTTPAdapter会发送plain HTTP request？
+zhuhaow=>你完整配置文件私信我
+FlowerWrong=>我之前也有，有些网站header host不标准
+zhuhaow=>怎么样的
+zhuhaow=>问题是这个header是NEKit发的
+maocuu=>通过 squid 的 https 服务器，访问 www.ip.cn 会提示这个错误。
+    end
+      @port = @port.nil? ? 80 : @port.to_i
+    else
+      @port = @port.nil? ? 443 : @port.to_i
+      @domain, @port = @parser.request_url.split(':')
+    if @parser.http_method == 'CONNECT'
+FlowerWrong=>domain, @port = headers['Host'].split(':')
+FlowerWrong=>我是这么干的
+zhuhaow=>啊？还有connect就默认443的说法……
+zhuhaow=>去掉80端口之前也是一样的错误么？
+maocuu=>未修改的时候，  X-Squid-Error:ERR_INVALID_URL
+maocuu=>trying to retrieve the URL: www.ip.cn:80  
+maocuu=>Access DEnied.
+zhuhaow=>我看看rfc怎么写的
+#http_access deny CONNECT !SSL_ports
+zhuhaow=># Deny CONNECT to other than secure SSL ports
+zhuhaow=>你设置的问题
+#http_access deny CONNECT !SSL_ports
+zhuhaow=>```# Deny CONNECT to other than secure SSL ports
+zhuhaow=>```
+#http_access deny CONNECT !SSL_ports
+zhuhaow=># Deny CONNECT to other than secure SSL ports
+zhuhaow=>诶，排版不了，你自己看吧
+zhuhaow=>NEKit现在支持SOCKS5 adapter了
+zhuhaow=>@/all 
+maocuu=>NEkit 是不是修复了  telegram 和Hangouts 的问题？
+zhuhaow=>应该修复了吧，上次修完没人再说了
+maocuu=>刚才测试正常了。
+maocuu=>breakwa11 来了 NEKit 是不是帮我们实现 shadowsocksR 啊
+zhuhaow=>SSR支持会有的，就是要等
+zhuhaow=>因为我最近没时间
+zhuhaow=>以下是接下来NEKit要做的事情，部分功能会反映到SpechtLite中去：
+zhuhaow=>1. 重新设计所有类的接口，现在的public和internal很乱我会从新整理，对兼容性应该无影响
+zhuhaow=>2. ssr支持，一点一点加
+zhuhaow=>3. 增加unit test
+zhuhaow=>以上东西顺序随机，进度随心，取决于我最近其它事情的顺利成都
+lioliy=>我下载了SpechtLite源码并编译用了一下，speedtest测延时高达700ms以上
+zhuhaow=>如果speedtest用的是ping那根本就不走代理
+zhuhaow=>如果走代理那就是本来就这么高
+zhuhaow=>或者speed里面的delay
+nie11kun=>有必要加dns map吗
+zhuhaow=>类似host？
+nie11kun=>对
+nie11kun=>不过感觉有了speed模式可以代替
+zhuhaow=>很难插进现有的架构中去
+zhuhaow=>即不是adapter也不是rule
+zhuhaow=>也很难定义出来的ip怎么处理，是继续match rule还是直连？
+nie11kun=>应该是更底层的规则，优先级最高
+zhuhaow=>如果是处理packet的模式的话，几行就实现了，因为DNS都是自己处理的
+zhuhaow=>但是现在SpechtLite的模式很难加这个
+nie11kun=>恩，影响也不大
+nie11kun=>访问不畅的直接走代理了
+FlowerWrong=>直接在代理层也可以哇，先查一遍自定义hosts文件，再用hosts结果connect
+FlowerWrong=>省略dns query
+zhuhaow=>只在direct adapter里面这么做？
+FlowerWrong=>我是这么干的，正常使用下想不出有别的需求，又不是搞隐身什么的。
+FlowerWrong=>建议加个mitm功能，抓包https
+bjzhou=>speedtest是走代理连https://www.google.com/generate_204
+bjzhou=>[![Screenshot 2016-09-11 10.38.53.png](https://files.gitter.im/zhuhaow/NEKit/osDi/thumb/Screenshot-2016-09-11-10.38.53.png)](https://files.gitter.im/zhuhaow/NEKit/osDi/Screenshot-2016-09-11-10.38.53.png)
+bjzhou=>我大概有病。。。。
+zhuhaow=>在你继续之前我强烈建议先讨论一下重新设计配置格式的问题
+bjzhou=>会不会继续做还得看心情😂
+lioliy=>为什么speed test会出现很高的延迟
+bjzhou=>speed test不是ping，是去连google，等他返回一个204状态码给你
+lioliy=>嗯，但安卓版的ssr我测延时是50多点，也是用的generate_204
+lioliy=>https://github.com/shadowsocks/shadowsocks-android/blob/master/src/main/scala/com/github/shadowsocks/Shadowsocks.scala  第360行 
+zhuhaow=>speed如果你设了延迟那显然是要等延迟的时间的啊
+lioliy=>
+lioliy=>嗯，没有使用speed延时300多，使用了700以上
+zhuhaow=>那就是正常就是300多。要么就是你的dns很慢
+lioliy=>我在手机上延时是50左右，应该不是dns问题，dns不是会缓存吗，第一次测后就不再用dns了吧
+zhuhaow=>dns的缓存是不由specht完成的
+zhuhaow=>不过应该是
+zhuhaow=>手机和电脑上的speedtest原理一样么？
+bjzhou=>原理是一样的，不过可能有误差
+zhuhaow=>误差很大啊，难道Geo lookup有这么慢？
+bjzhou=>试试把rule都去掉，只用all全走代理？
+zhuhaow=>我这里没什么问题，香港的68ms，包括Geo IP lookup
+jannerchang=>j
+
+```
+
+    adapter: hk2
+  - type: all
+rule:
+    password: xxx
+    method: xxx
+    port: xxx
+    host: xxx
+    type: ss
+  - id: hk2
+adapter:
+port: 9090
+```yaml
+
+lioliy=>
+lioliy=>我是这样设置的
+lioliy=>现在延时高的吓人，1400多ms
+zhuhaow=>是不是测试服务器自动选的不对啊
+zhuhaow=>我还有一堆其它的规则最后也就68ms
+lioliy=>我只设置ip也300多，ping服务器是time=40.654 ms
+lioliy=>没有用speed adapter
+zhuhaow=>ping服务器的时间和最终时间肯定不一样的
+lioliy=>嗯，但也不至于300＋
+zhuhaow=>但是应该不会到300
+zhuhaow=>我想了一下配置文件的问题
+zhuhaow=>首先，为什么会有这个配置文件
+zhuhaow=>是因为我懒不想写test
+zhuhaow=>所以把之前soca用的配置文件又拿来用了。方便测试的
+zhuhaow=>在NEKit的readme也写了 明确不建议使用
+zhuhaow=>因为NEKit本身很灵活。而配置文件本身太难以达成所有人的需求了
+zhuhaow=>接下来的SpechtLite只是一个demo。所以直接用了NEKit提供的配置文件处理功能
+zhuhaow=>但是这不是说这个配置文件是好的或者这饿这个配置文件涵盖了所有的功能
+zhuhaow=>现在的问题是我应当怎样去处理配置文件
+zhuhaow=>首先NEKit本身不应当提供配置文件，这是理念本身的问题
+zhuhaow=>但是我可以把他提到一个NEKitConfiguration里去
+zhuhaow=>下一个问题就是配置文件的格式
+zhuhaow=>本来我想的是大家都有一个GUI去设置
+zhuhaow=>所以配置文件根本没用，自然就无所谓好用不好用
+zhuhaow=>但是配置文件的需求还是存在，所以我想提供一个样本也是好的，并且还可以完善一下SpechtLite
+要么就是多个服务器但是同一组规则
+zhuhaow=>大多数人的需求要么就是一个服务器一组规则
+bjzhou=>配置的关键是RuleManager吧，写GUI的话，配置文件确实没用
+zhuhaow=>最DRY最干净的方法就是所有服务器一个文件，每组规则另外的文件，然后通过alias服务器的方法，这样只需要切换alias就可以切换服务器而不用写重复的规则 当然了，每个列表也是单独的文件，这样没有一点重复 但是现在这样的配置文件已经有人说不懂 那样写基本就更没戏了
+zhuhaow=>而且如果多个文件
+zhuhaow=>gui也是个很大的问题
+zhuhaow=>单文件是最简单最容易的。还没有路径的问题
+zhuhaow=>但是单文件如何减少重复？
+bjzhou=>我想的是数据库存储...
+zhuhaow=>是啊
+zhuhaow=>我支持这样
+zhuhaow=>但是这样开发对gui的要求就高了
+zhuhaow=>如果有配置文件就可以应付高级用户的需求
+zhuhaow=>而不需要华丽的gui了
+jannerchang=>用 surge 的配置就行吧
+zhuhaow=>surge废话太多了，而且我有一大堆一模一样的配置只有服务器不一样
+zhuhaow=>我改都懒得改，因为每一个都要改
+nie11kun=>支持服务器一个文件，规则一个文件
+nie11kun=>然后服务器可以分组
+zhuhaow=>我是可以理解，问题是用户能不能理解
+nie11kun=>反正现在规则也是分好几个文件的
+zhuhaow=>问题是现在的list比较好理解
+zhuhaow=>那堆映射来映射去的
+nie11kun=>现在同一个配置不同服务器要写好几个几乎一样的文件
+zhuhaow=>所以怎么设计才能比较好懂
+nie11kun=>而且说实话配置语法有点儿麻烦，基本三句行描述一个情景
+zhuhaow=>但是简单
+nie11kun=>对，对于懂点儿程序的也许比较舒服
+nie11kun=>视觉上利用率有点儿低
+zhuhaow=>为什么在意这种东西
+zhuhaow=>用yaml配置几乎是所有现在程序的一致选择
+nie11kun=>只是随便说说的哈哈
+zhuhaow=>因为比较好理解
+maocuu=>方便第一重要。
+zhuhaow=>如果用一行如何记住顺序就是个问题
+zhuhaow=>更不要说如果有几种不同的可能组合
+nie11kun=>毕竟现在流行的ios下的那些app基本都是一个格式了
+zhuhaow=>就完全没法做了
+zhuhaow=>大家一般都喜欢follow最知名的那个么
+nie11kun=>也许吧
+zhuhaow=>我觉得又不是学个大东西，至于非要降低这点学习成本么
+zhuhaow=>支持surge格式很容易，但是真的很烂，所有问题一概都有，比现在的格式还要严重
+nie11kun=>也许他的格式符合他未来的发展需求吧
+nie11kun=>不一定适合其他开发者
+zhuhaow=>单一文件的格式确实好处理啊，多个文件怎么设计GUI来编辑？
+zhuhaow=>我记得surge最早是没有设置界面，只能手写的
+zhuhaow=>这样就很好理解为什么一定要单文件的
+nie11kun=>除非明确每个文件的类别
+nie11kun=>但相互牵扯的地方就复杂了
+zhuhaow=>还要涉及到路径问题，文件名问题，想想都烦，还不如单文件
+zhuhaow=>单文件也就是高级用户麻烦
+zhuhaow=>一般人就一个服务器几条基本规则完事
+maocuu=>高级用户少，大部分都是菜鸟。
+nie11kun=>那就看app 的服务对象了
+nie11kun=>定位是什么
+zhuhaow=>但是我的设计理念必然要我自己用的舒心……
+zhuhaow=>所以我希望app自己去设计
+zhuhaow=>别用NEKit自带的这个
+nie11kun=>那就按你自己的想法实现
+zhuhaow=>还是要考虑普遍人民群众的啊，毕竟现在还是有人在用的
+nie11kun=>我想现在的使用者还是有一定经验的居多吧
+zhuhaow=>现在这个格式基本是极限了，再复杂基本就是方便高级用户折腾死普通用户的节奏了
+nie11kun=>纯小白应该还没有大量到来的吧
+zhuhaow=>所有内容都是纯英文应该不会到来吧
+maocuu=>SpechtLite 怎么舒服怎么折腾。 毕竟只是 NEKit 长出来的一个分支。 只要NEKit 好用，觉得 SpechtLite 不好的，会造轮子的。
+nie11kun=>没关系做好配置示例应该问题不大
+zhuhaow=>我有若干设想，都是太复杂的针对多服务器切换的方案
+zhuhaow=>实在难以抉择
+nie11kun=>多服务器必定会越来越普遍
+maocuu=>多服务器是指不同目标网站通过不同服务器吗？
+zhuhaow=>不是，指一样的规则切换不一样的服务器用
+zhuhaow=>你们可以正常使用pip么
+zhuhaow=>我挂了代理就是Retrying (Retry(total=4, connect=None, read=None, redirect=None)) after connection broken by 'ProtocolError('Connection aborted.', BadStatusLine("''",))': /simple/scipy/
+lioliy=>用Mac的小白应该不多吧，感觉现在配置挺好的，完全可以不用surge的配置啊，毕竟繁琐很多功能意义不大
+lioliy=>gui确实不好做
+bjzhou=>多服务器切换可以参考chrome插件SwitchyOmega的做法，添加一个虚情景模式，相当于一个软链接，所有规则都指向这个软链接，切换服务器只需要切换目标地址就行了
+zhuhaow=>SwitchyOmega切换服务器实际上还是要写很多个不同的profile
+bjzhou=>[![Screenshot 2016-09-12 10.51.13.png](https://files.gitter.im/zhuhaow/NEKit/PrRU/thumb/Screenshot-2016-09-12-10.51.13.png)](https://files.gitter.im/zhuhaow/NEKit/PrRU/Screenshot-2016-09-12-10.51.13.png)
+zhuhaow=>哦
+zhuhaow=>我试了一下，没明白他干了什么
+zhuhaow=>每次切服务器
+zhuhaow=>还是要进来改一下Virtual Profile指向的服务器
+bjzhou=>[![Screenshot 2016-09-12 10.56.18.png](https://files.gitter.im/zhuhaow/NEKit/NGwK/thumb/Screenshot-2016-09-12-10.56.18.png)](https://files.gitter.im/zhuhaow/NEKit/NGwK/Screenshot-2016-09-12-10.56.18.png)
+jannerchang=>有这个配置app就方便多啦
+jannerchang=>鸡翅膀用了一天挺稳定啊
+zhuhaow=>我要想想如何把这个用配置文件的方式写出来
+lioliy=>这种配置文件不错，和以前一样支持实时切换节点
+lioliy=>mac版的ssx都不能实时切换节点，需要等一会或重开浏览器
+zhuhaow=>在用NEKit的人觉得是要升级到Swift3还是等等
+YuQiang=>SwitchyOmega 目标服务器和规则是分开的。适合用GUI进行管理。
+nie11kun=>那个wingy是谁开发的呀
+zhuhaow=>就在群里，我就不@了，你要干啥
+nie11kun=>刚刚看到这个app，看了下居于NEkit的
+nie11kun=>就来问问
+nie11kun=>内建的规则呀
+zhuhaow=>诶，这群里没讨论过，telegram已经讨论过了
+nie11kun=>我刚刚加那个群了
+zhuhaow=>没啥劲，都不知道在说啥
+nie11kun=>看来鸡喜欢讨论实质性的技术问题
+nie11kun=>你喜欢
+应该半个钟头内就可以更新了
+Zhuhao Wang, [13.09.16 21:12]
+
+正在Travis CI构建
+Zhuhao Wang, [13.09.16 21:12]
+
+另外增加了SOCKS5 adapter
+Zhuhao Wang, [13.09.16 21:11]
+
+telegram应该也可以用了
+Zhuhao Wang, [13.09.16 21:11]
+
+修复了SOCKS5代理的问题
+Zhuhao Wang, [13.09.16 21:11]
+
+SpechtLite 0.4.0发布了
+zhuhaow=>Zhuhao Wang, [13.09.16 21:11]
+YuQiang=>d=====(￣▽￣*)b
+nie11kun=>鼓掌👏
+nie11kun=>修复socks5  待会试试Google photos
+zhuhaow=>https://travis-ci.org/zhuhaow/SpechtLite/builds/159588446
+zhuhaow=>构建好就自动发布了
+nie11kun=>我把360的域名放到reject里了，但看日志还是走的direct adopter 
+nie11kun=>没匹配上
+nie11kun=>｀｀｀
+```
+2016/09/13 21:49:08:318  Request: haostat.qihoo.com Type: DirectAdapter Rule: Optional(<CountryRule countryCode:CN match:true>)
+2016/09/13 21:49:08:315  Request: haostat.qihoo.com Type: DirectAdapter Rule: Optional(<CountryRule countryCode:CN match:true>)
+2016/09/13 21:49:08:302  Request: vis.360.cn Type: DirectAdapter Rule: Optional(<CountryRule countryCode:CN match:true>)
+2016/09/13 21:49:08:298  Request: vis.360.cn Type: DirectAdapter Rule: Optional(<CountryRule countryCode:CN match:true>)
+2016/09/13 21:49:08:279  Request: index.360.cn Type: DirectAdapter Rule: Optional(<CountryRule countryCode:CN match:true>)
+2016/09/13 21:49:08:274  Request: js.login.360.cn Type: DirectAdapter Rule: Optional(<CountryRule countryCode:CN match:true>)
+2016/09/13 21:49:08:271  Request: www.so.com Type: DirectAdapter Rule: Optional(<CountryRule countryCode:CN match:true>)
+nie11kun=>```
+zhuhaow=>如果你要匹配360.cn那要写360\.cn
+```
+qhimg\.com
+so\.com
+qihoo\.com
+360\.cn
+360\.com
+nie11kun=>```
+nie11kun=>reject这样写的
+zhuhaow=>你是不是country rule在这个rule的前面啊
+nie11kun=>对
+nie11kun=>这个顺序还有要求的呀
+zhuhaow=>不然我怎么知道你矛盾的规则怎么选
+nie11kun=>按照配置文件的顺序设定优先级？
+zhuhaow=>对啊
+zhuhaow=>CNrule已经apply了啊
+nie11kun=>我以为是有一套你内建的顺序
+nie11kun=>好了
+nie11kun=>我发现了一个奇怪的问题
+nie11kun=>我屏蔽掉360.com，第一次刷新的确显示无法打开网页，但刷新一次却可以正常访问了
+zhuhaow=>log怎么说
+nie11kun=>一次类推，这两种状态我刷新期间来回循环
+nie11kun=>日志显示每次刷新都是正确匹配到RejectAdapter了
+nie11kun=>还有现在的0.3.1每次打开日志都会同时打开配置文件夹
+zhuhaow=>并不会啊
+zhuhaow=>你试试清空浏览器的缓存了
+nie11kun=>的确是缓存问题
+nie11kun=>清掉后没问题了
+nie11kun=>我的第二个情况，是在那个配置文件夹打开的情况下，打开日志会先置顶配置文件夹而不是日志窗口
+zhuhaow=>因为实现的时候有点问题，我是没搞懂Mac OS的置顶窗口的原理
+zhuhaow=>更新0.4.1，修复所有SOCKS5问题，我睡觉了
+rongxiong=>[![blob](https://files.gitter.im/zhuhaow/NEKit/5GI1/thumb/blob.png)](https://files.gitter.im/zhuhaow/NEKit/5GI1/blob)
+zhuhaow=>哇，居然又有一个人跑起来NE了
+rongxiong=>为什么同是gmail，一个用shadowsocks adapter，一个用direct adapter
+zhuhaow=>不是的，是speed adapter还没处理好这块，所以两个请求一起发出都显示出来了
+zhuhaow=>speed adapter一直有一点问题，但是能用，实在没时间改，所以Event这个也没处理过
+rongxiong=>我没配置speed adapter的，这是默认启用的吗？
+zhuhaow=>不是，你的配置文件怎么写就是怎么连的
+rongxiong=>[![blob](https://files.gitter.im/zhuhaow/NEKit/5YJE/thumb/blob.png)](https://files.gitter.im/zhuhaow/NEKit/5YJE/blob)
+zhuhaow=>adapter1什么类型？
+rongxiong=>我这样配然后黑名单没起作用
+rongxiong=>shadowsocks
+zhuhaow=>大概是黑名单没写成正则
+rongxiong=>[![blob](https://files.gitter.im/zhuhaow/NEKit/79vh/thumb/blob.png)](https://files.gitter.im/zhuhaow/NEKit/79vh/blob)
+rongxiong=>不是这样写的吗？
+zhuhaow=>没什么问题
+rongxiong=>不知道哪个环节出了问题
+zhuhaow=>你的黑名单没走代理？
+rongxiong=>对，没走
+zhuhaow=>那黑名单里的域名match到什么rule了
+rongxiong=>[![blob](https://files.gitter.im/zhuhaow/NEKit/WRX2/thumb/blob.png)](https://files.gitter.im/zhuhaow/NEKit/WRX2/blob)
+rongxiong=>应该是match上的，但就是打不开网页
+rongxiong=>我似乎找到了一点规律了，感觉只有第个list会起作用
+maocuu=>NEKit 支持 swift 2.3 吗？
+zhuhaow=>2.2和2.3几乎没有区别
+zhuhaow=>我主要是要不要升到3
+maocuu=>我升级到 swift 2.3 了。 carthage update 失败了。
+zhuhaow=>其它项目编译失败了还是NEKit编译失败了
+zhuhaow=>2.3删了两个感叹号，看起来更像是SDK的更新
+
+** CLEAN FAILED **
+maocuu=>A shell task (/usr/bin/xcrun xcodebuild -workspace /Users/mao/nekit18/Carthage/Checkouts/CocoaLumberjack/Framework/Lumberjack.xcworkspace -scheme CocoaLumberjackSwift-iOS -configuration Release -sdk iphoneos ONLY_ACTIVE_ARCH=NO BITCODE_GENERATION_MODE=bitcode CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY= CARTHAGE=YES clean build) failed with exit code 65:
+zhuhaow=>这个错误怎么看都不是swift的问题吧
+maocuu=>网上说是要升级 carthage 0.18
+/Users/mao/Desktop/NEKit/Carthage/Checkouts/CocoaAsyncSocket/Source/RunLoop/AsyncSocket.m:4268:3: warning: 'AsyncSocket' is de
+/Users/mao/Desktop/NEKit/Carthage/Checkouts/CocoaAsyncSocket/Source/RunLoop/AsyncSocket.m:4252:38: warning: 'AsyncSocket' is deprecated: The RunLoop versions of CocoaAsyncSocket are deprecated and will be removed in a future release. Please migrate to GCDAsyncSocket. [-Wdeprecated-declarations]
+/Users/mao/Desktop/NEKit/Carthage/Checkouts/CocoaAsyncSocket/Source/RunLoop/AsyncSocket.m:4252:3: warning: 'AsyncSocket' is deprecated: The RunLoop versions of CocoaAsyncSocket are deprecated and will be removed in a future release. Please migrate to GCDAsyncSocket. [-Wdeprecated-declarations]
+/Users/mao/Desktop/NEKit/Carthage/Checkouts/CocoaAsyncSocket/Source/RunLoop/AsyncSocket.m:671:17: warning: Implementing deprecated class [-Wdeprecated-implementations]
+/Users/mao/Desktop/NEKit/Carthage/Checkouts/CocoaAsyncSocket/Source/RunLoop/AsyncSocket.m:4282:38: warning: 'AsyncSocket' is deprecated: The RunLoop versions of CocoaAsyncSocket are deprecated and will be removed in a future release. Please migrate to GCDAsyncSocket. [-Wdeprecated-declarations]
+/Users/mao/Desktop/NEKit/Carthage/Checkouts/CocoaAsyncSocket/Source/RunLoop/AsyncSocket.m:4282:3: warning: 'AsyncSocket' is deprecated: The RunLoop versions of CocoaAsyncSocket are deprecated and will be removed in a future release. Please migrate to GCDAsyncSocket. [-Wdeprecated-declarations]
+/Users/mao/Desktop/NEKit/Carthage/Checkouts/CocoaAsyncSocket/Source/RunLoop/AsyncSocket.m:4268:38: warning: 'AsyncSocket' is deprecated: The RunLoop versions of CocoaAsyncSocket are deprecated and will be removed in a future release. Please migrate to GCDAsyncSocket. [-Wdeprecated-declarations]
+/Users/mao/Desktop/NEKit/Carthage/Checkouts/CocoaAsyncSocket/Source/RunLoop/AsyncSocket.m:4268:3: warning: 'AsyncSocket' is deprecated: The RunLoop versions of CocoaAsyncSocket are deprecated and will be removed in a future release. Please migrate to GCDAsyncSocket. [-Wdeprecated-declarations]
+/Users/mao/Desktop/NEKit/Carthage/Checkouts/CocoaAsyncSocket/Source/RunLoop/AsyncSocket.m:4252:38: warning: 'AsyncSocket' is deprecated: The RunLoop versions of CocoaAsyncSocket are deprecated and will be removed in a future release. Please migrate to GCDAsyncSocket. [-Wdeprecated-declarations]
+/Users/mao/Desktop/NEKit/Carthage/Checkouts/CocoaAsyncSocket/Source/RunLoop/AsyncSocket.m:4252:3: warning: 'AsyncSocket' is deprecated: The RunLoop versions of CocoaAsyncSocket are deprecated and will be removed in a future release. Please migrate to GCDAsyncSocket. [-Wdeprecated-declarations]
+/Users/mao/Desktop/NEKit/Carthage/Checkouts/CocoaAsyncSocket/Source/RunLoop/AsyncSocket.m:671:17: warning: Implementing deprecated class [-Wdeprecated-implementations]
+/Users/mao/Desktop/NEKit/Carthage/Checkouts/CocoaAsyncSocket/Source/RunLoop/AsyncUdpSocket.m:2307:41: warning: 'AsyncUdpSocket' is deprecated: The RunLoop versions of CocoaAsyncSocket are deprecated and will be removed in a future release. Please migrate to GCDAsyncUdpSocket. [-Wdeprecated-declarations]
+/Users/mao/Desktop/NEKit/Carthage/Checkouts/CocoaAsyncSocket/Source/RunLoop/AsyncUdpSocket.m:2307:3: warning: 'AsyncUdpSocket' is deprecated: The RunLoop versions of CocoaAsyncSocket are deprecated and will be removed in a future release. Please migrate to GCDAsyncUdpSocket. [-Wdeprecated-declarations]
+/Users/mao/Desktop/NEKit/Carthage/Checkouts/CocoaAsyncSocket/Source/RunLoop/AsyncUdpSocket.m:195:17: warning: Implementing deprecated class [-Wdeprecated-implementations]
+/Users/mao/Desktop/NEKit/Carthage/Checkouts/CocoaAsyncSocket/Source/GCD/GCDAsyncSocket.m:1985:37: warning: multiple methods named 'initWithDelegate:delegateQueue:socketQueue:' found [-Wstrict-selector-match]
+(1 failure)
+	Check dependencies
+The following build commands failed:
+
+
+** BUILD FAILED **
+(1 failure)
+	Check dependencies
+The following build commands failed:
+
+
+** CLEAN FAILED **
+*** Building scheme "CocoaLumberjackSwift-iOS" in Lumberjack.xcworkspace
+maocuu=>
+bjzhou=>升级xcode8，下载完成后安装到一半又开始重新下载了是什么鬼
+FlowerWrong=>是这样的
+zhuhaow=>我更新了，没遇到这个问题
+FlowerWrong=>你们carthage成功吗？我原来用2.2。系统的默认是3
+zhuhaow=>不成功。还没编译出来
+lioliy=>需要升swift3？
+easunny=>今天刚刚升级了xcdoe carthage一直编译失败 我把里面的chekcout的项目手动改成swift2.3版本了 编译tun2socks的时候出了问题
+easunny=>Xcode = =
+easunny=>[![blob](https://files.gitter.im/zhuhaow/NEKit/Iqut/thumb/blob.png)](https://files.gitter.im/zhuhaow/NEKit/Iqut/blob)
+zhuhaow=>最近没空，不处理这些问题
+bjzhou=>有个诡异的问题，mac同时挂着gitter和telegram客户端，关掉telegram客户端窗口，gitter窗口会弹出来。。。
+zhuhaow=>我还有finder和console乱跳的
+loik160=>@zhuhaow 不知道我怎么搞的 现在我打开软件。。状态栏不会出现软件图标了 。。。用不了
+luckypoem=>怎么用不了啊？
+wksora=>问一下，有没有谁转换过 gfwlist 到这边的配置。
+wksora=>还一个小问题，已经载入过的配置，但是删除了配置文件，怎么让他在下拉栏里也能删除掉。
+zhuhaow=>Reload config
+zhuhaow=>发现问题了
+zhuhaow=>修复了
+wksora=>有考虑可以支持下 gfwlist 或者 pac 格式的规则文件么？
+zhuhaow=>无，不会支持
+wksora=>走 Speed 模式的时候，所有配置在 Speed 里面的代理流量是否都会用到（换言之流量是否会 X n）？还是只是在测试谁延迟最快，然后再传流量。 每次都走会不会出现服务器跳来跳去的情况，有没有考虑选择之后一段时间内都用那台服务器。
+zhuhaow=>只是发起多个连接
+zhuhaow=>那个先连上用哪个
+CoderJin=>[![blob](https://files.gitter.im/zhuhaow/NEKit/fjce/thumb/blob.png)](https://files.gitter.im/zhuhaow/NEKit/fjce/blob)
+CoderJin=>没文档了吗
+simpzan=>@wksora pac ios NE sdk支持的，用NEProxySettings可以设置。
+clavichord93=>能不能给Specht加入词典支持，方便实用Apple Script和Alfred？
+zhuhaow=>已经很方便了啊……应该不会做
+rongxiong=>Specht是不是所有DNS请求都是走的本地？
+zhuhaow=>是也不是，我不知道你是怎么理解的
+zhuhaow=>发给代理服务器的一定是域名
+nie11kun=>
+nie11kun=>
+2016/09/27 21:18:58:452  Request: github-cloud.s3.amazonaws.com Type: ShadowsocksAdapter Rule: <AllRule>
+nie11kun=>2016/09/27 21:18:58:148  Request: github-cloud.s3.amazonaws.com Type: DirectAdapter Rule: <AllRule>
+nie11kun=>发现同一个流量日志里有两条记录，不知道实际走的哪个
+zhuhaow=>不知。因为speed adapter的log一直没写好
+nie11kun=>应该direct
+nie11kun=>Mac自带字典里的wikipedia不能走代理嘛
+nie11kun=>试了下无法访问，看了下日志里面也没有访问记录
+zhuhaow=>我好像一直可以访问wiki
+nie11kun=>我这边不行
+zhuhaow=>我明天试试
+nie11kun=>[![Screen Shot 2016-09-28 at 22.24.58.png](https://files.gitter.im/zhuhaow/NEKit/ftGb/thumb/Screen-Shot-2016-09-28-at-22.24.58.png)](https://files.gitter.im/zhuhaow/NEKit/ftGb/Screen-Shot-2016-09-28-at-22.24.58.png)
+zhuhaow=>今天忘了
+nie11kun=>😳
+CloudnuY=>为什么点Show log之后日志显示出来了，但是把Finder唤醒到前台了。。有时候还会唤醒其他运行中但不在前台的程序
+bjzhou=>@zhuhaow 把showLogfile里的selectFile改成openFile
+zhuhaow=>字典就是不走代理，也没办法
+nie11kun=>不过用处也不大
+nie11kun=>speed的确感觉有问题，使用中一般都无法准确处理allrule
+CoderJin=>[![blob](https://files.gitter.im/zhuhaow/NEKit/xg3I/thumb/blob.png)](https://files.gitter.im/zhuhaow/NEKit/xg3I/blob)
+这样匹配 好像不管用 ,直接用tudou\\.com  好像可以在RejectAdapterFactory 有作用 @zhuhaow  ?有办法匹配没
+CoderJin=> 
+zhuhaow=>前面的点为什么不转义
+CoderJin=>ok 
+CoderJin=>谢谢
+wangjinwei0806=>@zhuhaow  - `DomainRuleList` can match domain based on prefix, suffix and keyword.   这个啥时候发布 ,NEKit大神...
+zhuhaow=>可以用了。只不过配置文件不支持
+zhuhaow=>正则比他们强太多
+wangjinwei0806=>牛 B ..
+nie11kun=>suffix不是本来就支持吗
+clavichord93=>今天升级0.4.8之后directlist文件显示如下错误：
+clavichord93=>http://ww1.sinaimg.cn/large/006y8lVagw1f8js11h2i1j30s00g8wgl.jpg
+clavichord93=>这是什么情况。。。0.4.7的时候没有这个问题
+zhuhaow=>升级0.4.9试试
+clavichord93=>可以了～
+zgia=>请问 @zhuhaow 在吗？
+zgia=>@clavichord93 规则中不能有空行
+zgia=>@zhuhaow 规则中有个g.co，这样xxxg.com就会被解析成g.co，这个情况下，请问g.co如何设置？
+zhuhaow=>^g.co
+bjzhou=>^g\.co$
+zhuhaow=>'''
+bjzhou=>为什么转译的\会消失。。
+zgia=>多谢，我试一试
+zhuhaow=>``` ^g\.co ```
+zgia=>ok了
+zgia=>thx
+zgia=>我都没有对.进行转义
+zgia=>发现也可以
+zgia=>再请教一个问题
+zgia=>[![blob](https://files.gitter.im/zhuhaow/NEKit/NnRc/thumb/blob.png)](https://files.gitter.im/zhuhaow/NEKit/NnRc/blob)
+zgia=>请这里的delay是如何起作用的？
+zgia=>[![blob](https://files.gitter.im/zhuhaow/NEKit/brD9/thumb/blob.png)](https://files.gitter.im/zhuhaow/NEKit/brD9/blob)
+zgia=>我有多个ss，如果SpechtLite
+zgia=>我有多个ss，如果SpechtLite每次取的都是Delay最小的那么是不是说speed中delay大的就没有用了呢
+zhuhaow=>每次根据delay同时连接，取先连接成功的
+zgia=>明白了，多谢多谢
+
+	}
+	    reportReason = "REPORT_REASON_DATA_STALL_AT_APP_LAYER";
+	    delegated = 0;
+	    };
+	        trafficClass = 0;
+	        "timeToDNSStart_msecs" = 0;
+	        "timeToDNSResolved_msecs" = 0;
+	        "timeToConnectionStart_msecs" = 3;
+	        "timeToConnectionEstablishment_msecs" = 4;
+	        tcpFastOpen = 0;
+	        synRetransmissionCount = 0;
+	        "smoothedRTT_msecs" = 0;
+	        packetsRetransmitted = 0;
+	        packetsOutOfOrder = 0;
+	        packetsOut = 1;
+	        packetsIn = 0;
+	        packetsDuplicate = 0;
+	        kernelReportingWriteStalled = 0;
+	        kernelReportingReadStalled = 0;
+	        kernelReportingConnectionStalled = 0;
+	        kernelReportedStalls = 0;
+	        interfaceType = "INTERFACE_TYPE_WIFI";
+	        "flowDuration_msecs" = 15654;
+	        "currentRTT_msecs" = 0;
+	        connectionReuseCount = 0;
+	        "connectionEstablishmentTime_msecs" = 1;
+	        connectedInterfaceType = "(unknown: 4)";
+	        connected = 1;
+	        cellularRRCConnected = 0;
+	        cellularFallback = 0;
+	        bytesRetransmitted = 0;
+	        bytesOutOfOrder = 0;
+	        bytesOut = 410;
+	        bytesIn = 0;
+	        bytesDuplicate = 0;
+	        betterRouteEventCount = 0;
+	        "bestRTT_msecs" = 0;
+	        appReportingDataStallCount = 1;
+	        "appDataStallTimer_msecs" = 3;
+	        RTTvariance = 0;
+	        "DNSResolvedTime_msecs" = 0;
+	        DNSAnswersCached = 0;
+	    connectionStatisticsReport =     {
+	    clientIdentifier = "com.burbn.instagram";
+	    };
+	        );
+	            3013
+	        "timeToNetworkEvents_msecs" =         (
+	        );
+	            "NETWORK_EVENT_DATA_STALL_AT_APP_LAYER"
+	        networkEvents =         (
+	        fellback = 0;
+	        "fallbackTimer_msecs" = 0;
+	        );
+	            }
+	                bytesOut = 410;
+	                bytesIn = 0;
+	                        {
+	        dataUsageSnapshotsAtNetworkEvents =         (
+	    cellularFallbackReport =     {
+	<AWDLibnetcoreTCPConnectionReport: 0x12fd6c590> {
+Oct  8 11:52:01 jin networkd[88] <Error>: -[NETAWDManager reportStats:metricID:] AWDServerConnection newMetricContainerWithIdentifier failed for metric 2686983, server 0x12fe773c0, not reporting:
+host:scontent.cdninstagram.com port: 80)> received request <ConnectRequest host:scontent.cdninstagram.com port:80>.
+wangjinwei0806=>instagram 图片打不开 ruller  instagram\.com
+wangjinwei0806=>哪位大哥知道怎么回事 是不是应该匹配keyword? instagram?
+zhuhaow=>instagram的cdn有些地方dns污染了
+wangjinwei0806=>如果全局走代理的话 ,没啥问题的 
+wangjinwei0806=>如果我用移动4G网络 的话 instagram的图片能显示..
+nie11kun=>是否speed里的delay越大相当于越照顾对应的adepter？
+zhuhaow=>越小
+nie11kun=>恩，如果我有一条us线路和hk线路，为了优先使用us的大流量我就要吧hk的delay设大了吧
+zhuhaow=>那就把hk去掉
+nie11kun=>加上hk可以防止us偶尔抽风
+zhuhaow=>那就随意了
+nie11kun=>有人在使用twitter的Mac客户端吗
+nie11kun=>我的登录不了，弹出一个空白的页面一直无响应
+nie11kun=>[![Screen Shot 2016-10-08 at 21.00.22.png](https://files.gitter.im/zhuhaow/NEKit/kchS/thumb/Screen-Shot-2016-10-08-at-21.00.22.png)](https://files.gitter.im/zhuhaow/NEKit/kchS/Screen-Shot-2016-10-08-at-21.00.22.png)
+nie11kun=>查了下日志也是没什么异常的链接
+nie11kun=>研究了下正则表达式
+nie11kun=>功能很强大
+nie11kun=>如果我想匹配所有google关键字的话是否因该添加下面的
+nie11kun=>\bgoogle
+nie11kun=>Google\b
+zhuhaow=>google
+nie11kun=>直接写google会不会无法匹配类似uersgoogle.com
+zhuhaow=>不会
+TangMonk=>很好用啊
+TangMonk=>这个rule的配置
+TangMonk=>请问下什么时候可以上架到商店呢
+TangMonk=>Network Extension是可以全局代理的吧，shell都可以代理吧?
+zhuhaow=>应该不会上架
+TangMonk=>唔。。上架多好
+TangMonk=>那只有让我朋友帮我编译一个了
+zhuhaow=>不建议使用 不稳定
+TangMonk=>哦，好的，那我只用Lite版本了
+rongxiong=>那以后Specht都不更新了吗？我都想参与开发了，只是看不太懂
+zhuhaow=>看不懂为何还要开发。应该不会更新吧。一直也没更新过
+rongxiong=>可惜了，Extension多好用的
+lioliy=>github怎么更新fork上的内容
+zhuhaow=>pull一下吧
+lioliy=>刚才点错pullrequest到zhuhaow:master上了。不是自己可以pullrequest更新fork上的内容吗
+lioliy=>https://github.com/lioliy/SpechtLite/commit/2d336dd0bd6843ecf795d23792d68299afb26e35 像这个
+lioliy=>好了
+networkextension=>提了一个issue https://github.com/zhuhaow/NEKit/issues/20
+networkextension=>32bit  iOS9 下IPv4Address hashValue 错误
+zhuhaow=>@abigt 为什么会出错
+networkextension=>@zhuhaow  UInt32 to Int 问题
+zhuhaow=>那为什么swap了就不会有问题了
+networkextension=>@zhuhaow  byteswap 后不溢出
+zhuhaow=>感觉你这只是偶然对了而已
+networkextension=>@zhuhaow  http://stackoverflow.com/questions/29434253/xcode-exc-breakpoint-exc-arm-breakpoint-subcode-0xe7ffdefe 类似问题的讨论
+networkextension=>@zhuhaow  byteswap 后也会溢出，不过ip地址是0x00000000-0xffffffff
+networkextension=>而0x00 开头的基本碰不到
+        }
+            print(addr.hashValue)
+            let addr = IPv4Address.init(fromUInt32InHostOrder:(UInt32.max - UInt32(i)))
+            
+networkextension=>@zhuhaow 测试代码 for i in 1 ...  100{
+        return Int(r) 测试没问题
+networkextension=>let r :Int32 = Int32(bitPattern: _in_addr.s_addr)
+networkextension=>这个问题是UInt32 在32为cpu 不能直接转成Int
+zhuhaow=>我会看一下。但是不好测试啊
+zhuhaow=>32位是5和5c？
+networkextension=>5c 和5 都是32bit
+zhuhaow=>直接返回hashvalue就好了
+networkextension=>嗯
+CoderJin=>[![blob](https://files.gitter.im/zhuhaow/NEKit/BhdY/thumb/blob.png)](https://files.gitter.im/zhuhaow/NEKit/BhdY/blob)
+CoderJin=>你们能用Carthage 获取 NEKit 最新版本吗?为啥我编辑总是这个错误 ..能指点不 ?
+zxl777=>请问一下，用NEKIT＋SS，在iOS上是有一个本地的socket5代理吗？还是iOS本身的NEPacketTunnelProvider直接接管了网络IP包？
+zhuhaow=>应该都不是
+zxl777=>那是什么方式？
+zhuhaow=>是http代理转发请求
+zxl777=>Shadowrocket连接后，我看wifi的网络设置，http代理是关闭的。
+zhuhaow=>因为并不是在那个接口上
+zxl777=>是不是在 NEPacketTunnelProvider 提供的接口上？
+zhuhaow=>嗯
+plokijuhhb=>请问一下 NEKit有没有打算支持iOS9.0-9.2这之间的版本呢, 还是说这段版本之间有一些坑点吗
+zhuhaow=>我也不知道
+zhuhaow=>能编译就能用吧
+zxl777=>请问，设置直连，不通过代理，是不是通过设置NEIPv4Route？
+zhuhaow=>什么都不设就好了
+zxl777=>QQ 访问 UTUN0 interface ，什么都不设置，QQ会通过UTUN0访问外网？
+zxl777=>已经打开VPN都情况下
+zhuhaow=>不会
+zxl777=>怎么设置，让QQ直连外网？
+zhuhaow=>什么都不设
+zxl777=>什么都不设置的话，QQ通过哪个路径访问外网？直接通过物理网卡？无视UTUN0虚拟网卡？
+zhuhaow=>嗯
+zxl777=>那通过设置哪一项，让Safari － Youtube知道要通过虚拟网卡？
+zhuhaow=>设哪一项应该都做不到
+zhuhaow=>你网络一点不懂？
+zxl777=>差不多不懂，一片混乱了
+zhuhaow=>不懂还做这种？
+zxl777=>暂时不懂：） 我看官方文档说是都通过UTUN0处理 － This is a virtual interface, so instead of sending the packets out over the physical network it will divert them to the NEPacket Tunnel Provider.
+zxl777=>NEPacket Tunnel Provider has a lot of control over the UTUN0 interface. Most importantly, it can specify the routes.
+zxl777=>不知道我和你说的是不是一个东西？
+zhuhaow=>你路由表没写一个包也不会发过去的
+zhuhaow=>代理服务器则是另一个问题
+zxl777=>设置路由表，是不是通过设置NEIPv4Route？
+zhuhaow=>是
+zxl777=>我先设置路由表，让QQ 读写 UTUN0，然后自己写代理程序转发QQ的读写数据吗？
+zhuhaow=>嗯
+ila123=>请问type: SPEED,如果配置过多代理，会不会导致访问过慢？这个speed的规则在哪看？
+zhuhaow=>在哪里看？
+nie11kun=>不会慢但应该会负载大吧
+ila123=>就是想请问adapters下有10个id和一个id，速度是一样的吗？是不是配置10id就10个id都发起一次请求
+zhuhaow=>是
+ila123=>明白，非常感谢！ @zhuhaow  @nie11kun 
+siton=>66666
+maocuu=>NEKit swift3 分支  carthage update --no-use-binaries --platform ios 好像有错误。
+maocuu=>用模拟器有问题，再用真机试试。
+zhuhaow=>把carthage文件夹删掉
+ func tcp_recv_func(_ arg: UnsafeMutableRawPointer?, pcb: UnsafeMutablePointer<tcp_pcb>?, buf:  
+maocuu=>
+    socket.recved(buf!)  报错。
+maocuu=>里面的 
+maocuu=>tun2socks was compiled with optimization - stepping may behave oddly; variables may not be available.
+maocuu=>swift3 一会就断线了。。。
+zhuhaow=>tun的问题暂时无力修复
+
+maocuu=>libswiftFoundation.dylib`function signature specialization <Arg[0] = Owned To Guaranteed, Arg[1] = Dead> of static Foundation.Data._unconditionallyBridgeFromObjectiveC (Swift.Optional<__ObjC.NSData>) -> Foundation.Data:
+zhuhaow=>这是哪里的
+opchen=>@zhuhaow I have an issue with ip setting
+opchen=>我设置了特别的ip地址通过某个socks5出去，但设置貌似没有生效。如果排错呢？
+opchen=>如何排错呢？
+zhuhaow=>不明白你的意思
+opchen=>我的iplist文件是每个ip段写了一行： 192.168.1.0/24
+    file: ~/.SpechtLite/inner
+    adapter: SOCKETS-CD
+opchen=>  - type: iplist
+       port: 1081
+       host: 127.0.0.1
+       type: socks5
+opchen=>     - id: SOCKETS-CD
+zhuhaow=>然后你想干嘛
+opchen=>我想让 192.168.1.0这个网段的网络通信都通过我设置的socks5代理走
+opchen=>但是貌似设置没有起到作用，不知道如何排错
+zhuhaow=>自己设置系统代理，把bypass里面的192.168/16去掉
+opchen=>bypass已经去掉了
+zhuhaow=>什么样的请求
+opchen=>http
+zhuhaow=>terminal的？
+opchen=>不是，web的
+zhuhaow=>log怎么说
+opchen=>log里没显示我的记录
+zhuhaow=>什么客户端
+opchen=>chrome
+opchen=>其他设置是生效的，比如google，youtube
+zhuhaow=>设了代理了
+zhuhaow=>？
+opchen=>但就是iplist的配置没有起作用
+opchen=>代理已经设置为system profile
+zhuhaow=>你chrome代理怎么设的
+opchen=>system proxy
+zhuhaow=>chrome://net-internals/#proxy
+opchen=>哦，看到了，这里有个bypass 192.168.0.0/16
+opchen=>但是系统设置里没有
+opchen=>奇怪的是在系统里又看到192.168，我删除后，在log中看到我的匹配了。请问是什么原因呢？
+opchen=>现在正常了
+opchen=>OK, 现在可以通过日志看到通过socks走流量了，但是我的chrome是一直在loading，并没有访问到目标网页。
+zhuhaow=>直接设成127.0.0.1:1081可用？
+opchen=>是的，直接设置是可用的
+zhuhaow=>可能有bug吧，不知道了，没人用socks5，也没太多测试，而且只支持最标准的一种情况
+opchen=>最标准是指什么情况呢
+zhuhaow=>发510
+zhuhaow=>对面会5X
+zhuhaow=>然后根据请求发5101，5104或者5013
+zhuhaow=>其他的所有情况都不支持
+opchen=>好的，谢谢
+xohozu=>@zhuhaow 你好，请问一点关于NE权限申请的问题？之前尝试申请NE权限，理由大概是personal education use，但是被拒了。
+zhuhaow=>已经不需要申请了
+xohozu=>是最近更改的吗?我是在8月申请过一次被拒。
+xohozu=>👍先试玩一下Specht看看
+Tralny=>ins看不了图能破吗？😂
+zhuhaow=>规则问题
+Tralny=>改好了，谢谢作者了。
+Tralny=>🌚🌚🌚
+Args=>请问出现这个的原因是什么呢 Error Domain=NEVPNErrorDomain Code=5 "permission denied" 
+exxfzc=>为什么我的用不了呀,伤心....
+2016/12/13 20:34:13:097  Request: xp.apple.com Type: SpeedAdapter Rule: <AllRule>
+2016/12/13 20:34:11:366  Request: init.itunes.apple.com Type: DirectAdapter Rule: <CountryRule countryCode:CN match:true>
+2016/12/13 20:32:32:912  Request: api.smoot.apple.com.cn Type: DirectAdapter Rule: <CountryRule countryCode:CN match:true>
+2016/12/13 20:32:20:281  Request: www.google.com Type: SpeedAdapter Rule: <IPRangeList>
+2016/12/13 20:31:24:969  Request: zhidao.baidu.com Type: DirectAdapter Rule: <CountryRule countryCode:CN match:true>
+2016/12/13 20:30:48:242  Request: api-glb-sea.smoot.apple.com Type: SpeedAdapter Rule: <AllRule>
+2016/12/13 20:30:43:563  Request: api-glb-sea.smoot.apple.com Type: SpeedAdapter Rule: <AllRule>
+2016/12/13 20:30:41:373  Request: api-glb-sea.smoot.apple.com Type: SpeedAdapter Rule: <AllRule>
+2016/12/13 20:30:32:122  Request: api-glb-sea.smoot.apple.com Type: SpeedAdapter Rule: <AllRule>
+2016/12/13 20:30:32:119  Request: api-glb-sea.smoot.apple.com Type: SpeedAdapter Rule: <AllRule>
+2016/12/13 20:30:31:933  Request: api.smoot.apple.com.cn Type: DirectAdapter Rule: <CountryRule countryCode:CN match:true>
+2016/12/13 20:30:29:505  Request: kstj.baidu.com Type: DirectAdapter Rule: <CountryRule countryCode:CN match:true>
+2016/12/13 20:30:29:504  Request: gss0.bdstatic.com Type: DirectAdapter Rule: <CountryRule countryCode:CN match:true>
+2016/12/13 20:30:29:202  Request: api-glb-sea.smoot.apple.com Type: SpeedAdapter Rule: <AllRule>
+2016/12/13 20:29:29:165  Request: ws.audioscrobbler.com Type: SpeedAdapter Rule: <AllRule>
+2016/12/13 20:28:23:762  Request: zhidao.baidu.com Type: DirectAdapter Rule: <CountryRule countryCode:CN match:true>
+exxfzc=>2016/12/13 20:27:55:225  Request: api.smoot.apple.com.cn Type: DirectAdapter Rule: <CountryRule countryCode:CN match:true>
+exxfzc=>貌似speed test不准确,测速经常去到2000多ms,但是上网速度很快
+zhuhaow=>那你就心中除100吧
+这行就报这个错，请问这个应该从哪入手解决？
+suzee=>dyld: lazy symbol binding failed: can't resolve symbol __TZFO4Yaml4Yaml4loadfzSSS0_ in /Users/fanzz/Library/Developer/Xcode/DerivedData/network-ezpscqqsdkszvsctgbuoegfxtvbo/Build/Products/Debug-iphonesimulator/NEKit.framework/NEKit because dependent dylib #1 could not be loaded            加载NEKit时候程序运行到            try config.load(fromConfigString: content)
+zhuhaow=>学一下怎么用carthage
+zhuhaow=>估计没加yaml库
+suzee=>carthage 加载完成了，编译也成功了，运行时候就报这个错，yaml这个库是存在的
+zhuhaow=>你用过carthage么
+suzee=>用过，略小白
+zhuhaow=>不知道为什么，因为我没遇到过，但是明显库没找到
+zhuhaow=>但是显示的错误也很奇怪
+zhuhaow=>你carthage没用no use binary?
+suzee=>google 了好久，其他类似错误都能通过把库加入到Embedded中，Linked Frameworks and LIbraries 中移除掉就可以解决掉类似这种could not be loaded 错误，但是这个NEKit没有 Embedded Binaries, 就一直报这个错误，carthage update时候用的 no use binary
+suzee=>一脸懵逼，求大神指路
+suzee=>我成功的通过父工程添加yaml逃避了这个问题😂😂😂~~~~
+    }这个代码块一直循环状态，多次循环后，崩溃，->  0x10062d1ec <+120>: brk    #0x1
+        return littleEndian ? v.littleEndian : v.bigEndian
+        position += MemoryLayout<T>.size
+        }
+          
+             $0.advanced(by: position).load(as: T.self)
+          
+        let v = data.withUnsafeRawPointer {
+
+        }
+            return nil
+        if remaining < MemoryLayout<T>.size {
+suzee=>@zhuhaow  配置ss代理用networkExtension加载NEKit,连上一会就断开，断点测试显示   open func read<T: BinaryReadable>() -> T? {
+suzee=>无其他报错信息，仅在 函数调用栈执行过程中提示，function signature specialization <preserving fragile attribute, Arg[1] = [Closure Propagated : reabstraction thunk helper from @callee_owned (@unowned Swift.UnsafeBufferPointer<Swift.UInt8>) -> () to @callee_owned (@unowned Swift.UnsafeBufferPointer<Swift.UInt8>) -> (@out ()), Argument Types : [@callee_owned (@unowned Swift.UnsafeBufferPointer<Swift.UInt8>) -> ()]> of generic specialization <preserving fragile attribute, ()> of Swift.StaticString.withUTF8Buffer <A> ((Swift.UnsafeBufferPointer<Swift.UInt8>) -> A) -> A  ->  0x10062d1ec <+120>: brk    #0x1
+suzee=>大神，求提示下，非常感谢
+zhuhaow=>你给个stack也行啊，都不知道错在哪
+
+suzee=>#2	0x0000000100319818 in BinaryDataScanner.(read<A where ...> () -> A?).(closure #1) at   NEKit-master/src/Utils/BinaryDataScanner.swift:64
+zhuhaow=>stack
+zhuhaow=>把整个crash report发出来
+
+    0x100604704 <+96>: bl     0x10062d174               ; function signature specialization <preserving fragile attribute, Arg[2] = Dead, Arg[3] = Dead> of Swift._fatalErrorMessage (Swift.StaticString, Swift.StaticString, Swift.StaticString, Swift.UInt, flags : Swift.UInt32) -> Swift.Never
+    0x100604700 <+92>: movz   w6, #0
+    0x1006046fc <+88>: orr    w5, wzr, #0x2
+    0x1006046f8 <+84>: orr    w4, wzr, #0x20
+    0x1006046f4 <+80>: orr    w2, wzr, #0x2
+    0x1006046f0 <+76>: movz   w1, #0xb
+    0x1006046ec <+72>: nop    
+    0x1006046e8 <+68>: adr    x3, #955496               ; "load from misaligned raw pointer"
+    0x1006046e4 <+64>: nop    
+    0x1006046e0 <+60>: adr    x0, #951226               ; "fatal error"
+    0x1006046dc <+56>: mov    x29, sp
+    0x1006046d8 <+52>: stp    x29, x30, [sp, #-16]!
+    0x1006046d4 <+48>: brk    #0x1
+    0x1006046d0 <+44>: br     x4
+    0x1006046cc <+40>: mov    x2, x3
+    0x1006046c8 <+36>: mov    x0, x8
+    0x1006046c4 <+32>: ldr    x4, [x9, #48]
+    0x1006046c0 <+28>: cbnz   x10, 0x1006046d8          ; <+52>
+    0x1006046bc <+24>: and    x10, x10, x1
+    0x1006046b8 <+20>: add    x1, x2, x0
+    0x1006046b4 <+16>: b.lo   0x1006046d4               ; <+48>
+    0x1006046b0 <+12>: subs   x10, x10, #1              ; =1 
+    0x1006046ac <+8>:  add    x10, x10, #1              ; =1 
+    0x1006046a8 <+4>:  ldrh   w10, [x9, #144]
+    0x1006046a4 <+0>:  ldur   x9, [x3, #-8]
+suzee=>libswiftCore.dylib`Swift.UnsafeRawPointer.load <A> (fromByteOffset : Swift.Int, as : A.Type) -> A:
+zhuhaow=>你要是在xcode里调试crash的时候把左边的stack截个图
+suzee=>[![屏幕快照 2016-12-16 下午1.57.45.png](https://files.gitter.im/zhuhaow/NEKit/RM2o/thumb/____-2016-12-16-__1.57.45.png)](https://files.gitter.im/zhuhaow/NEKit/RM2o/____-2016-12-16-__1.57.45.png)
+zhuhaow=>不要用TUNInterface
+suzee=>enen
+zhuhaow=>readme里面不是写了么
+suzee=>恩恩，粗心了，谢谢，非常感谢
+suzee=>[![屏幕快照 2016-12-16 下午2.48.44.png](https://files.gitter.im/zhuhaow/NEKit/V2E4/thumb/____-2016-12-16-__2.48.44.png)](https://files.gitter.im/zhuhaow/NEKit/V2E4/____-2016-12-16-__2.48.44.png)
+suzee=>@zhuhaow 链接上一会断开了就
+zhuhaow=>错误是什么
+YzsXQ=>@suzee 我也有这个问题
+
+->  0x100a5aa44 <+160>: brk    #0x1
+    0x100a5aa40 <+156>: ret    
+    0x100a5aa3c <+152>: ldp    x20, x19, [sp], #32
+    0x100a5aa38 <+148>: ldp    x29, x30, [sp, #16]
+    0x100a5aa34 <+144>: sub    sp, x29, #16              ; =16 
+    0x100a5aa30 <+140>: str    x19, [x0, #16]
+    0x100a5aa2c <+136>: bl     0x100a43bb4               ; rt_swift_allocObject
+    0x100a5aa28 <+132>: orr    w2, wzr, #0x7
+    0x100a5aa24 <+128>: orr    w1, wzr, #0x18
+    0x100a5aa20 <+124>: stlr   x0, [x8]
+    0x100a5aa1c <+120>: nop    
+    0x100a5aa18 <+116>: adr    x8, #319488               ; lazy cache variable for type metadata for Foundation._SwiftNSData
+    0x100a5aa14 <+112>: bl     0x100a421a4               ; rt_swift_getInitializedObjCClass
+    0x100a5aa10 <+108>: add    x0, x8, #16               ; =16 
+    0x100a5aa0c <+104>: nop    
+    0x100a5aa08 <+100>: adr    x8, #299272               ; (void *)0x0000000100a0ecc4: Foundation._SwiftNSData.__deallocating_deinit
+    0x100a5aa04 <+96>:  cbnz   x0, 0x100a5aa24           ; <+128>
+    0x100a5aa00 <+92>:  ldr    x0, [x8, #2584]
+    0x100a5a9fc <+88>:  adrp   x8, 78
+    0x100a5a9f8 <+84>:  mov    x19, x0
+    0x100a5a9f4 <+80>:  bl     0x100a84aa0               ; symbol stub for: _swift_bridgeAnythingNonVerbatimToObjectiveC
+    0x100a5a9f0 <+76>:  mov    x0, sp
+    0x100a5a9ec <+72>:  mov    x1, x0
+    0x100a5a9e8 <+68>:  bl     0x100a50994               ; type metadata accessor for Any
+    0x100a5a9e4 <+64>:  str    x0, [sp, #24]
+    0x100a5a9e0 <+60>:  str    xzr, [sp]
+    0x100a5a9dc <+56>:  bl     0x100a508f4               ; type metadata accessor for Swift.Optional<Swift.AnyObject>
+    0x100a5a9d8 <+52>:  b      0x100a5a9e4               ; <+64>
+    0x100a5a9d4 <+48>:  str    x19, [sp]
+    0x100a5a9d0 <+44>:  bl     0x100a84cb0               ; symbol stub for: swift_getObjectType
+    0x100a5a9cc <+40>:  mov    x0, x19
+    0x100a5a9c8 <+36>:  cbz    x19, 0x100a5a9dc          ; <+56>
+    0x100a5a9c4 <+32>:  mov    x19, x0
+    0x100a5a9c0 <+28>:  bl     0x100a842cc               ; symbol stub for: objc_msgSend
+    0x100a5a9bc <+24>:  ldr    x1, #294844               ; "copy"
+    0x100a5a9b8 <+20>:  nop    
+    0x100a5a9b4 <+16>:  sub    sp, sp, #32               ; =32 
+    0x100a5a9b0 <+12>:  add    x29, sp, #16              ; =16 
+    0x100a5a9ac <+8>:   stp    x29, x30, [sp, #16]
+    0x100a5a9a8 <+4>:   stp    x20, x19, [sp, #-32]!
+    0x100a5a9a4 <+0>:   cbz    x0, 0x100a5aa44           ; <+160>
+suzee=>libswiftFoundation.dylib`function signature specialization <Arg[0] = Owned To Guaranteed, Arg[1] = Dead> of static Foundation.Data._unconditionallyBridgeFromObjectiveC (Swift.Optional<__ObjC.NSData>) -> Foundation.Data:
+suzee=>[![屏幕快照 2016-12-16 下午3.03.26.png](https://files.gitter.im/zhuhaow/NEKit/HpVU/thumb/____-2016-12-16-__3.03.26.png)](https://files.gitter.im/zhuhaow/NEKit/HpVU/____-2016-12-16-__3.03.26.png)
+suzee=>现在变成这样了😢
+zhuhaow=>`RawSocketFactory.TunnelProvider = self`去掉
+suzee=>好了。膜拜膜拜膜拜大神中，🙏🙏，非常感谢大神
+qianxin0126=>能通过规则 加速ss服务吗
+qianxin0126=>谁遇到iOS版wingy新版打开代理 完全断网的情况
+zgia=>[![blob](https://files.gitter.im/zhuhaow/NEKit/fHKk/thumb/blob.png)](https://files.gitter.im/zhuhaow/NEKit/fHKk/blob)
+zgia=>请教一个问题，百度地图，输入某个地址，比如常营，就出现如图的信息
+zgia=>于是无法定位到目的地
+zgia=>请问这个有可能是什么原因？我使用了两个配置，一个根据域名加速，一个是禁止。
+zgia=>我把两个配置都置空，还是同样
+zhuhaow=>完整网址发一下
+zgia=>http://ditu.baidu.com/
+zgia=>百度地图，输入某个地方
+zhuhaow=>log里那个
+zgia=>[![blob](https://files.gitter.im/zhuhaow/NEKit/Kibk/thumb/blob.png)](https://files.gitter.im/zhuhaow/NEKit/Kibk/blob)
+zgia=>http://ditu.baidu.com/?newmap=1&reqflag=pcmap&biz=1&from=webmap&da_par=direct&pcevaname=pc4.1&qt=s&da_src=searchBox.button&wd=%E5%B8%B8%E8%90%A5-%E5%9C%B0%E9%93%81%E7%AB%99&c=131&src=0&wd2=&sug=0&l=12&b=(12941506,4813149;13015234,4851485)&from=webmap&biz_forward={%22scaler%22:1,%22styles%22:%22pl%22}&sug_forward=&tn=B_NORMAL_MAP&nn=0&u_loc=12965634,4832317&ie=utf-8&t=1482140160182
+zhuhaow=>这些程序员太有创意了
+zhuhaow=>天天创建这些非法url
+zgia=>hahaha 
+yueisme=>[![blob](https://files.gitter.im/zhuhaow/NEKit/c7KT/thumb/blob.png)](https://files.gitter.im/zhuhaow/NEKit/c7KT/blob)
+这是什么情况
+
+yueisme=>Speed test failed: Error Domain=NSURLErrorDomain Code=-1001 "The request timed out." UserInfo={NSUnderlyingError=0x7fa7ad85c660 {Error Domain=kCFErrorDomainCFNetwork Code=-1001 "(null)" UserInfo={_kCFStreamErrorCodeKey=-2102, _kCFStreamErrorDomainKey=4}}, NSErrorFailingURLStringKey=https://www.gstatic.com/generate_204, NSErrorFailingURLKey=https://www.gstatic.com/generate_204, _kCFStreamErrorDomainKey=4, _kCFStreamErrorCodeKey=-2102, NSLocalizedDescription=The request timed out.}
+yueisme=>adapter1 指向shadowsocks本地客户端
+nailuoGG=>type不对
+qianxin0126=>type TCP host 0.0.0.0试试再
+zhuhaow=>代理没启用吧
+yueisme=>Speed test failed: Error Domain=NSURLErrorDomain Code=-1200 "An SSL error has occurred and a secure connection to the server cannot be made." UserInfo={_kCFStreamErrorCodeKey=-9806, NSLocalizedRecoverySuggestion=Would you like to connect to the server anyway?, NSUnderlyingError=0x7fd2a0edf290 {Error Domain=kCFErrorDomainCFNetwork Code=-1200 "(null)" UserInfo={_kCFStreamPropertySSLClientCertificateState=0, _kCFNetworkCFStreamSSLErrorOriginalValue=-9806, _kCFStreamErrorDomainKey=3, _kCFStreamErrorCodeKey=-9806}}, NSLocalizedDescription=An SSL error has occurred and a secure connection to the server cannot be made., NSErrorFailingURLKey=https://www.gstatic.com/generate_204, NSErrorFailingURLStringKey=https://www.gstatic.com/generate_204, _kCFStreamErrorDomainKey=3}
+yueisme=>恩，配置修改了，再测就是这个错误。。
+yueisme=>[![blob](https://files.gitter.im/zhuhaow/NEKit/zdLT/thumb/blob.png)](https://files.gitter.im/zhuhaow/NEKit/zdLT/blob)
+zhuhaow=>ssl证书错误
+zhuhaow=>可能是代理信息不对
+yueisme=>这个adapter1是配到SS客户端的端口，做二级代理，如果是直接用type: ss又会抛出-1001错误 :worried: 
+yueisme=>怪怪的
+zhuhaow=>ss的端口是socks5喽
+yueisme=>尴尬啦~我试试
+我记得windows上socks跟http代理都是一个端口的，那么mac按道理填http/socks5都一样吧
+yueisme=>不行，又是-1001
+zhuhaow=>啊？
+yueisme=>以后再看看吧，先不折腾了
+Args=>[self.packetFlow readPacketsWithCompletionHandler:];用这个份方法的时候读取到的好像都是IP数据报请问这正常吗？
+zhuhaow=>你想读到什么……
+Args=>额..其实我现在的问题是，读到这些数据报 如果我想把数据传回，不走服务器，只通过tunnel来监控网络 需要用什么方式传回呢  困扰几天了- -
+Args=>而且我看好多源码中都是建立了NWUDPSession，但是我不知道这个是否能给自己传数据，而且怎么看这玩意也不像是为ip数据报准备的呀
+zhuhaow=>不能这样监控网络
+Args=>(惊 那监控网络是怎么实现的 这个？NEAppProxyProvider 大牛给个方向
+zhuhaow=>监控什么
+Args=>比如我想把某个地址的信息屏蔽掉 访问的时候直接把这地址的数据丢弃
+Args=>这样的话 如果想全局屏蔽某些网站 貌似NEAppProxyProvider是不行的吧 这个好像是应用内？
+            "   adapter: direct" + "\n"   时，代理连接上开始网页浏览后，就自动断开了vpn，请问大神这可能是哪里出现了问题
+            "   match: true" + "\n" +
+            "   country: CN" + "\n" +
+            " - type: country" + "\n" +
+            "   adapter: \(uuid)" + "\n" +
+            "   match: true" + "\n" +
+            "   country: JP" + "\n" +
+            " - type: country" + "\n" +
+            "   adapter: \(uuid)" + "\n" +
+            "   match: true" + "\n" +
+            "   country: US" + "\n" +
+            " - type: country" + "\n" +
+            //"   adapter: \(uuid)" + "\n" +
+            //" - type: all" + "\n" +
+suzee=>@zhuhaow  我配置rule为"rule:" + "\n" +
+zhuhaow=>不知道
+zhuhaow=>完全没信息量啊
+suzee=>没有任何报错信息，只是vpn自动断开，只要开始网络连接请求，vpn就自动断开
+suzee=>[![屏幕快照 2016-12-27 下午5.44.58.png](https://files.gitter.im/zhuhaow/NEKit/c5T9/thumb/____-2016-12-27-__5.44.58.png)](https://files.gitter.im/zhuhaow/NEKit/c5T9/____-2016-12-27-__5.44.58.png)
+suzee=>[![屏幕快照 2016-12-27 下午5.44.52.png](https://files.gitter.im/zhuhaow/NEKit/6wBD/thumb/____-2016-12-27-__5.44.52.png)](https://files.gitter.im/zhuhaow/NEKit/6wBD/____-2016-12-27-__5.44.52.png)
+suzee=>[![屏幕快照 2016-12-27 下午5.44.52.png](https://files.gitter.im/zhuhaow/NEKit/uIXb/thumb/____-2016-12-27-__5.44.52.png)](https://files.gitter.im/zhuhaow/NEKit/uIXb/____-2016-12-27-__5.44.52.png)
+suzee=>到这里断了，求助，🙏
+zhuhaow=>开tun了？
+suzee=>没有啊
+suzee=>只是配置下country那个rule
+suzee=>然后就出现这个问题
+zhuhaow=>MMDB这个方法返回了nil
+zhuhaow=>看看为什么
+suzee=>debug进入不了MMDB的构造方法里
+zhuhaow=>你link mmdb了么
+suzee=>症结所在啊，谢谢大神
+suzee=>泪目
+Args=>[![IMG_0346.PNG](https://files.gitter.im/zhuhaow/NEKit/qQd9/thumb/IMG_0346.png)](https://files.gitter.im/zhuhaow/NEKit/qQd9/IMG_0346.PNG)
+Args=>这样为什么是不通的
+zhuhaow=>这样为什么会能用
+Args=>(ó﹏ò｡)那应该怎么办呢
+zhuhaow=>processpacket应该在block里面
+Args=>哦 对
+Args=>但是总觉得改到里面也不能用。。。
+Args=>那个packets 原封不动的write 回去能行吗
+zhuhaow=>我不知道你要干嘛
+Args=>😂是我自己有点蒙圈 我再看看
+zgia=>http://reg.163.com/Logout.jsp?username=pptpz&url=http://mail.163.com/logout.htm%23163|pptpz|1482892699688|false
+zgia=>@zhuhaow 这个地址无法退出网易邮箱
+zgia=>ERR_EMPTY_RESPONSE
+Args=>[![屏幕快照 2016-12-28 下午5.21.52.png](https://files.gitter.im/zhuhaow/NEKit/uLOm/thumb/____-2016-12-28-__5.21.52.png)](https://files.gitter.im/zhuhaow/NEKit/uLOm/____-2016-12-28-__5.21.52.png)
+Args=>tunnel里导入NEKit extension会崩在这里
+Args=>[![屏幕快照 2016-12-28 下午5.21.52.png](https://files.gitter.im/zhuhaow/NEKit/zdXr/thumb/____-2016-12-28-__5.21.52.png)](https://files.gitter.im/zhuhaow/NEKit/zdXr/____-2016-12-28-__5.21.52.png)
+Args=>😳
+Args=>dalao知道咋回事不(⊙…⊙)
+zhuhaow=>信息量太大我要判断一下
+Args=>光import 是没关系的，用到一句NEKit ，哪怕是声明个变量 就会这样
+Args=>。。。
+zhuhaow=>不过你可以先买本xcode基本操作什么的学习一下
+Args=>。。。。
+rongxiong=>现在不是支持ssr了吗，怎样设置的？
+zhuhaow=>看readme
+Args=>Tuninterface 不再用的话，那些操作也直接注释掉吗？比如register Stack之类的。有什么类替换它吗
+zhuhaow=>都删掉
+Args=>噢。。
+Args=>[![屏幕快照 2016-12-30 上午10.02.12.png](https://files.gitter.im/zhuhaow/NEKit/EhgX/thumb/____-2016-12-30-__10.02.12.png)](https://files.gitter.im/zhuhaow/NEKit/EhgX/____-2016-12-30-__10.02.12.png)
+Args=>请问这样初始化对吗
+soppysonny=>鼓起勇气做一次伸手党...看了一周大神的SpechtLite, 想模仿一下wingy, 原本没有接触过Swift, ReactiveSwift更是不懂, 望能不吝赐教...目前RuleManager设定完Rule, GCDHTTPProxyServer,GCDSOCKS5ProxyServer start之后 大概需要走什么样的流程?
+zhuhaow=>大致上就跑起来了
+soppysonny=>这...VPN标志没出现呢 怎么才能让VPN标志出现?
+zhuhaow=>route 0.0.0.0/8
+soppysonny=>我好像还在另一个次元...我再琢磨琢磨吧...
+Args=>请问tunnel 配置好后，QQ微信不能联网了是什么原因呢 其他应用基本正常
+zhuhaow=>udp direct stack没有加
+Args=>我看到源码里这个加在TUNinterface上了  可是这个不是不在用了吗
+zhuhaow=>现在不稳定啊
+zhuhaow=>不要route数据啊
+Args=>额 好 知道了
+Args=>多谢大佬(´⌣`ʃƪ)
+jiangyancong=>你好，想知道既然NEKit可以独立于network extension运行，那么如果只是用来做ss代理的话。是否就没必要使用network extension entitlement？不清楚NEKit和Network Extension一起用是什么场景？目前在土豆丝的代码上已经能够正常跑起VPN，但是发现并没有用到NEKit。看看有没有优化空间。
+zhuhaow=>NEKit是一组工具。没有说非要和什么一起用。
+jiangyancong=>好的，我只是回过头来看，当初好像就没有必要申请个开发证书，就可以搞定了。
+AlbertDu=>请问，那个 type 出了 speed还有什么， 从哪里可以看到支持的所有 type 啊，比如手动选择什么的？
+AlbertDu=>（除了）
+AlbertDu=>还是一定要写多个yaml文件进行手动选择？
+zhuhaow=>不知道你在问什么
+AlbertDu=>啊..不好意思，就是我配置了多个adapter , 在选择的时候type可以是 speed（示例里边的）， 我就想问下有没有其他的 type?
+zhuhaow=>那种都可以
+zhuhaow=>你speed里面写的那些都可以
+Args=>speed http shttp ss sock5 reject 
+AlbertDu=>哦哦，我好像知道了
+zhuhaow=>想手动选就建多个yaml
+AlbertDu=>恩恩，我知道了~谢谢~
+AlbertDu=>https://github.com/zhuhaow/SpechtLite/issues/41 开发者您好，您可以测试一下，情况应该可以复现~
+zhuhaow=>你是说ipv6.google.com会dnsfail？
+AlbertDu=>恩，就是这种纯 ipv6地址
+AlbertDu=>不过您要是要复现，应该把 Google 从您的 list里边去掉
+zhuhaow=>因为当前解析的时候只解析ipv4
+zhuhaow=>所以就fail了
+AlbertDu=>哦哦，顺便问一下，现在我们使用的 dns策略是（对proxy使用远程服务器的 dns,对与 direct使用本机 dns ）吗？
+zhuhaow=>是
+AlbertDu=>哦哦，ok~
+AlbertDu=>貌似 Sierra 10.12.1 的开机启动有问题，我电脑从来都没成功，虽然我之前用 SSX-NG, 但是我已经把它设为开机不启动了，不知道是我哪里弄错了？
+Args=>请问如果adapter是direct,不开tun 应该怎么处理对QQ的影响呢
+zhuhaow=>为什么会对qq有影响呢
+Args=>(⊙…⊙)不知道啊
+zhuhaow=>我也不知道啊
+Args=>ヽ(ﾟДﾟ)ﾉ
+Args=>QQ会显示连不上网 但实际上消息能收到
+Args=>是和一些UDP 有关吗 就像你之前说的
+zhuhaow=>不route东西为什么会和udp有关
+Args=>噢。。
+AlbertDu=>开机启动不成功应该看哪里的日志信息啊？
+zhuhaow=>不知道
+zhuhaow=>我不知道问题在哪
+zhuhaow=>时灵时不灵
+AlbertDu=>哦哦这样啊，那祝您早日排掉 bug~
+
+zhuhaow=>……
+zhuhaow=>你们能不能先学一下网络基础
+zhuhaow=>那就不要做了啊
+suzee=>恩，搞完这个就不做了
+AlbertDu=>您好，SpechtLite版本的更新会不会加入那个check for update?
+zhuhaow=>不然那个是干嘛的
+zhuhaow=>NEKit.Port
+zhuhaow=>正确设置origin了？
+zhuhaow=>试试84fb994这个commit
+zhuhaow=>还不对就是你的问题了
+wangjinwei0806=>能正常工作啊 我一直都使用的是origin  没有遇到问题，还非常稳定啊
+wangjinwei0806=>不是用的 Python 2.8.2 ，shadowsocks-libev(https://teddysun.com/357.html )
+wangjinwei0806=>还有这个https://shadowsocks.be/9.html  也可以
+wangjinwei0806=>Shadowsocks Python  （https://teddysun.com/342.html） 刚在vps安装了  ，还是能正常使用。
+wangjinwei0806=>https://github.com/zhuhaow/NEKit/releases/tag/0.7.3
+wangjinwei0806=>用这个版本试一下 
+我的iOS是9.3.5版本，估计是这个原因？不知楼主有没在这个版本下测试过？” 应该是这个问题 。你看一下作者的changelog
+换了一个网络环境，依然连不上。
+wangjinwei0806=>“@ralphshane
+(2 failures)
+	CompileSwiftSources normal arm64 com.apple.xcode.tools.swift.compiler
+	CompileSwift normal arm64
+YzsXQ=>he following build commands failed:
+clavichord93=>请问SpechtLite怎么导入gfwlist啊，或者说有没有什么靠谱的proxylist。。。之前一直用白名单模式，最近网络状况不太好，打算换黑名单模式试试。。。
+yvbbrjdr=>NEAppProxyProvider和NEPacketTunnelProvider有啥区别？
+yvbbrjdr=>@zhuhaow 
+soppysonny=>有人遇到过 NSExtensionContextVendor _setPrincipalObject:forUUID 这个崩溃吗?
+258076067=>你好，请问NEKIT的dns rewrite request这部分有详细点的资料吗？或者用哪个方法啊？谢谢
+yeye63=>spechtlite什么时候支持SSR的全部混淆协议呀？
+chenyihu=>@zhuhaow  你好，**IPPacket** 的 buildPacket 好像有点问题导致 **UDPDirectStack** 还有 **DNSServer** 工作不正常，我这里 Log 了下，发出去的包是：`DNS, 192.169.89.1:60839 ---> 114.114.114.114:53(114.114.114.114)`, query: www.apple.com，UDPDirectStack 输出的回包是 `UDP, 1.89.169.192:0 <--- 114.114.114.114:0`
+zhuhaow=>即便修了还是不能用的
+chenyihu=>现在主要有哪些问题呢？ 我昨天用了一下，TCPStack 是 OK 的。或许我可以尝试修复下，因为之前已经写过一个功能类似的 App，但是感觉 NEKit 封装的更好一点，所以希望能引入到自己的项目里来。
+zhuhaow=>ok是因为你用的时间短
+zhuhaow=>不要用tuninterface
+chenyihu=>好的，了解
+chenyihu=>tun2socks 可以用吗？
+zhuhaow=>不能
+chenyihu=>了解，非常感谢
+zhang9tian=>有人在吗？
+zhang9tian=>新手用NEKit遇到问题，想请教。
+skyjacker=>想用NEKit做本地广告屏蔽可以吗？ 
+zhang9tian=>理论上是可以的哦。把指定域名给直接阻止了。
+zhang9tian=>skyjacker,你用NEKit编译出应用没有？
+skyjacker=>没有啊，我正在下载中
+skyjacker=>刚知道NEKit...
+zhang9tian=>我用carthage自动编译不行，编译出的mac版运行时缺少一个.NEKit_demo.yaml
+Args=>自己添加进去就好
+zhang9tian=>内容呢？
+zhang9tian=>不知道如何写呢。
+Args=>哦 你说那个demo啊 库编译好就行了吧 demo不用运行 
+skyjacker=>我是想在iOS上用
+zhang9tian=>我也是想在IOS上用。IOS的demo没有。我想先看看mac的。
+zhang9tian=>这里有没有哪位同学完成IOS的demo的，给点建议？
+zhang9tian=>那个yaml的配置如何编写？
+Args=>Github 里有些其他项目的链接 你可以去看看
+
+Args=>Specht之类的
+chenyihu=>这两天在 iOS 上试用了下 NEKit 的 TCPStack，其中 tun2socks 有两个会导致 crash 的地方修正了一下，然后运行了一段较长的时间因为内存占用过多被系统杀死了，暂时没查出是什么地方内存管理出了问题。
+chenyihu=>UDPDirectStack 也重写了一个，运行正常
+chenyihu=>@zhuhaow 我做了一些修改，使 NEKit 的 UDPDirectStack 可以正常使用了  https://github.com/zhuhaow/NEKit/pull/51
+partyspy=>@zhuhaow 哥 你讲的DNS查询时用到Fake IP Pool是何原因? 硬是没看明白那段.
+
+zhuhaow=>？
+partyspy=>GCDProxyServer.swfit里的start()内会产生崩溃试过么. 崩溃于这句listenSocket = GCDAsyncSocket(delegate: self, delegateQueue: QueueFactory.getQueue(), socketQueue: QueueFactory.getQueue())
+partyspy=>EXC_BAD_ACCESS(code=1, address=0x00)
+partyspy=>[![blob](https://files.gitter.im/zhuhaow/NEKit/7eMv/thumb/blob.png)](https://files.gitter.im/zhuhaow/NEKit/7eMv/blob)
+chenyihu=>@partyspy  因为 IP 和域名不是一一对应关系，需要使用 IP Pool 将它强制成一对一关系，这样才能反查出域名。
+partyspy=>@chenyihu 谢谢回答. 还没完全明白, 我再想想看
+partyspy=>导入NEKit时我遇到各种框架依赖导致的错误, 你们是怎么导入的. 直接拖还是用Carthage?
+Args=>直接拖
+  Reason: image not found
+  Referenced from: /private/var/containers/Bundle/Application/277AA390-9207-49EF-9E5A-3D9C528C19EA/WaterDrop.app/Frameworks/NEKit.framework/NEKit
+partyspy=>dyld: Library not loaded: @rpath/Resolver.framework/Resolver
+partyspy=>直接拖时, 启动时会遇到这错误
+partyspy=>在主工程的target里, 是不是只需嵌入NEKit.framework和NetworkExtension.framework就可以了?
+2. I am looking using the `TUNInterface, you say it doesn't work, what needs to be done for it to work? I am wondering if I can help.
+mcfedr=>Hi, 1. Really happy I found NEKit, thanks for the hard work!
+zhuhaow=>当然不是
+partyspy=>nekit依赖的框架全部在主工程又添加一遍吗?
+zhuhaow=>Well, some crash should be fixed by the latest pull request, allegedly. I haven't tried it yet. But there are still some memory leakage in tun2socks
+zhuhaow=>这样的，NEKit是让懂的人不要重复劳动，不是降低门槛
+zhuhaow=>如果你对iOS开发怎么搞在概念上有疑问
+zhuhaow=>应该先学一下
+zhuhaow=>所有在NEKit的编译时候标为required的都要加上
+partyspy=>好 明白了
+chenyihu=>iOS 10 似乎放开了内存限制，实际使用  TCPStack 半天后内存涨到了 50 M 左右，但是仍然未被系统杀死。
+mcfedr=>I see.
+mcfedr=>I might try out your pull request then
+chenyihu=>@mcfedr   https://github.com/zhuhaow/NEKit/issues/50    https://github.com/zhuhaow/tun2socks/pulls?q=is%3Apr+is%3Aclosed
+partyspy=>全部框架都添加进主工程了. 实在不知哪里出问题. 真机安装时报错App installation failed Could not inspect the application package.
+partyspy=>有人遇到过吗
+partyspy=>加一个NEKit依赖的框架(比如Resolver.framework)进主工程, 则报上述错误. 若不加, 则为dyld: Library not loaded: 之类的错误.
+partyspy=>环境 Xcode8.1+ iOS9.3.3
+twenky-kiki=>hello， 大家好，我最近在研究Network Extension，希望能获得大家的指点啊
+twenky-kiki=>请问，有没有什么比较好的使用NETunnelProvider的例子或者文章呢，我下了苹果官方的SimpleTunnel，服务端和客户端都编好运行了，但是不知道怎么填配置文件让她们可以连起来
+chenyihu=>@zhuhaow  https://github.com/zhuhaow/libnekit  会支持 tun2socks 吗？
+twenky-kiki=>请问有人用过SimpleTunnel，客户端和服务端连接起来了吗
+zhuhaow=>@chenyihu 会
+zscorpio=>我如果问https://github.com/zhuhaow/Specht  github "zhuhaow/NEKit" "0.3.0"编译不过....是不是不太好....
+zscorpio=>本来想走一遍流程....
+Args=>是 
+Args=>容易被大佬打死
+zscorpio=>那我还是用最新版本自己写个demo吧...那个nekit版本也有点小...
+twenky-kiki=>@xie
+twenky-kiki=>@zscorpio 如果您写出来了能发我一份吗？我也不想做伸手党，目前也编译有问题，正在努力改
+twenky-kiki=>另外想问大家一个问题，我现在有一个特简单的需求，就是想对ios上特定域名的流量做过滤，比如对所有baidu的流量过滤掉，我的想法是，用NETunnelProvider连个简单的服务器，只对特定的域名流量走这个服务器，服务器上把所有收到的包都直接弃掉不处理，请问这种处理方案可行吗
+wangjinwei0806=> NEKit 大神 早就用提供了demo，https://github.com/zhuhaow/Specht，只是这个不是swift3的，这个demo 是能运行的 ！
+zscorpio=>@twenky-kiki 我先试试吧,不确定可以.
+zscorpio=>@wangjinwei0806 我是这个运行不起来...尴尬
+twenky-kiki=>@zscorpio 好的，谢谢啦
+kobeLw=>大神 为什么我的项目一直不走NEPacketTunnelProvider的startTunnelWithOptions方法?
+partyspy=>你开了extension调试了吗
+kobeLw=>怎么开?
+partyspy=>Debug>>Attach to process...
+zscorpio=>我这两天也一直被困恼....有时候可以,有时候就是进不去,但是看系统的console却是可以,这样很尴尬啊....
+zscorpio=>好像当vpn连接不对的时候,就会死活上不去....
+kobeLw=>我能把应用加到vpn里,但是点连接一直连接不上
+					})
+						self.updateVPNStatus(manager)
+zscorpio=>@kobeLw 你NotificationCenter.default.addObserver(forName: NSNotification.Name.NEVPNStatusDidChange, object: manager.connection, queue: OperationQueue.main, using: { [unowned self] (notification) -> Void in
+zscorpio=>看manager.connection.status 
+zscorpio=>估计和我一样是connecting之后就直接disconnect了
+partyspy=>还是得看它报什么错
+zscorpio=>strat不报错的
+zscorpio=>我是start不报错的
+kobeLw=>@partyspy 就是不报错   就是不走startTunnelWithOptions这个方法
+partyspy=>如果startTunnelWithOptions:都进不去, 一般来说应该是Extension在启动时就崩溃了. 
+zscorpio=>@kobeLw 你和我一样startTunnelWithOptions nslog一下看系统的console吧
+partyspy=>我的经验是可能跟框架依赖或者项目授权的某些设定不妥相关..
+kobeLw=>@zscorpio 在哪里nslog
+zscorpio=>@kobeLw startTunnelWithOptions里面
+kobeLw=>@partyspy capabilities里面要打开哪些?
+partyspy=>我开了PersonalVPN和App Group
+partyspy=>我之前试过personalVPN没开会导致你说的那个问题
+zscorpio=>我看了系统的报错
+
+默认	15:38:48.456775 +0800	NESwift	vpn disconnecting
+默认	15:38:48.454836 +0800	nesessionmanager	NESMVPNSession[SwiftVPN:0B03F2A6-05A6-4427-A268-C8469D7196F8]: status changed to disconnecting
+错误	15:38:48.453097 +0800	nesessionmanager	im.tt.vpn[5673]: dropping a message because the current state is not "started" (0)
+错误	15:38:48.451847 +0800	nesessionmanager	im.tt.vpn[5673]: dropping a message because the current state is not "started" (0)
+默认	15:38:48.449437 +0800	NESwift	vpn connecting
+默认	15:38:48.445210 +0800	pkd	No plugins found to match query <private>
+默认	15:38:48.443006 +0800	NESwift	vpn connecting
+错误	15:38:48.442590 +0800	neagent	NEAgentSession: failed to initialize the delegate
+错误	15:38:48.440250 +0800	neagent	Failed to create an NSExtension with type im.tt.vpn: (null)
+默认	15:38:48.432361 +0800	nesessionmanager	NESMVPNSession[SwiftVPN:0B03F2A6-05A6-4427-A268-C8469D7196F8]: status changed to connecting
+zscorpio=>默认	15:38:48.426097 +0800	nesessionmanager	NESMVPNSession[SwiftVPN:0B03F2A6-05A6-4427-A268-C8469D7196F8]: Received a start command from NESwift[5658]
+zscorpio=>neagent Failed to create an NSExtension with type im.tt.vpn: (null)
+zscorpio=>https://forums.developer.apple.com/thread/31167
+kobeLw=>这个咋解决..
+				configuration.providerConfiguration = ["lol":1]
+zscorpio=>				configuration.providerBundleIdentifier = "im.tt.vpn.tunnel"
+zscorpio=>我代码加了这2行之后好像进了断电
+zscorpio=>不过我之前没加 经过断点,后来不知道怎么挂了
+kobeLw=>试了各种办法  就是不走那个方法...
+zscorpio=>@zhuhaow 库封装完美....暂时用起来没什么问题,准备再去找找shadowsocks的配置方法....然后再看看源码...
+chenyihu=>@zscorpio  提示这个错误有可能 1. 没有设置正确的 .entitlements 文件。2. 没有把需要的 framework 复制到 App bundle 内，你看下 Carthage 的文档。
+kobeLw=>@chenyihu  .entitlements文件应该怎么设置啊？
+jiangyancong=>请问有人知道怎样让用户不能通过设置->通用->VPN去连接VPN，只能通过App去连接呢？应该是NETunnelProviderManager在saveToPreferences之前做一些设置？我看openVPN就是，只能用App去连，不能用在设置里面来连。
+jiangyancong=>@kobeLw entitlements文件在开发者的证书里面打开相关选项，然后把provision文件同步到xcode就可以。
+partyspy=>![](https://files.gitter.im/zhuhaow/NEKit/V2E4/____-2016-12-16-__2.48.44.png)
+partyspy=>我也遇到这问题. 看聊天记录也有这个. 楼主说不要用TUNInterface是什么意思? @zhuhaow 
+partyspy=>不用它岂不是没入口了?
+wangjinwei0806=>https://github.com/zhuhaow/Specht/blob/master/SpechtTunnelPacketProvider/PacketTunnelProvider.swift#L7
+wangjinwei0806=>这里设置为false  就不会走这种错误出现了
+partyspy=>谢谢!
+partyspy=>我试下
+partyspy=>那东西不用岂不是操作不了packetFlow了?
+zscorpio=>这几天看了potatso的源代码...才发现这东西好像还需要c的基础....
+zscorpio=>想问问你们都看得懂源代码么...

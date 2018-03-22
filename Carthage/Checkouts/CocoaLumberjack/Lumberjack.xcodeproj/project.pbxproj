@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		07CA82901F90E89000FF0F17 /* CocoaLumberjack.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DCB3185114EB418E001CFBEE /* CocoaLumberjack.framework */; };
+		07CA82911F90E89C00FF0F17 /* CocoaLumberjack.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 19D90B261BBFA9DB00947169 /* CocoaLumberjack.framework */; };
+		07CA82921F90E8A800FF0F17 /* CocoaLumberjack.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 19190EDE1B84D812008D059E /* CocoaLumberjack.framework */; };
 		18F3BF081A81D8B700692297 /* CocoaLumberjack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55BCB5C619D4BB6E0096E784 /* CocoaLumberjack.swift */; };
 		18F3BF641A81DD2E00692297 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18F3BF631A81DD2E00692297 /* AppDelegate.swift */; };
 		18F3BF661A81DD2E00692297 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18F3BF651A81DD2E00692297 /* ViewController.swift */; };
@@ -143,6 +146,10 @@
 		620EEE811BFA65CE00D1B9CB /* DDMultiFormatter.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = DA9C20CF192A0E0000AB7171 /* DDMultiFormatter.h */; };
 		93483CFC1D09E39000AD40D6 /* CLIColor.h in Headers */ = {isa = PBXBuildFile; fileRef = 93483CFA1D09E39000AD40D6 /* CLIColor.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		93483CFD1D09E39000AD40D6 /* CLIColor.m in Sources */ = {isa = PBXBuildFile; fileRef = 93483CFB1D09E39000AD40D6 /* CLIColor.m */; };
+		C72CB9821FBF27EE009AEE6B /* DDOSLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = DD4738831E7168A400F1A4F5 /* DDOSLogger.m */; };
+		C72CB9831FBF27EF009AEE6B /* DDOSLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = DD4738831E7168A400F1A4F5 /* DDOSLogger.m */; };
+		C72CB9841FBF27F0009AEE6B /* DDOSLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = DD4738831E7168A400F1A4F5 /* DDOSLogger.m */; };
+		C72CB9851FBF27F1009AEE6B /* DDOSLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = DD4738831E7168A400F1A4F5 /* DDOSLogger.m */; };
 		C7D056731E1A58EA000E6591 /* CocoaLumberjack.h in Headers */ = {isa = PBXBuildFile; fileRef = E5D89BA41994749300C180CF /* CocoaLumberjack.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DA9C20D1192A0E0000AB7171 /* DDAbstractDatabaseLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = DA9C20BD192A0E0000AB7171 /* DDAbstractDatabaseLogger.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DA9C20D2192A0E0000AB7171 /* DDAbstractDatabaseLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = DA9C20BE192A0E0000AB7171 /* DDAbstractDatabaseLogger.m */; };
@@ -459,6 +466,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				07CA82901F90E89000FF0F17 /* CocoaLumberjack.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -496,6 +504,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				07CA82921F90E8A800FF0F17 /* CocoaLumberjack.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -518,6 +527,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				07CA82911F90E89C00FF0F17 /* CocoaLumberjack.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1508,6 +1518,7 @@
 				19190F051B84DB5C008D059E /* DDFileLogger.m in Sources */,
 				19190F061B84DB61008D059E /* DDTTYLogger.m in Sources */,
 				19190F071B84DB66008D059E /* DDMultiFormatter.m in Sources */,
+				C72CB9851FBF27F1009AEE6B /* DDOSLogger.m in Sources */,
 				19190F081B84DB6C008D059E /* DDAbstractDatabaseLogger.m in Sources */,
 				19190F091B84DB72008D059E /* DDASLLogger.m in Sources */,
 			);
@@ -1542,6 +1553,7 @@
 				19D90B1C1BBFA9DB00947169 /* DDFileLogger.m in Sources */,
 				19D90B1D1BBFA9DB00947169 /* DDTTYLogger.m in Sources */,
 				19D90B1E1BBFA9DB00947169 /* DDMultiFormatter.m in Sources */,
+				C72CB9841FBF27F0009AEE6B /* DDOSLogger.m in Sources */,
 				19D90B1F1BBFA9DB00947169 /* DDAbstractDatabaseLogger.m in Sources */,
 				19D90B201BBFA9DB00947169 /* DDASLLogger.m in Sources */,
 			);
@@ -1576,6 +1588,7 @@
 				19FF462F1B8B4ED500B43179 /* DDFileLogger.m in Sources */,
 				19FF462E1B8B4ED200B43179 /* DDTTYLogger.m in Sources */,
 				19FF462D1B8B4ECE00B43179 /* DDMultiFormatter.m in Sources */,
+				C72CB9821FBF27EE009AEE6B /* DDOSLogger.m in Sources */,
 				19FF462C1B8B4ECA00B43179 /* DDAbstractDatabaseLogger.m in Sources */,
 				19FF462B1B8B4EC600B43179 /* DDASLLogger.m in Sources */,
 			);
@@ -1604,6 +1617,7 @@
 				DA9C20DA192A0E0000AB7171 /* DDLog.m in Sources */,
 				DA9C20D4192A0E0000AB7171 /* DDASLLogCapture.m in Sources */,
 				DA9C20DF192A0E0000AB7171 /* DDContextFilterLogFormatter.m in Sources */,
+				C72CB9831FBF27EF009AEE6B /* DDOSLogger.m in Sources */,
 				DA9C20E1192A0E0000AB7171 /* DDDispatchQueueLogFormatter.m in Sources */,
 				DA9C20D8192A0E0000AB7171 /* DDFileLogger.m in Sources */,
 				DA9C20DD192A0E0000AB7171 /* DDTTYLogger.m in Sources */,
@@ -1768,7 +1782,6 @@
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 4.0;
 				VALID_ARCHS = "arm64 armv7 armv7s i386 x86_64";
 				WRAPPER_EXTENSION = framework;
 			};
@@ -1793,7 +1806,6 @@
 				PRODUCT_NAME = CocoaLumberjackSwift;
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 4.0;
 				VALID_ARCHS = "arm64 armv7 armv7s i386 x86_64";
 				WRAPPER_EXTENSION = framework;
 			};
@@ -1970,7 +1982,6 @@
 				PRODUCT_NAME = CocoaLumberjackSwift;
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = 4;
 				WRAPPER_EXTENSION = framework;
 			};
@@ -1993,7 +2004,6 @@
 				PRODUCT_NAME = CocoaLumberjackSwift;
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = 4;
 				WRAPPER_EXTENSION = framework;
 			};
@@ -2096,7 +2106,6 @@
 				PRODUCT_NAME = CocoaLumberjackSwift;
 				SDKROOT = appletvos;
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 4.0;
 			};
 			name = Debug;
 		};
@@ -2117,7 +2126,6 @@
 				PRODUCT_NAME = CocoaLumberjackSwift;
 				SDKROOT = appletvos;
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 4.0;
 			};
 			name = Release;
 		};
@@ -2260,7 +2268,6 @@
 				PRODUCT_NAME = CocoaLumberjackSwift;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -2282,7 +2289,6 @@
 				PRODUCT_NAME = CocoaLumberjackSwift;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
@@ -2375,12 +2381,12 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 3.0;
+				SWIFT_VERSION = 4.0;
 				TVOS_DEPLOYMENT_TARGET = 9.0;
 				WATCHOS_DEPLOYMENT_TARGET = 2.0;
 			};
@@ -2427,11 +2433,11 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
-				SWIFT_VERSION = 3.0;
+				SWIFT_VERSION = 4.0;
 				TVOS_DEPLOYMENT_TARGET = 9.0;
 				VALIDATE_PRODUCT = YES;
 				WATCHOS_DEPLOYMENT_TARGET = 2.0;

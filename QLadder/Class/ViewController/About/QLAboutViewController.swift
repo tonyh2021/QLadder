@@ -13,7 +13,14 @@ class QLAboutViewController: QLBaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(rightBarButtonItemDidClick))
+        navigationItem.title = "关于"
+    }
+    
+    @objc private func rightBarButtonItemDidClick() {
+        let vc = QDBuddhaListViewController()
+        vc.hidesBottomBarWhenPushed = true
+        navigationController?.pushViewController(vc, animated: true)
     }
 
 }

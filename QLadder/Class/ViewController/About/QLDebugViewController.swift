@@ -24,23 +24,16 @@ class QLDebugViewController: QLBaseViewController {
         let nib = UINib(nibName: QDBuddhaCell.identifier(), bundle: nil)
         self.tableView.register(nib, forCellReuseIdentifier: QDBuddhaCell.identifier())
         
-        QueryManager.shared.fetchBuddhas(page: 1) { (buddhas, errorMessage) in
+        QueryManager.shared.fetchBuddhas(1) { (buddhas, errorMessage) in
             self.buddhas += buddhas
             self.tableView.reloadData()
         }
-    }
-
-    @objc private func rightBarButtonItemDidClick() {
-        let vc = QLDebugViewController()
-        vc.hidesBottomBarWhenPushed = true
-        navigationController?.pushViewController(vc, animated: true)
     }
 }
 
 extension QLDebugViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        print(buddhas.count)
         return buddhas.count
     }
     

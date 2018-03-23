@@ -6,12 +6,19 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="QDBuddhaViewController" customModule="QLadder" customModuleProvider="target">
             <connections>
+                <outlet property="addTimeLabel" destination="zjZ-LR-eK0" id="3hQ-v8-4Vu"/>
+                <outlet property="durationLabel" destination="AWH-IB-PeL" id="Pww-4u-5ZX"/>
+                <outlet property="imageView" destination="Zqa-XL-b53" id="z4B-YA-RN6"/>
+                <outlet property="nameDetailLabel" destination="RYl-Yn-G13" id="cvn-dg-Fs4"/>
+                <outlet property="pointsLabel" destination="1jq-MZ-LiX" id="hJP-R6-apg"/>
+                <outlet property="userLabel" destination="e7H-Mp-JPJ" id="IjE-8R-jXM"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
         </placeholder>
@@ -19,8 +26,67 @@
         <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
             <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Zqa-XL-b53">
+                    <rect key="frame" x="0.0" y="0.0" width="375" height="281.5"/>
+                    <constraints>
+                        <constraint firstAttribute="width" secondItem="Zqa-XL-b53" secondAttribute="height" multiplier="4:3" id="Tm6-Mj-JvW"/>
+                    </constraints>
+                </imageView>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="新恒结衣" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RYl-Yn-G13">
+                    <rect key="frame" x="15" y="297" width="345" height="21"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                    <nil key="textColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="时长：" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AWH-IB-PeL">
+                    <rect key="frame" x="15" y="333" width="345" height="21"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                    <nil key="textColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="上传时间：" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zjZ-LR-eK0">
+                    <rect key="frame" x="15" y="369" width="345" height="21"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                    <nil key="textColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="上传用户：" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="e7H-Mp-JPJ">
+                    <rect key="frame" x="15" y="405" width="345" height="21"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                    <nil key="textColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="积分：" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1jq-MZ-LiX">
+                    <rect key="frame" x="15" y="441" width="345" height="20.5"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                    <nil key="textColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
+            </subviews>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <constraints>
+                <constraint firstItem="e7H-Mp-JPJ" firstAttribute="top" secondItem="zjZ-LR-eK0" secondAttribute="bottom" constant="15" id="8Gm-cr-h6F"/>
+                <constraint firstItem="1jq-MZ-LiX" firstAttribute="leading" secondItem="RYl-Yn-G13" secondAttribute="leading" id="AMg-Qm-ud7"/>
+                <constraint firstItem="1jq-MZ-LiX" firstAttribute="trailing" secondItem="RYl-Yn-G13" secondAttribute="trailing" id="Hrk-ve-O6j"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="Zqa-XL-b53" secondAttribute="trailing" id="I7x-Bz-bKt"/>
+                <constraint firstItem="AWH-IB-PeL" firstAttribute="top" secondItem="RYl-Yn-G13" secondAttribute="bottom" constant="15" id="LUB-8v-82v"/>
+                <constraint firstItem="RYl-Yn-G13" firstAttribute="top" secondItem="Zqa-XL-b53" secondAttribute="bottom" constant="15" id="S0m-jp-Ib1"/>
+                <constraint firstItem="1jq-MZ-LiX" firstAttribute="top" secondItem="e7H-Mp-JPJ" secondAttribute="bottom" constant="15" id="X6L-xe-h26"/>
+                <constraint firstItem="zjZ-LR-eK0" firstAttribute="leading" secondItem="RYl-Yn-G13" secondAttribute="leading" id="Z11-DM-Hhb"/>
+                <constraint firstItem="Zqa-XL-b53" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="djw-nk-bfn"/>
+                <constraint firstItem="e7H-Mp-JPJ" firstAttribute="trailing" secondItem="RYl-Yn-G13" secondAttribute="trailing" id="gFT-bY-WrP"/>
+                <constraint firstItem="e7H-Mp-JPJ" firstAttribute="leading" secondItem="RYl-Yn-G13" secondAttribute="leading" id="gO1-53-Ds6"/>
+                <constraint firstItem="AWH-IB-PeL" firstAttribute="leading" secondItem="RYl-Yn-G13" secondAttribute="leading" id="kTJ-Ei-xtU"/>
+                <constraint firstItem="zjZ-LR-eK0" firstAttribute="trailing" secondItem="RYl-Yn-G13" secondAttribute="trailing" id="kxC-0f-QzM"/>
+                <constraint firstItem="AWH-IB-PeL" firstAttribute="trailing" secondItem="RYl-Yn-G13" secondAttribute="trailing" id="lNH-PZ-9lr"/>
+                <constraint firstItem="Zqa-XL-b53" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="owB-65-XPh"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="RYl-Yn-G13" secondAttribute="trailing" constant="15" id="plw-66-cwo"/>
+                <constraint firstItem="zjZ-LR-eK0" firstAttribute="top" secondItem="AWH-IB-PeL" secondAttribute="bottom" constant="15" id="qMQ-Nc-0j9"/>
+                <constraint firstItem="RYl-Yn-G13" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="15" id="yhN-Iv-3Cv"/>
+            </constraints>
             <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
+            <point key="canvasLocation" x="34.5" y="67.5"/>
         </view>
     </objects>
 </document>

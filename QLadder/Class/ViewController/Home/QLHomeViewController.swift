@@ -18,7 +18,6 @@ class QLHomeViewController: QLBaseViewController, VpnManagerDelegate, ConfigMana
     
     var status: VpnStatus {
         didSet {
-            print(oldValue)
             updateConnectButtonText(status: status)
         }
     }
@@ -42,7 +41,6 @@ class QLHomeViewController: QLBaseViewController, VpnManagerDelegate, ConfigMana
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        print(VpnManager.shared.vpnStatus)
         status = VpnManager.shared.vpnStatus
     }
     

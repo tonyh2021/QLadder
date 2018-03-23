@@ -70,9 +70,9 @@
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
             <connections>
+                <outlet property="addTimeLabel" destination="b0T-mK-zbT" id="HF2-OL-te1"/>
+                <outlet property="durationLabel" destination="eh9-Vf-oTK" id="dTJ-Db-ruG"/>
                 <outlet property="nameLabel" destination="Nbx-bf-xaR" id="43B-Iv-AkF"/>
-                <outlet property="timeLabel" destination="eh9-Vf-oTK" id="k0N-pa-6w2"/>
-                <outlet property="timeStampLabel" destination="b0T-mK-zbT" id="HF2-OL-te1"/>
                 <outlet property="userLabel" destination="m6U-a8-lnz" id="j0A-ED-sIY"/>
                 <outlet property="videoImageView" destination="XXS-Ew-mIM" id="9MW-3I-1J1"/>
             </connections>

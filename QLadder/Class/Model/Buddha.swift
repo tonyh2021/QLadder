@@ -13,16 +13,32 @@ struct Buddha {
     var name: String?
     var url: String?
     var imgUrl: String?
-    var time: String?
-    var timeStamp: String?
+    var duration: String?
+    var addTime: String?
     var user: String?
     
-    init(name: String, url: String, imgUrl: String, time: String, timeStamp: String, user: String) {
+    var videoUrl: String?
+    var name_zh: String?
+    var detailImgUrl: String?
+    var addTime_zh: String?
+    var points: String?
+    
+    init(name: String, url: String, imgUrl: String, duration: String, addTime: String, user: String) {
         self.name = name
         self.url = url
         self.imgUrl = imgUrl
-        self.time = time
-        self.timeStamp = timeStamp
+        self.duration = duration
+        self.addTime = addTime
         self.user = user
+    }
+    
+    func mutableCopy(with zone: NSZone? = nil) -> Buddha {
+        var mutableBuddha = Buddha(name: name ?? "", url: url ?? "", imgUrl: imgUrl ?? "", duration: duration ?? "", addTime: addTime ?? "", user: user ?? "")
+        mutableBuddha.videoUrl = videoUrl  ?? ""
+        mutableBuddha.name_zh = name_zh  ?? ""
+        mutableBuddha.detailImgUrl = detailImgUrl  ?? ""
+        mutableBuddha.addTime_zh = addTime_zh  ?? ""
+        mutableBuddha.points = points  ?? ""
+        return mutableBuddha
     }
 }

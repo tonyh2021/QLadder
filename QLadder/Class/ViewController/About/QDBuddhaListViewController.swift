@@ -28,14 +28,18 @@ class QDBuddhaListViewController: QLBaseViewController {
         super.viewWillAppear(animated)
         
         if buddhas.count == 0 {
-            tableView.contentOffset = CGPoint(x: 0, y: -refreshControl.frame.size.height)
-            refreshControl.beginRefreshing()
-            handleRefresh(refreshControl)
+            refresh()
         }
     }
     
     func initSubviews() {
         navigationItem.title = "Buddha"
+        
+        let rightSwitch = UISwitch()
+        let rightBarButtonItem = UIBarButtonItem(customView: rightSwitch)
+        navigationItem.rightBarButtonItem = rightBarButtonItem
+        rightSwitch.setOn(true, animated: false)
+        rightSwitch.addTarget(self, action: #selector(rightSwitchDidClick(_:)), for: .valueChanged)
         
         tableView.separatorStyle = .none;
         tableView.showsVerticalScrollIndicator = false;
@@ -57,9 +61,9 @@ class QDBuddhaListViewController: QLBaseViewController {
     
     private func loadData() {
         currentPage = 0
-        QueryManager.shared.fetchBuddhas(page: 0) { (buddhas, errorMessage) in
+        QueryManager.shared.fetchBuddhas(0) { (buddhas, errorMessage) in
             if errorMessage != nil {
-                
+                self.showEmptyView()
             } else {
                 self.buddhas = buddhas
                 self.tableView.reloadData()
@@ -70,7 +74,7 @@ class QDBuddhaListViewController: QLBaseViewController {
     }
     
     private func loadMoreData() {
-        QueryManager.shared.fetchBuddhas(page: currentPage + 1) { (buddhas, errorMessage) in
+        QueryManager.shared.fetchBuddhas(currentPage + 1) { (buddhas, errorMessage) in
             if errorMessage != nil {
                 
             } else {
@@ -79,6 +83,30 @@ class QDBuddhaListViewController: QLBaseViewController {
                 self.currentPage += 1
             }
         }
+    }
+    
+    @objc private func rightSwitchDidClick(_ rightSwitch: UISwitch) {
+        let covertMode = rightSwitch.isOn
+        if covertMode == QueryManager.shared.covertMode {
+            return
+        }
+        QueryManager.shared.covertMode = covertMode
+        DispatchQueue.global().async {
+            DispatchQueue.main.async {
+                self.tableView.reloadData()
+            }
+        }
+    }
+    
+    @objc override func emptyViewDidClick(_ gestureRecognizer: UITapGestureRecognizer) {
+        refresh()
+    }
+    
+    private func refresh() {
+        tableView.contentOffset = CGPoint(x: 0, y: -refreshControl.frame.size.height)
+        refreshControl.beginRefreshing()
+        handleRefresh(refreshControl)
+        hideEmptyView()
     }
 }
 

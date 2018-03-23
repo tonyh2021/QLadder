@@ -44,7 +44,7 @@ class LaunchViewManager {
         }
         
         let view = keyWindow.rootViewController!.view!
-        print(view)
+//        print(view)
         
         //2.从 bundle 中获取启动 View
         let launchVC = UIStoryboard(name: "LaunchScreen", bundle: nil).instantiateViewController(withIdentifier: "LaunchScreen")

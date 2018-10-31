@@ -1,5 +1,5 @@
 PODS:
-  - Alamofire (4.5.1)
+  - Alamofire (4.7.3)
   - CocoaLumberjack/Default (3.4.2)
   - CocoaLumberjack/Swift (3.4.2):
     - CocoaLumberjack/Default
@@ -8,7 +8,7 @@ PODS:
   - SwiftColor (1.0.0)
 
 DEPENDENCIES:
-  - Alamofire (~> 4.5.1)
+  - Alamofire (~> 4.7.3)
   - CocoaLumberjack/Swift (~> 3.4.2)
   - Fuzi (~> 2.1.0)
   - Kingfisher (~> 4.10.0)
@@ -23,12 +23,12 @@ SPEC REPOS:
     - SwiftColor
 
 SPEC CHECKSUMS:
-  Alamofire: 2d95912bf4c34f164fdfc335872e8c312acaea4a
+  Alamofire: c7287b6e5d7da964a70935e5db17046b7fde6568
   CocoaLumberjack: db7cc9e464771f12054c22ff6947c5a58d43a0fd
   Fuzi: 8c57344debff6d3a0c76a9e0f549152defdaaa48
   Kingfisher: 43c4b802d8b5256cf1f4379e9cd10b329be6d3e2
   SwiftColor: aad338783abbcdd78df9031a38a7a96aae3d9122
 
-PODFILE CHECKSUM: 1441c53aa681b65bf6504aff88afd7a636e33797
+PODFILE CHECKSUM: 731fccb41869be7f052f784553af18f31400649a
 
 COCOAPODS: 1.6.0.beta.1

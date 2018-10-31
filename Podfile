@@ -4,15 +4,15 @@ platform :ios, '9.0'
 use_frameworks!
 
 def common
-    pod 'SwiftColor'
-    pod 'CocoaLumberjack/Swift'
+    pod 'SwiftColor', '~>1.0.0'
+    pod 'CocoaLumberjack/Swift', '~>3.4.2'
 end
 
 target "QLadder" do
     common
-    pod 'Alamofire', '4.5.1'
-    pod 'Fuzi'
-    pod 'Kingfisher'
+    pod 'Alamofire', '~>4.5.1'
+    pod 'Fuzi', '~>2.1.0'
+    pod 'Kingfisher', '~>4.10.0'
 end
 
 

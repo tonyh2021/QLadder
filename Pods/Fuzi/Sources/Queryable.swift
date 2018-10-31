@@ -36,6 +36,17 @@ public protocol Queryable {
   func xpath(_ xpath: String) -> NodeSet
   
   /**
+   Returns the results for an XPath selector.
+   
+   - parameter xpath: XPath selector string.
+   
+   - returns: An enumerable collection of results.
+   
+   - Throws: last registered XMLError, most likely libXMLError with code and message.
+   */
+  func tryXPath(_ xpath: String) throws -> NodeSet
+  
+  /**
   Returns the first elements matching an XPath selector, or `nil` if there are no results.
   
   - parameter xpath: The XPath selector.
@@ -115,6 +126,20 @@ extension XMLDocument: Queryable {
   }
   
   /**
+   - parameter xpath: XPath selector string.
+   
+   - returns: An enumerable collection of results.
+   
+   - Throws: last registered XMLError, most likely libXMLError with code and message.
+   */
+  public func tryXPath(_ xpath: String) throws -> NodeSet {
+    guard let rootNode = root else {
+      return XPathNodeSet.emptySet
+    }
+    
+    return try rootNode.tryXPath(xpath)
+  }
+  /**
   Returns the first elements matching an XPath selector, or `nil` if there are no results.
   
   - parameter xpath: The XPath selector.
@@ -168,12 +193,22 @@ extension XMLElement: Queryable {
   - returns: An enumerable collection of results.
   */
   public func xpath(_ xpath: String) -> NodeSet {
-    guard let cXPath = self.cXPath(xpathString: xpath) else {
+    guard let cXPath = try? self.cXPath(xpathString: xpath) else {
       return XPathNodeSet.emptySet
     }
     return XPathNodeSet(cXPath: cXPath, document: document)
   }
   
+  /**
+   - parameter xpath: XPath selector string.
+   
+   - returns: An enumerable collection of results.
+   
+   - Throws: last registered XMLError, most likely libXMLError with code and message.
+   */
+  public func tryXPath(_ xpath: String) throws -> NodeSet {
+    return XPathNodeSet(cXPath: try self.cXPath(xpathString: xpath), document: document)
+  }
   /**
   Returns the first elements matching an XPath selector, or `nil` if there are no results.
   
@@ -215,13 +250,17 @@ extension XMLElement: Queryable {
   - returns: The eval function result.
   */
   public func eval(xpath: String) -> XPathFunctionResult? {
-    return XPathFunctionResult(cXPath: cXPath(xpathString: xpath))
-  }
-  
-  fileprivate func cXPath(xpathString: String) -> xmlXPathObjectPtr? {
-    guard let context = xmlXPathNewContext(cNode.pointee.doc) else {
+    guard let cXPath = try? cXPath(xpathString: xpath) else {
       return nil
     }
+    return XPathFunctionResult(cXPath: cXPath)
+  }
+  
+  fileprivate func cXPath(xpathString: String) throws -> xmlXPathObjectPtr {
+    guard let context = xmlXPathNewContext(cNode.pointee.doc) else {
+      throw XMLError.lastError(defaultError: .xpathError(code: 1207))
+    }
+    
     context.pointee.node = cNode
     var node = cNode
     while node.pointee.parent != nil {
@@ -235,7 +274,7 @@ extension XMLElement: Queryable {
           if let defaultPrefix = document.defaultNamespaces[href] {
             prefixChars = defaultPrefix.cString(using: String.Encoding.utf8) ?? []
             prefixChars.withUnsafeBufferPointer {(cArray: UnsafeBufferPointer<CChar>) -> Void in
-                prefix = UnsafeRawPointer(cArray.baseAddress)?.assumingMemoryBound(to: xmlChar.self)
+              prefix = UnsafeRawPointer(cArray.baseAddress)?.assumingMemoryBound(to: xmlChar.self)
             }
           }
         }
@@ -246,9 +285,12 @@ extension XMLElement: Queryable {
       }
       node = node.pointee.parent
     }
-    let xmlXPath = xmlXPathEvalExpression(xpathString, context)
-    
-    xmlXPathFreeContext(context)
+    defer {
+      xmlXPathFreeContext(context)
+    }
+    guard let xmlXPath = xmlXPathEvalExpression(xpathString, context) else {
+      throw XMLError.lastError(defaultError: .xpathError(code: 1207))
+    }
     return xmlXPath
   }
 }

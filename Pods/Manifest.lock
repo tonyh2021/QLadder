@@ -1,26 +1,34 @@
 PODS:
   - Alamofire (4.5.1)
-  - CocoaLumberjack/Default (3.4.1)
-  - CocoaLumberjack/Swift (3.4.1):
+  - CocoaLumberjack/Default (3.4.2)
+  - CocoaLumberjack/Swift (3.4.2):
     - CocoaLumberjack/Default
-  - Fuzi (2.0.1)
-  - Kingfisher (4.6.3)
-  - SwiftColor (0.6.0)
+  - Fuzi (2.1.0)
+  - Kingfisher (4.10.0)
+  - SwiftColor (1.0.0)
 
 DEPENDENCIES:
-  - Alamofire (= 4.5.1)
-  - CocoaLumberjack/Swift
-  - Fuzi
-  - Kingfisher
-  - SwiftColor
+  - Alamofire (~> 4.5.1)
+  - CocoaLumberjack/Swift (~> 3.4.2)
+  - Fuzi (~> 2.1.0)
+  - Kingfisher (~> 4.10.0)
+  - SwiftColor (~> 1.0.0)
+
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - Alamofire
+    - CocoaLumberjack
+    - Fuzi
+    - Kingfisher
+    - SwiftColor
 
 SPEC CHECKSUMS:
   Alamofire: 2d95912bf4c34f164fdfc335872e8c312acaea4a
-  CocoaLumberjack: 2e258a064cacc8eb9a2aca318e24d02a0a7fd56d
-  Fuzi: f64983dea705491d3aedd32351247a09523e7efd
-  Kingfisher: 98e6d5b5e807645743e8ed5ececd25d688d38452
-  SwiftColor: ce45cc128e2a433a20e6f052c41f533590a567b4
+  CocoaLumberjack: db7cc9e464771f12054c22ff6947c5a58d43a0fd
+  Fuzi: 8c57344debff6d3a0c76a9e0f549152defdaaa48
+  Kingfisher: 43c4b802d8b5256cf1f4379e9cd10b329be6d3e2
+  SwiftColor: aad338783abbcdd78df9031a38a7a96aae3d9122
 
-PODFILE CHECKSUM: bb03e0c828515e40f15d85142b03a25086947cdc
+PODFILE CHECKSUM: 1441c53aa681b65bf6504aff88afd7a636e33797
 
-COCOAPODS: 1.4.0
+COCOAPODS: 1.6.0.beta.1

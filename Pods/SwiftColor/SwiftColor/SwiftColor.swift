@@ -16,31 +16,15 @@
     public typealias Image = NSImage
 #endif
 
-public func ==(lhs: Color, rhs: Color) -> Bool{
-    let (lRed, lGreen, lBlue, lAlpha) = lhs.colorComponents()
-    let (rRed, rGreen, rBlue, rAlpha) = rhs.colorComponents()
-    return fabsf(Float(lRed - rRed)) < .ulpOfOne
-        && fabsf(Float(lGreen - rGreen)) < .ulpOfOne
-        && fabsf(Float(lBlue - rBlue)) < .ulpOfOne
-        && fabsf(Float(lAlpha - rAlpha)) < .ulpOfOne
-}
-
-public extension Color {
+extension Color {
     
     public convenience init(_ hexString: String) {
         self.init(hexString: hexString, alpha: 1.0)
     }
     
     public convenience init(hexInt: Int, alpha: Float = 1.0) {
-        var hexString = NSString(format: "%0X", hexInt)
-        if hexInt <= 0xfff {
-            hexString = NSString(format: "%03X", hexInt)
-        }else if hexInt <= 0xffff {
-            hexString = NSString(format: "%04X", hexInt)
-        }else if hexInt <= 0xffffff {
-            hexString = NSString(format: "%06X", hexInt)
-        }
-        self.init(hexString: hexString as String, alpha: alpha)
+        let hexString = String(format: "%06X", hexInt)
+        self.init(hexString: hexString, alpha: alpha)
     }
     
     public convenience init(hexString: String, alpha: Float = 1.0) {
@@ -127,7 +111,7 @@ public extension Color {
     
 }
 
-public extension String {
+extension String {
     
     public var color: Color {
         return Color(hexString: self)
@@ -135,7 +119,7 @@ public extension String {
     
 }
 
-public extension Int {
+extension Int {
     
     public var color: Color {
         return Color(hexInt: self)
@@ -143,7 +127,7 @@ public extension Int {
     
 }
 
-public extension Color {
+extension Color {
     
     public func toImage(size: CGSize = CGSize(width: 1, height: 1)) -> Image? {
         #if os(iOS)

@@ -2,6 +2,31 @@
 All notable changes to this project will be documented in this file.
 I will do my best to guarantee that this project adheres to [Semantic Versioning](http://semver.org/) after 1.0.0, but please do read change log before updating.
 
+## 0.13.1
+
+### Fixed
+- URL parser can parse domain with hyphen.
+
+## 0.13.0
+
+### Fixed
+- Build on Xcode 10
+
+## 0.12.7
+
+### Fixed
+- Make sure modification accesses are exclusive. Latest compiler (or swift runtime) enforces that.
+
+## 0.12.6
+
+### Fixed
+- Update MMDB-Swift which fixes a potential error when downloading GeoIP database.
+
+## 0.12.5
+
+### Fixed
+- Fix wrong access control level for `GCDProxyServer`.
+
 ## 0.12.4
 
 ### Fixed

@@ -2,8 +2,8 @@
 //  QLDebugViewController.swift
 //  QLadder
 //
-//  Created by qd-hxt on 2017/11/17.
-//  Copyright © 2017年 qding. All rights reserved.
+//  Created by TonyHan on 2017/11/17.
+//  Copyright © 2017年 TonyHan All rights reserved.
 //
 
 import UIKit
@@ -21,10 +21,10 @@ class QLDebugViewController: QLBaseViewController {
         
         navigationItem.title = "Debug"
         
-        let nib = UINib(nibName: QDBuddhaCell.identifier(), bundle: nil)
-        self.tableView.register(nib, forCellReuseIdentifier: QDBuddhaCell.identifier())
+        let nib = UINib(nibName: QLBuddhaCell.identifier(), bundle: nil)
+        self.tableView.register(nib, forCellReuseIdentifier: QLBuddhaCell.identifier())
         
-        QueryManager.shared.fetchBuddhas(1) { (buddhas, errorMessage) in
+        QueryManager.shared.fetchBuddhas(.porn_91, 1) { (buddhas, errorMessage) in
             self.buddhas += buddhas
             self.tableView.reloadData()
         }
@@ -38,7 +38,7 @@ extension QLDebugViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if let cell = tableView.dequeueReusableCell(withIdentifier: QDBuddhaCell.identifier()) as? QDBuddhaCell {
+        if let cell = tableView.dequeueReusableCell(withIdentifier: QLBuddhaCell.identifier()) as? QLBuddhaCell {
             let buddha = buddhas[indexPath.row] as Buddha
             cell.buddha = buddha
             return cell

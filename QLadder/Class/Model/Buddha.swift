@@ -2,8 +2,8 @@
 //  Buddha.swift
 //  QLadder
 //
-//  Created by qd-hxt on 2018/3/19.
-//  Copyright © 2018年 qding. All rights reserved.
+//  Created by TonyHan on 2018/3/19.
+//  Copyright © 2018年 TonyHan All rights reserved.
 //
 
 import Foundation

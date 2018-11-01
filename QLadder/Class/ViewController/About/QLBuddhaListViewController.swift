@@ -1,14 +1,30 @@
 //
-//  QDBuddhaListViewController.swift
+//  QLBuddhaListViewController.swift
 //  QLadder
 //
-//  Created by qd-hxt on 2018/3/22.
-//  Copyright © 2018年 qding. All rights reserved.
+//  Created by TonyHan on 2018/3/22.
+//  Copyright © 2018年 TonyHan All rights reserved.
 //
 
 import UIKit
 
-class QDBuddhaListViewController: QLBaseViewController {
+public enum BuddhaType {
+    case porn_91
+    case porn_hub
+}
+
+class QLBuddhaListViewController: QLBaseViewController {
+    
+    init(buddhaType: BuddhaType) {
+        self.buddhaType = buddhaType
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    private var buddhaType: BuddhaType
 
     private var buddhas: [Buddha] = []
     
@@ -44,8 +60,8 @@ class QDBuddhaListViewController: QLBaseViewController {
         tableView.separatorStyle = .none;
         tableView.showsVerticalScrollIndicator = false;
         
-        let nib = UINib(nibName: QDBuddhaCell.identifier(), bundle: nil)
-        self.tableView.register(nib, forCellReuseIdentifier: QDBuddhaCell.identifier())
+        let nib = UINib(nibName: QLBuddhaCell.identifier(), bundle: nil)
+        self.tableView.register(nib, forCellReuseIdentifier: QLBuddhaCell.identifier())
         
         refreshControl = UIRefreshControl()
         refreshControl.addTarget(self, action:
@@ -61,7 +77,7 @@ class QDBuddhaListViewController: QLBaseViewController {
     
     private func loadData() {
         currentPage = 0
-        QueryManager.shared.fetchBuddhas(0) { (buddhas, errorMessage) in
+        QueryManager.shared.fetchBuddhas(self.buddhaType, 0) { (buddhas, errorMessage) in
             if errorMessage != nil {
                 self.showEmptyView()
             } else {
@@ -74,7 +90,7 @@ class QDBuddhaListViewController: QLBaseViewController {
     }
     
     private func loadMoreData() {
-        QueryManager.shared.fetchBuddhas(currentPage + 1) { (buddhas, errorMessage) in
+        QueryManager.shared.fetchBuddhas(self.buddhaType, currentPage + 1) { (buddhas, errorMessage) in
             if errorMessage != nil {
                 
             } else {
@@ -87,9 +103,6 @@ class QDBuddhaListViewController: QLBaseViewController {
     
     @objc private func rightSwitchDidClick(_ rightSwitch: UISwitch) {
         let covertMode = rightSwitch.isOn
-        if covertMode == QueryManager.shared.covertMode {
-            return
-        }
         QueryManager.shared.covertMode = covertMode
         DispatchQueue.global().async {
             DispatchQueue.main.async {
@@ -110,14 +123,14 @@ class QDBuddhaListViewController: QLBaseViewController {
     }
 }
 
-extension QDBuddhaListViewController: UITableViewDelegate, UITableViewDataSource {
+extension QLBuddhaListViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return buddhas.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if let cell = tableView.dequeueReusableCell(withIdentifier: QDBuddhaCell.identifier()) as? QDBuddhaCell {
+        if let cell = tableView.dequeueReusableCell(withIdentifier: QLBuddhaCell.identifier()) as? QLBuddhaCell {
             let buddha = buddhas[indexPath.row] as Buddha
             cell.buddha = buddha
             return cell
@@ -126,7 +139,7 @@ extension QDBuddhaListViewController: UITableViewDelegate, UITableViewDataSource
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return QDBuddhaCell.height()
+        return QLBuddhaCell.height()
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
@@ -139,7 +152,7 @@ extension QDBuddhaListViewController: UITableViewDelegate, UITableViewDataSource
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let buddha = buddhas[indexPath.row] as Buddha
-        let vc = QDBuddhaViewController(buddha)
+        let vc = QLBuddhaViewController(buddha)
         navigationController?.pushViewController(vc, animated: true)
     }
 }

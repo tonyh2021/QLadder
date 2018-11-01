@@ -2,8 +2,8 @@
 //  UIView+Color.swift
 //  QLadder
 //
-//  Created by qd-hxt on 2017/11/28.
-//  Copyright © 2017年 qding. All rights reserved.
+//  Created by TonyHan on 2017/11/28.
+//  Copyright © 2017年 TonyHan All rights reserved.
 //
 
 import UIKit

@@ -1,15 +1,15 @@
 //
-//  QDBuddhaCell.swift
+//  QLBuddhaCell.swift
 //  QLadder
 //
-//  Created by qd-hxt on 2018/3/21.
-//  Copyright © 2018年 qding. All rights reserved.
+//  Created by TonyHan on 2018/3/21.
+//  Copyright © 2018年 TonyHan All rights reserved.
 //
 
 import UIKit
 import Kingfisher
 
-class QDBuddhaCell: UITableViewCell {
+class QLBuddhaCell: UITableViewCell {
     
     @IBOutlet weak var nameLabel: UILabel!
     

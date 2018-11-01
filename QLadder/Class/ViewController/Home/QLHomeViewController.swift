@@ -2,13 +2,13 @@
 //  QLHomeViewController.swift
 //  QLadder
 //
-//  Created by qd-hxt on 2017/11/16.
-//  Copyright © 2017年 qding. All rights reserved.
+//  Created by TonyHan on 2017/11/16.
+//  Copyright © 2017年 TonyHan All rights reserved.
 //
 
 import UIKit
 
-class QLHomeViewController: QLBaseViewController, VpnManagerDelegate, ConfigManagerDelegate, LaunchViewManagerDelegate, QLNewViewControllerDelegate {
+class QLHomeViewController: QLBaseViewController, VpnManagerDelegate, ConfigManagerDelegate, QLNewViewControllerDelegate {
 
     @IBOutlet weak var connectButton: UIButton!
     
@@ -30,6 +30,9 @@ class QLHomeViewController: QLBaseViewController, VpnManagerDelegate, ConfigMana
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        isStatusBarHidden = false
+        setNeedsStatusBarAppearanceUpdate()
+        
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(newConfig))
         navigationItem.title = "连接"
         
@@ -46,9 +49,6 @@ class QLHomeViewController: QLBaseViewController, VpnManagerDelegate, ConfigMana
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
-        LaunchViewManager.shared.delegate = self
-        LaunchViewManager.shared.showLaunchView()
     }
     
     func updateConnectButtonText(status: VpnStatus) {
@@ -114,14 +114,6 @@ extension QLHomeViewController {
     
     override var prefersStatusBarHidden: Bool {
         return self.isStatusBarHidden
-    }
-}
-
-// MARK: - LaunchViewManagerDelegate
-extension QLHomeViewController {
-    func managerWillDisappear(_ manager: LaunchViewManager) {
-        isStatusBarHidden = false
-        setNeedsStatusBarAppearanceUpdate()
     }
 }
 

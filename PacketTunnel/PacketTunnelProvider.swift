@@ -2,7 +2,7 @@
 //  PacketTunnelProvider.swift
 //  PacketTunnel
 //
-//  Created by qd-hxt on 2017/11/15.
+//  Created by tony han on 2017/11/15.
 //  Copyright © 2017年 qding. All rights reserved.
 //
 

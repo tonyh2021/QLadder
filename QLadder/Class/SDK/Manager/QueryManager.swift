@@ -2,8 +2,8 @@
 //  QueryManager.swift
 //  QLadder
 //
-//  Created by qd-hxt on 2018/3/19.
-//  Copyright © 2018年 qding. All rights reserved.
+//  Created by TonyHan on 2018/3/19.
+//  Copyright © 2018年 TonyHan All rights reserved.
 //
 
 import Foundation
@@ -57,12 +57,16 @@ class QueryManager {
     }
     
     // MARK: BuddhaList
-    func fetchBuddhas(_ page: Int, completion: @escaping QueryResult) {
+    func fetchBuddhas(_ buddhaType: BuddhaType, _ page: Int, completion: @escaping QueryResult) {
         var url = ""
-        if page <= 0 {
-            url = "http://91porn.com/v.php?category=rf&viewtype=basic&page=1"
+        if buddhaType == .porn_91 {
+            if page <= 0 {
+                url = "http://91porn.com/v.php?category=rf&viewtype=basic&page=1"
+            } else {
+                url = "http://91porn.com/v.php?category=rf&viewtype=basic&page=\(page)"
+            }
         } else {
-            url = "http://91porn.com/v.php?category=rf&viewtype=basic&page=\(page)"
+            url = "https://www.pornhub.com/recommended"
         }
         
         Alamofire.request(url)
@@ -74,7 +78,23 @@ class QueryManager {
                         completion(self.buddhas, error.localizedDescription)
                     }
                 } else {
-                    self.updateBuddhas(response.result.value! as NSString)
+                    if buddhaType == .porn_91 {
+                        self.updateBuddhasIn91(response.result.value! as NSString)
+                    } else {
+                        let file = "data.html"
+                        if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+                            let fileURL = dir.appendingPathComponent(file)
+                            //writing
+                            do {
+                                try (response.result.value! as String).write(to: fileURL, atomically: false, encoding: .utf8)
+                            }
+                            catch {
+                                /* error handling here */
+                            }
+                        }
+                        
+//                        self.updateBuddhas(response.result.value! as NSString)
+                    }
                     DispatchQueue.main.async {
                         completion(self.buddhas, nil)
                     }
@@ -82,7 +102,7 @@ class QueryManager {
         }
     }
     
-    fileprivate func updateBuddhas(_ htmlString: NSString) {
+    fileprivate func updateBuddhasIn91(_ htmlString: NSString) {
 
         if htmlString == "" {
             return

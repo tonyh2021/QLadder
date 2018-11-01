@@ -1,16 +1,16 @@
 //
-//  QDBuddhaViewController.swift
+//  QLBuddhaViewController.swift
 //  QLadder
 //
-//  Created by qd-hxt on 2018/3/22.
-//  Copyright © 2018年 qding. All rights reserved.
+//  Created by TonyHan on 2018/3/22.
+//  Copyright © 2018年 TonyHan All rights reserved.
 //
 
 import UIKit
 import AVKit
 import Alamofire
 
-class QDBuddhaViewController: QLBaseViewController {
+class QLBuddhaViewController: QLBaseViewController {
     
     private var buddha: Buddha
     
@@ -113,22 +113,9 @@ class QDBuddhaViewController: QLBaseViewController {
                 playerViewController.player!.play()
             }
         }
-        
-//        let destination = DownloadRequest.suggestedDownloadDestination(for: .documentDirectory)
-//
-//        Alamofire.download(
-//            buddha.videoUrl!,
-//            method: .get,
-//            to: destination).downloadProgress(closure: { (progress) in
-//                //progress closure
-//                print(progress)
-//            }).response(completionHandler: { (DefaultDownloadResponse) in
-//                //here you able to access the DefaultDownloadResponse
-//                //result closure
-//            })
     }
 }
 
-extension QDBuddhaViewController {
+extension QLBuddhaViewController {
 
 }

@@ -19,13 +19,13 @@ class QLTabBarController: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        UITabBarItem.appearance().setTitleTextAttributes([NSAttributedStringKey.foregroundColor : QLColor.C3], for: .normal)
-        UITabBarItem.appearance().setTitleTextAttributes([NSAttributedStringKey.foregroundColor : QLColor.C3], for: .selected)
+        UITabBarItem.appearance().setTitleTextAttributes([NSAttributedString.Key.foregroundColor : QLColor.C3], for: .normal)
+        UITabBarItem.appearance().setTitleTextAttributes([NSAttributedString.Key.foregroundColor : QLColor.C3], for: .selected)
         
         //自定义tabbar的item
         for (index, item) in (self.tabBar.items?.enumerated())! {
-            item.image = UIImage(named: images[index][0])?.withRenderingMode(UIImageRenderingMode.alwaysOriginal)
-            item.selectedImage = UIImage(named: images[index][1])?.withRenderingMode(UIImageRenderingMode.alwaysOriginal)
+            item.image = UIImage(named: images[index][0])?.withRenderingMode(UIImage.RenderingMode.alwaysOriginal)
+            item.selectedImage = UIImage(named: images[index][1])?.withRenderingMode(UIImage.RenderingMode.alwaysOriginal)
             item.title = titles[index];
         }
     }

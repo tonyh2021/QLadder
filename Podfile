@@ -20,12 +20,3 @@ target "PacketTunnel" do
     common
 end
 
-target "QLadderTests" do
-
-end
-
-target "QLadderUITests" do
-
-end
-
-

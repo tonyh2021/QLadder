@@ -17,7 +17,7 @@ class QLBaseViewController: UIViewController {
         
         view.backgroundColor = QLColor.C2
 
-		let backImage = UIImage(named: "nav-back")?.withRenderingMode(UIImageRenderingMode.alwaysOriginal)
+		let backImage = UIImage(named: "nav-back")?.withRenderingMode(UIImage.RenderingMode.alwaysOriginal)
 		
 		navigationController?.navigationBar.backIndicatorImage = backImage
         navigationController?.navigationBar.backIndicatorTransitionMaskImage = backImage

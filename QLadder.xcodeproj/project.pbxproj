@@ -15,8 +15,6 @@
 		D8866B831FBC396F002E406C /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D8866B811FBC396F002E406C /* Main.storyboard */; };
 		D8866B851FBC396F002E406C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D8866B841FBC396F002E406C /* Assets.xcassets */; };
 		D8866B881FBC396F002E406C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D8866B861FBC396F002E406C /* LaunchScreen.storyboard */; };
-		D8866B931FBC396F002E406C /* QLadderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8866B921FBC396F002E406C /* QLadderTests.swift */; };
-		D8866B9E1FBC396F002E406C /* QLadderUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8866B9D1FBC396F002E406C /* QLadderUITests.swift */; };
 		D8866BB21FBC39D9002E406C /* PacketTunnelProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8866BB11FBC39D9002E406C /* PacketTunnelProvider.swift */; };
 		D8866BB71FBC39D9002E406C /* PacketTunnel.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = D8866BAF1FBC39D8002E406C /* PacketTunnel.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		D8866BBF1FBC3C7D002E406C /* NetworkExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D8866BBE1FBC3C7D002E406C /* NetworkExtension.framework */; };
@@ -63,25 +61,9 @@
 		D8EBED351FC4055000477A97 /* AppConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8EBED341FC4055000477A97 /* AppConfig.swift */; };
 		D8FF912F1FC6CCD400AFA494 /* ConfigManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8FF912E1FC6CCD400AFA494 /* ConfigManager.swift */; };
 		D8FF91391FCD0BF900AFA494 /* UIView+Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8FF91381FCD0BF800AFA494 /* UIView+Color.swift */; };
-		DF324D411690EAA5E4EDD089 /* Pods_QLadderTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A773E43AB7F368E6A353D9F7 /* Pods_QLadderTests.framework */; };
-		EFBCC7A37FA972D8AF6434A8 /* Pods_QLadderUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2592B8F9266210F74A9B00D1 /* Pods_QLadderUITests.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		D8866B8F1FBC396F002E406C /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D8866B721FBC396F002E406C /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = D8866B791FBC396F002E406C;
-			remoteInfo = QLadder;
-		};
-		D8866B9A1FBC396F002E406C /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D8866B721FBC396F002E406C /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = D8866B791FBC396F002E406C;
-			remoteInfo = QLadder;
-		};
 		D8866BB51FBC39D9002E406C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D8866B721FBC396F002E406C /* Project object */;
@@ -109,11 +91,7 @@
 		072D594BED902B2FA183883C /* Pods-QLadder.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-QLadder.debug.xcconfig"; path = "Pods/Target Support Files/Pods-QLadder/Pods-QLadder.debug.xcconfig"; sourceTree = "<group>"; };
 		2592B8F9266210F74A9B00D1 /* Pods_QLadderUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_QLadderUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		6FBBC7B7C96FF6CD3C1F2E01 /* Pods-PacketTunnel.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PacketTunnel.release.xcconfig"; path = "Pods/Target Support Files/Pods-PacketTunnel/Pods-PacketTunnel.release.xcconfig"; sourceTree = "<group>"; };
-		781425E1C8AEBDC9303D610C /* Pods-QLadderTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-QLadderTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-QLadderTests/Pods-QLadderTests.release.xcconfig"; sourceTree = "<group>"; };
-		7DBE0C10D11AACDD81575E70 /* Pods-QLadderUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-QLadderUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-QLadderUITests/Pods-QLadderUITests.release.xcconfig"; sourceTree = "<group>"; };
 		87C7EF1E372693D4B4D12141 /* Pods-QLadder.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-QLadder.release.xcconfig"; path = "Pods/Target Support Files/Pods-QLadder/Pods-QLadder.release.xcconfig"; sourceTree = "<group>"; };
-		9404C956A4229F434537CF56 /* Pods-QLadderUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-QLadderUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-QLadderUITests/Pods-QLadderUITests.debug.xcconfig"; sourceTree = "<group>"; };
-		A46D421CF339E3F9B47E3DFF /* Pods-QLadderTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-QLadderTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-QLadderTests/Pods-QLadderTests.debug.xcconfig"; sourceTree = "<group>"; };
 		A773E43AB7F368E6A353D9F7 /* Pods_QLadderTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_QLadderTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BEA8410ADD1CCB5860EDF120 /* Pods-PacketTunnel.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PacketTunnel.debug.xcconfig"; path = "Pods/Target Support Files/Pods-PacketTunnel/Pods-PacketTunnel.debug.xcconfig"; sourceTree = "<group>"; };
 		D80F5B18205FBF7400251694 /* QueryManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueryManager.swift; sourceTree = "<group>"; };
@@ -124,12 +102,6 @@
 		D8866B841FBC396F002E406C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D8866B871FBC396F002E406C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		D8866B891FBC396F002E406C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		D8866B8E1FBC396F002E406C /* QLadderTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = QLadderTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		D8866B921FBC396F002E406C /* QLadderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QLadderTests.swift; sourceTree = "<group>"; };
-		D8866B941FBC396F002E406C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		D8866B991FBC396F002E406C /* QLadderUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = QLadderUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		D8866B9D1FBC396F002E406C /* QLadderUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QLadderUITests.swift; sourceTree = "<group>"; };
-		D8866B9F1FBC396F002E406C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D8866BAF1FBC39D8002E406C /* PacketTunnel.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = PacketTunnel.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		D8866BB11FBC39D9002E406C /* PacketTunnelProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PacketTunnelProvider.swift; sourceTree = "<group>"; };
 		D8866BB31FBC39D9002E406C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -192,22 +164,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		D8866B8B1FBC396F002E406C /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				DF324D411690EAA5E4EDD089 /* Pods_QLadderTests.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		D8866B961FBC396F002E406C /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				EFBCC7A37FA972D8AF6434A8 /* Pods_QLadderUITests.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		D8866BAC1FBC39D8002E406C /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -237,10 +193,6 @@
 				6FBBC7B7C96FF6CD3C1F2E01 /* Pods-PacketTunnel.release.xcconfig */,
 				072D594BED902B2FA183883C /* Pods-QLadder.debug.xcconfig */,
 				87C7EF1E372693D4B4D12141 /* Pods-QLadder.release.xcconfig */,
-				A46D421CF339E3F9B47E3DFF /* Pods-QLadderTests.debug.xcconfig */,
-				781425E1C8AEBDC9303D610C /* Pods-QLadderTests.release.xcconfig */,
-				9404C956A4229F434537CF56 /* Pods-QLadderUITests.debug.xcconfig */,
-				7DBE0C10D11AACDD81575E70 /* Pods-QLadderUITests.release.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -259,8 +211,6 @@
 			children = (
 				D8866B7C1FBC396F002E406C /* QLadder */,
 				D8866BB01FBC39D9002E406C /* PacketTunnel */,
-				D8866B911FBC396F002E406C /* QLadderTests */,
-				D8866B9C1FBC396F002E406C /* QLadderUITests */,
 				D8866B7B1FBC396F002E406C /* Products */,
 				D8866BBD1FBC3C7D002E406C /* Frameworks */,
 				44CC8C8D996DB7C4CB8E4575 /* Pods */,
@@ -271,8 +221,6 @@
 			isa = PBXGroup;
 			children = (
 				D8866B7A1FBC396F002E406C /* QLadder.app */,
-				D8866B8E1FBC396F002E406C /* QLadderTests.xctest */,
-				D8866B991FBC396F002E406C /* QLadderUITests.xctest */,
 				D8866BAF1FBC39D8002E406C /* PacketTunnel.appex */,
 			);
 			name = Products;
@@ -290,24 +238,6 @@
 				D8866B891FBC396F002E406C /* Info.plist */,
 			);
 			path = QLadder;
-			sourceTree = "<group>";
-		};
-		D8866B911FBC396F002E406C /* QLadderTests */ = {
-			isa = PBXGroup;
-			children = (
-				D8866B921FBC396F002E406C /* QLadderTests.swift */,
-				D8866B941FBC396F002E406C /* Info.plist */,
-			);
-			path = QLadderTests;
-			sourceTree = "<group>";
-		};
-		D8866B9C1FBC396F002E406C /* QLadderUITests */ = {
-			isa = PBXGroup;
-			children = (
-				D8866B9D1FBC396F002E406C /* QLadderUITests.swift */,
-				D8866B9F1FBC396F002E406C /* Info.plist */,
-			);
-			path = QLadderUITests;
 			sourceTree = "<group>";
 		};
 		D8866BB01FBC39D9002E406C /* PacketTunnel */ = {
@@ -502,44 +432,6 @@
 			productReference = D8866B7A1FBC396F002E406C /* QLadder.app */;
 			productType = "com.apple.product-type.application";
 		};
-		D8866B8D1FBC396F002E406C /* QLadderTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = D8866BA51FBC396F002E406C /* Build configuration list for PBXNativeTarget "QLadderTests" */;
-			buildPhases = (
-				4EA730C6A53D185E1EBB568C /* [CP] Check Pods Manifest.lock */,
-				D8866B8A1FBC396F002E406C /* Sources */,
-				D8866B8B1FBC396F002E406C /* Frameworks */,
-				D8866B8C1FBC396F002E406C /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				D8866B901FBC396F002E406C /* PBXTargetDependency */,
-			);
-			name = QLadderTests;
-			productName = QLadderTests;
-			productReference = D8866B8E1FBC396F002E406C /* QLadderTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
-		D8866B981FBC396F002E406C /* QLadderUITests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = D8866BA81FBC396F002E406C /* Build configuration list for PBXNativeTarget "QLadderUITests" */;
-			buildPhases = (
-				75C8AF32A0C38478037656A9 /* [CP] Check Pods Manifest.lock */,
-				D8866B951FBC396F002E406C /* Sources */,
-				D8866B961FBC396F002E406C /* Frameworks */,
-				D8866B971FBC396F002E406C /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				D8866B9B1FBC396F002E406C /* PBXTargetDependency */,
-			);
-			name = QLadderUITests;
-			productName = QLadderUITests;
-			productReference = D8866B991FBC396F002E406C /* QLadderUITests.xctest */;
-			productType = "com.apple.product-type.bundle.ui-testing";
-		};
 		D8866BAE1FBC39D8002E406C /* PacketTunnel */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = D8866BB81FBC39D9002E406C /* Build configuration list for PBXNativeTarget "PacketTunnel" */;
@@ -570,6 +462,7 @@
 				TargetAttributes = {
 					D8866B791FBC396F002E406C = {
 						CreatedOnToolsVersion = 9.1;
+						LastSwiftMigration = 1010;
 						ProvisioningStyle = Manual;
 						SystemCapabilities = {
 							com.apple.ApplicationGroups.iOS = {
@@ -583,18 +476,9 @@
 							};
 						};
 					};
-					D8866B8D1FBC396F002E406C = {
-						CreatedOnToolsVersion = 9.1;
-						ProvisioningStyle = Manual;
-						TestTargetID = D8866B791FBC396F002E406C;
-					};
-					D8866B981FBC396F002E406C = {
-						CreatedOnToolsVersion = 9.1;
-						ProvisioningStyle = Manual;
-						TestTargetID = D8866B791FBC396F002E406C;
-					};
 					D8866BAE1FBC39D8002E406C = {
 						CreatedOnToolsVersion = 9.1;
+						LastSwiftMigration = 1010;
 						ProvisioningStyle = Manual;
 						SystemCapabilities = {
 							com.apple.NetworkExtensions.iOS = {
@@ -622,8 +506,6 @@
 			targets = (
 				D8866B791FBC396F002E406C /* QLadder */,
 				D8866BAE1FBC39D8002E406C /* PacketTunnel */,
-				D8866B8D1FBC396F002E406C /* QLadderTests */,
-				D8866B981FBC396F002E406C /* QLadderUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -642,20 +524,6 @@
 				D8866B851FBC396F002E406C /* Assets.xcassets in Resources */,
 				D8D45F1320624CC500DEEF1D /* QLBuddhaCell.xib in Resources */,
 				D8866B831FBC396F002E406C /* Main.storyboard in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		D8866B8C1FBC396F002E406C /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		D8866B971FBC396F002E406C /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -681,42 +549,6 @@
 			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
 				"$(DERIVED_FILE_DIR)/Pods-QLadder-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		4EA730C6A53D185E1EBB568C /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-QLadderTests-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		75C8AF32A0C38478037656A9 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-QLadderUITests-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -770,7 +602,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "/usr/local/bin/carthage copy-frameworks";
+			shellScript = "/usr/local/bin/carthage copy-frameworks\n";
 		};
 		DDF05FC472331099A324FD75 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -820,22 +652,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		D8866B8A1FBC396F002E406C /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				D8866B931FBC396F002E406C /* QLadderTests.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		D8866B951FBC396F002E406C /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				D8866B9E1FBC396F002E406C /* QLadderUITests.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		D8866BAB1FBC39D8002E406C /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -847,16 +663,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		D8866B901FBC396F002E406C /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = D8866B791FBC396F002E406C /* QLadder */;
-			targetProxy = D8866B8F1FBC396F002E406C /* PBXContainerItemProxy */;
-		};
-		D8866B9B1FBC396F002E406C /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = D8866B791FBC396F002E406C /* QLadder */;
-			targetProxy = D8866B9A1FBC396F002E406C /* PBXContainerItemProxy */;
-		};
 		D8866BB61FBC39D9002E406C /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = D8866BAE1FBC39D8002E406C /* PacketTunnel */;
@@ -1003,7 +809,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 072D594BED902B2FA183883C /* Pods-QLadder.debug.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = QLadder/QLadder.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer: chunyu zhao (JNW34ZPMFS)";
@@ -1022,7 +827,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "c54e53df-b639-4cf3-9ba2-c3be76e5daa2";
 				PROVISIONING_PROFILE_SPECIFIER = "ladder-dev";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -1031,7 +836,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 87C7EF1E372693D4B4D12141 /* Pods-QLadder.release.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = QLadder/QLadder.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution: Beijing Qianding Internet Technology Co., Ltd.";
@@ -1050,86 +854,8 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "c9a3035a-f1ee-497b-b346-1448d4c504d7";
 				PROVISIONING_PROFILE_SPECIFIER = "ladder-enterprise";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Release;
-		};
-		D8866BA61FBC396F002E406C /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = A46D421CF339E3F9B47E3DFF /* Pods-QLadderTests.debug.xcconfig */;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CODE_SIGN_STYLE = Manual;
-				DEVELOPMENT_TEAM = 6232V88552;
-				INFOPLIST_FILE = QLadderTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.qding.QLadderTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
-				SWIFT_VERSION = 4.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/QLadder.app/QLadder";
-			};
-			name = Debug;
-		};
-		D8866BA71FBC396F002E406C /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 781425E1C8AEBDC9303D610C /* Pods-QLadderTests.release.xcconfig */;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
-				CODE_SIGN_STYLE = Manual;
-				DEVELOPMENT_TEAM = 6232V88552;
-				INFOPLIST_FILE = QLadderTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.qding.QLadderTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
-				SWIFT_VERSION = 4.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/QLadder.app/QLadder";
-			};
-			name = Release;
-		};
-		D8866BA91FBC396F002E406C /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 9404C956A4229F434537CF56 /* Pods-QLadderUITests.debug.xcconfig */;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				CODE_SIGN_STYLE = Manual;
-				DEVELOPMENT_TEAM = 6232V88552;
-				INFOPLIST_FILE = QLadderUITests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.qding.QLadderUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "2c70bdec-9ec4-453b-a06a-d2cf11a5e0bb";
-				PROVISIONING_PROFILE_SPECIFIER = devProvisioning4All;
-				SWIFT_VERSION = 4.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = QLadder;
-			};
-			name = Debug;
-		};
-		D8866BAA1FBC396F002E406C /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7DBE0C10D11AACDD81575E70 /* Pods-QLadderUITests.release.xcconfig */;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				CODE_SIGN_STYLE = Manual;
-				DEVELOPMENT_TEAM = 736T58M9ZN;
-				INFOPLIST_FILE = QLadderUITests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.qding.QLadderUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "8524809c-0aff-412a-adfc-213c41e88403";
-				PROVISIONING_PROFILE_SPECIFIER = qding_all_development;
-				SWIFT_VERSION = 4.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = QLadder;
 			};
 			name = Release;
 		};
@@ -1154,7 +880,7 @@
 				PROVISIONING_PROFILE = "fad5ac66-f134-4252-94e1-9643ee5f8bc1";
 				PROVISIONING_PROFILE_SPECIFIER = "ladder tunnel-dev";
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -1180,7 +906,7 @@
 				PROVISIONING_PROFILE = "c4bf8664-718a-4ea0-9761-1a83f69eb1cc";
 				PROVISIONING_PROFILE_SPECIFIER = "ladder tunnel-enterprise";
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
@@ -1202,24 +928,6 @@
 			buildConfigurations = (
 				D8866BA31FBC396F002E406C /* Debug */,
 				D8866BA41FBC396F002E406C /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		D8866BA51FBC396F002E406C /* Build configuration list for PBXNativeTarget "QLadderTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				D8866BA61FBC396F002E406C /* Debug */,
-				D8866BA71FBC396F002E406C /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		D8866BA81FBC396F002E406C /* Build configuration list for PBXNativeTarget "QLadderUITests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				D8866BA91FBC396F002E406C /* Debug */,
-				D8866BAA1FBC396F002E406C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

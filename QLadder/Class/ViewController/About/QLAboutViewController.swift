@@ -22,6 +22,11 @@ class QLAboutViewController: QLBaseViewController {
         view.addGestureRecognizer(tapGesture)
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        passwdTextField.text = nil
+        view.endEditing(true)
+    }
+    
     @objc func tap(tapGesture: UIGestureRecognizer) {
         view.endEditing(true)
     }

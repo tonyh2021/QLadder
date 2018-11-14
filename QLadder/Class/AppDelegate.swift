@@ -19,8 +19,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         let manager = ConfigManager.shared
         manager.loadConfig()
-        
+
         return true
+    }
+    
+    func dataWithHexString(hex: String) -> Data {
+        var hex = hex
+        var data = Data()
+        while(hex.count > 0) {
+            let subIndex = hex.index(hex.startIndex, offsetBy: 2)
+            let c = String(hex[..<subIndex])
+            hex = String(hex[subIndex...])
+            var ch: UInt32 = 0
+            Scanner(string: c).scanHexInt32(&ch)
+            var char = UInt8(ch)
+            data.append(&char, count: 1)
+        }
+        return data
     }
 
     func applicationWillResignActive(_ application: UIApplication) {

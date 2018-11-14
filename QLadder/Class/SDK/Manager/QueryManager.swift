@@ -8,7 +8,7 @@
 
 import Foundation
 import Alamofire
-import Fuzi
+import Kanna
 
 class QueryManager {
     
@@ -110,7 +110,7 @@ class QueryManager {
 
         do {
             // if encoding is omitted, it defaults to NSUTF8StringEncoding
-            let doc = try HTMLDocument(string: htmlString as String, encoding: String.Encoding.utf8)
+            let doc = try HTML(html: htmlString as String, encoding: .utf8)
             
             // XPath queries
             
@@ -131,16 +131,17 @@ class QueryManager {
                     url = urlItem["href"] ?? ""
                 }
                 for durationItem in item.xpath("text()") {
-                    let text = durationItem.rawXML.trimmingCharacters(in: .whitespacesAndNewlines)
-                    if text.contains(":") {
-                        duration = text
-                    }
-                    if text.contains("ago") {
-                        addTime = text
+                    if let text = durationItem.text?.trimmingCharacters(in: .whitespacesAndNewlines) {
+                        if text.contains(":") {
+                            duration = text
+                        }
+                        if text.contains("ago") {
+                            addTime = text
+                        }
                     }
                 }
                 if let userItem = item.xpath("a[@target='_parent']/text()").first {
-                    user = userItem.rawXML
+                    user = userItem.text ?? ""
                 }
                 let buddha = Buddha(name: name, url: url, imgUrl: imgUrl, duration: duration, addTime: addTime, user: user)
                 tempBuddhas.append(buddha)
@@ -195,35 +196,35 @@ class QueryManager {
             var newBuddha = buddha.mutableCopy()
             
             // if encoding is omitted, it defaults to NSUTF8StringEncoding
-            let doc = try HTMLDocument(string: htmlString as String, encoding: String.Encoding.utf8)
+            let doc = try HTML(html: htmlString as String, encoding: .utf8)
             
             // XPath queries
             if let nameItem = doc.xpath("//div[@id='viewvideo-title']/text()").first {
-                newBuddha.name_zh = nameItem.rawXML.trimmingCharacters(in: .whitespacesAndNewlines)
+                newBuddha.name_zh = nameItem.text?.trimmingCharacters(in: .whitespacesAndNewlines)
             }
             
             if let videoItem = doc.xpath("//video[@id='vid']/source").first {
                 newBuddha.videoUrl = videoItem["src"]?.trimmingCharacters(in: .whitespacesAndNewlines)
             }
-            
+
             if let imageItem = doc.xpath("//div[@class='example-video-container']/video").first {
                 newBuddha.detailImgUrl = imageItem["poster"]?.trimmingCharacters(in: .whitespacesAndNewlines)
             }
-            
+
             if let addTimeItem = doc.xpath("//div[@id='videodetails-content']/span[@class='title']/text()").first {
-                newBuddha.addTime_zh = addTimeItem.rawXML.trimmingCharacters(in: .whitespacesAndNewlines)
+                newBuddha.addTime_zh = addTimeItem.text?.trimmingCharacters(in: .whitespacesAndNewlines)
             }
-            
+
             if let infoItem = doc.xpath("//div[@class='boxPart']").first {
-                let pointsItemString = infoItem.rawXML
+                let pointsItemString = infoItem.text
                 var itemStringArray = [String]()
                 for item in infoItem.xpath("span[@class='info']") {
-                    let itemString = item.rawXML
-                    itemStringArray.append(itemString)
+                    let itemString = item.text
+                    itemStringArray.append(itemString ?? "")
                 }
 
-                var points = pointsItemString.components(separatedBy: itemStringArray[4])[1]
-                points = points.replacingOccurrences(of: "</div>", with: "").trimmingCharacters(in: .whitespacesAndNewlines)
+                var points = pointsItemString?.components(separatedBy: itemStringArray[4])[1]
+                points = points?.replacingOccurrences(of: "</div>", with: "").trimmingCharacters(in: .whitespacesAndNewlines)
                 newBuddha.points = points
             }
             

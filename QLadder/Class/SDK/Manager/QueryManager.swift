@@ -9,6 +9,7 @@
 import Foundation
 import Alamofire
 import Kanna
+import JavaScriptCore
 
 class QueryManager {
     
@@ -81,19 +82,7 @@ class QueryManager {
                     if buddhaType == .porn_91 {
                         self.updateBuddhasIn91(response.result.value! as NSString)
                     } else {
-                        let file = "data.html"
-                        if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-                            let fileURL = dir.appendingPathComponent(file)
-                            //writing
-                            do {
-                                try (response.result.value! as String).write(to: fileURL, atomically: false, encoding: .utf8)
-                            }
-                            catch {
-                                /* error handling here */
-                            }
-                        }
-                        
-//                        self.updateBuddhas(response.result.value! as NSString)
+                        self.updateBuddhasInHub(response.result.value! as NSString)
                     }
                     DispatchQueue.main.async {
                         completion(self.buddhas, nil)
@@ -102,8 +91,63 @@ class QueryManager {
         }
     }
     
+    fileprivate func updateBuddhasInHub(_ htmlString: NSString) {
+        
+        saveToFile(htmlString as String)
+        
+        if htmlString == "" {
+            return
+        }
+        
+        do {
+            // if encoding is omitted, it defaults to NSUTF8StringEncoding
+            let doc = try HTML(html: htmlString as String, encoding: .utf8)
+            
+            var tempBuddhas = [Buddha]()
+            
+            for item in doc.xpath("//div[@class='phimage']") {
+                var name: String = ""
+                var url: String = ""
+                var imgUrl: String = ""
+                var duration: String = ""
+                let addTime:String = ""
+                let user: String = ""
+                
+                if let a = item.xpath("div/a[@class='img js-viewTrack ']").first {
+                    url = a["href"] ?? ""
+                
+                    if let img = a.xpath("img").first {
+                        name = img["title"] ?? ""
+                        imgUrl = img["src"] ?? ""
+                    }
+                }
+                
+                if let textArray = item.text?.components(separatedBy: "\n") {
+                    for text in textArray {
+                        duration = text.trimmingCharacters(in: .whitespacesAndNewlines)
+                        if duration != "" {
+                            break
+                        }
+                    }
+                }
+                
+                let buddha = Buddha(name: name, url: url, imgUrl: imgUrl, duration: duration, addTime: addTime, user: user)
+                
+                if buddha.name != "" {
+                    tempBuddhas.append(buddha)
+                }
+            }
+            buddhas = tempBuddhas
+            
+        } catch let error {
+            print(error)
+        }
+    }
+    
     fileprivate func updateBuddhasIn91(_ htmlString: NSString) {
 
+//        saveToFile(htmlString as String)
+        
         if htmlString == "" {
             return
         }
@@ -130,18 +174,19 @@ class QueryManager {
                 if let urlItem = item.xpath("a[@target='blank']").first {
                     url = urlItem["href"] ?? ""
                 }
-                for durationItem in item.xpath("text()") {
-                    if let text = durationItem.text?.trimmingCharacters(in: .whitespacesAndNewlines) {
+                
+                for (index, textItem) in item.xpath("text()").enumerated() {
+                    if let text = textItem.text?.trimmingCharacters(in: .whitespacesAndNewlines) {
                         if text.contains(":") {
                             duration = text
                         }
                         if text.contains("ago") {
                             addTime = text
                         }
+                        if (index == 8) {
+                            user = text
+                        }
                     }
-                }
-                if let userItem = item.xpath("a[@target='_parent']/text()").first {
-                    user = userItem.text ?? ""
                 }
                 let buddha = Buddha(name: name, url: url, imgUrl: imgUrl, duration: duration, addTime: addTime, user: user)
                 tempBuddhas.append(buddha)
@@ -155,7 +200,7 @@ class QueryManager {
     }
     
     // MARK: BuddhaDetail
-    func fetchBuddhaDetail(_ buddha:Buddha, completion: @escaping QueryDetailResult) {
+    func fetchBuddhaDetailIn91(_ buddha:Buddha, completion: @escaping QueryDetailResult) {
         guard let url = buddha.url else {
             DispatchQueue.main.async {
                 completion(buddha, "url 为空")
@@ -163,7 +208,7 @@ class QueryManager {
             return
         }
         
-        setWatchTimesCookie()
+        setCookieIn91()
         
         Alamofire.request(url, headers: headers)
             .responseString { response in
@@ -174,7 +219,7 @@ class QueryManager {
                         completion(buddha, error.localizedDescription)
                     }
                 } else {
-                    if let newBuddha = self.parseBuddha(buddha, response.result.value! as NSString){
+                    if let newBuddha = self.parseBuddhaIn91(buddha, response.result.value! as NSString){
                         DispatchQueue.main.async {
                             completion(newBuddha, nil)
                         }
@@ -187,7 +232,7 @@ class QueryManager {
         }
     }
     
-    fileprivate func parseBuddha(_ buddha: Buddha, _ htmlString: NSString) -> Buddha? {
+    fileprivate func parseBuddhaIn91(_ buddha: Buddha, _ htmlString: NSString) -> Buddha? {
         if htmlString == "" {
             return nil
         }
@@ -235,7 +280,7 @@ class QueryManager {
         return nil
     }
     
-    private func setWatchTimesCookie() {
+    private func setCookieIn91() {
         //创建一个HTTPCookie对象
         var props = Dictionary<HTTPCookiePropertyKey, Any>()
         props[HTTPCookiePropertyKey.name] = "watch_times"
@@ -246,5 +291,135 @@ class QueryManager {
         let cstorage = HTTPCookieStorage.shared
         //        通过setCookie方法把Cookie保存起来
         cstorage.setCookie(cookie!)
+    }
+    
+    func fetchBuddhaDetailInHub(_ buddha:Buddha, completion: @escaping QueryDetailResult) {
+        guard let relativeUrl = buddha.url else {
+            DispatchQueue.main.async {
+                completion(buddha, "url 为空")
+            }
+            return
+        }
+        
+        let url = "https://www.pornhub.com" + relativeUrl
+        
+        Alamofire.request(url, headers: headers)
+            .responseString { response in
+                
+                if let error = response.error {
+                    print(error)
+                    DispatchQueue.main.async {
+                        completion(buddha, error.localizedDescription)
+                    }
+                } else {
+                    if let newBuddha = self.parseBuddhaInHub(buddha, response.result.value! as NSString){
+                        DispatchQueue.main.async {
+                            completion(newBuddha, nil)
+                        }
+                    } else {
+                        DispatchQueue.main.async {
+                            completion(buddha, "转换失败")
+                        }
+                    }
+                }
+        }
+    }
+    
+    fileprivate func parseBuddhaInHub(_ buddha: Buddha, _ htmlString: NSString) -> Buddha? {
+        if htmlString == "" {
+            return nil
+        }
+        
+//        saveToFile(htmlString as String)
+        
+        do {
+            var newBuddha = buddha.mutableCopy()
+            
+            // if encoding is omitted, it defaults to NSUTF8StringEncoding
+            let doc = try HTML(html: htmlString as String, encoding: .utf8)
+            
+            // XPath queries
+            if let scriptItem = doc.xpath("//div[@id='player']/script").first, let script = scriptItem.text?.replacingOccurrences(of: "\n", with: "").replacingOccurrences(of: "\t", with: "") {
+                
+                newBuddha.videoUrl = matchInfo(script, "videoUrl")
+            }
+            
+            newBuddha.detailImgUrl = newBuddha.imgUrl
+            
+            if let fromItem = doc.xpath("//div[@class='video-info-row']/div/a").first {
+                newBuddha.user = fromItem.text
+            }
+            
+            if let addOnItem = doc.xpath("//div[@class='video-info-row showLess']/span").reversed().first {
+                newBuddha.addTime = addOnItem.text
+                newBuddha.addTime_zh = addOnItem.text
+            }
+            
+            if let pointsItem = doc.xpath("//div[@class='votes-count-container']/span").first {
+                newBuddha.points = pointsItem.text
+            }
+            
+            return newBuddha
+        } catch let error {
+            print(error)
+        }
+        return nil
+    }
+    
+    private func matchInfo(_ string:String, _ pattern:String) -> String {
+        var result = ""
+        // - 1、创建规则
+        let pattern1 = "(?<=\(pattern)\\\":\\\").*?(?=\\\")"
+        // - 2、创建正则表达式对象
+        let regex1 = try! NSRegularExpression(pattern: pattern1, options: NSRegularExpression.Options.caseInsensitive)
+        // - 3、开始匹配A
+        let res = regex1.matches(in: string, options: NSRegularExpression.MatchingOptions.init(rawValue: 0), range: NSMakeRange(0, string.count))
+        // 输出结果
+        if let checkingRes = res.first {
+            result = (string as NSString).substring(with: checkingRes.range)
+        }
+        result = result.replacingOccurrences(of: "\\", with: "")
+        return result
+    }
+    
+    private func setCookieInHub() {
+        //创建一个HTTPCookie对象
+        var props = Dictionary<HTTPCookiePropertyKey, Any>()
+        props[HTTPCookiePropertyKey.name] = "platform"
+        props[HTTPCookiePropertyKey.value] = "pc"
+        props[HTTPCookiePropertyKey.name] = "ss"
+        props[HTTPCookiePropertyKey.value] = "367701188698225489"
+        props[HTTPCookiePropertyKey.name] = "bs"
+        props[HTTPCookiePropertyKey.value] = ""
+        props[HTTPCookiePropertyKey.name] = "RNLBSERVERID"
+        props[HTTPCookiePropertyKey.value] = "ded6699"
+        props[HTTPCookiePropertyKey.name] = "FastPopSessionRequestNumber"
+        props[HTTPCookiePropertyKey.value] = "1"
+        props[HTTPCookiePropertyKey.name] = "FPSRN"
+        props[HTTPCookiePropertyKey.value] = "1"
+        props[HTTPCookiePropertyKey.name] = "performance_timing"
+        props[HTTPCookiePropertyKey.value] = "home"
+        props[HTTPCookiePropertyKey.name] = "RNKEY"
+        props[HTTPCookiePropertyKey.value] = "40859743*68067497:1190152786:3363277230:1"
+        props[HTTPCookiePropertyKey.path] = "/"
+        props[HTTPCookiePropertyKey.domain] = "91porn.com"
+        let cookie = HTTPCookie(properties: props)
+        let cstorage = HTTPCookieStorage.shared
+        //        通过setCookie方法把Cookie保存起来
+        cstorage.setCookie(cookie!)
+    }
+    
+    private func saveToFile(_ htmlString: String) {
+        let file = "data.html"
+        if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+            let fileURL = dir.appendingPathComponent(file)
+            //writing
+            do {
+                try (htmlString as String).write(to: fileURL, atomically: false, encoding: .utf8)
+            }
+            catch {
+                /* error handling here */
+            }
+        }
     }
 }

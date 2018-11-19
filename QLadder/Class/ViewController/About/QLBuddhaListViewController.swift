@@ -152,7 +152,7 @@ extension QLBuddhaListViewController: UITableViewDelegate, UITableViewDataSource
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let buddha = buddhas[indexPath.row] as Buddha
-        let vc = QLBuddhaViewController(buddha)
+        let vc = QLBuddhaViewController(buddha, buddhaType: self.buddhaType)
         navigationController?.pushViewController(vc, animated: true)
     }
 }

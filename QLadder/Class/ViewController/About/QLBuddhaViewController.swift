@@ -14,6 +14,8 @@ class QLBuddhaViewController: QLBaseViewController {
     
     private var buddha: Buddha
     
+    private var buddhaType: BuddhaType
+    
     @IBOutlet weak var imageView: UIImageView!
     
     @IBOutlet weak var nameDetailLabel: UILabel!
@@ -25,10 +27,10 @@ class QLBuddhaViewController: QLBaseViewController {
     @IBOutlet weak var userLabel: UILabel!
     
     @IBOutlet weak var pointsLabel: UILabel!
-
     
-    init(_ buddha: Buddha) {
+    init(_ buddha: Buddha, buddhaType: BuddhaType) {
         self.buddha = buddha
+        self.buddhaType = buddhaType
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -41,14 +43,26 @@ class QLBuddhaViewController: QLBaseViewController {
         
         initSubviews()
 
-        QueryManager.shared.fetchBuddhaDetail(buddha) { (newBuddha, errorMessage) in
-            if errorMessage != nil {
-                
-            } else {
-                self.buddha = newBuddha
-                self.updateUI()
+        if (self.buddhaType == .porn_91) {
+            QueryManager.shared.fetchBuddhaDetailIn91(buddha) { (newBuddha, errorMessage) in
+                if errorMessage != nil {
+                    
+                } else {
+                    self.buddha = newBuddha
+                    self.updateUI()
+                }
+            }
+        } else {
+            QueryManager.shared.fetchBuddhaDetailInHub(buddha) { (newBuddha, errorMessage) in
+                if errorMessage != nil {
+                    
+                } else {
+                    self.buddha = newBuddha
+                    self.updateUI()
+                }
             }
         }
+        
     }
     
     private func initSubviews() {
@@ -104,7 +118,7 @@ class QLBuddhaViewController: QLBaseViewController {
     }
     
     @objc private func singleTapping(_ recognizer: UIGestureRecognizer) {
-        if let videoUrl = buddha.videoUrl, let url = URL(string: videoUrl) {
+        if let videoUrl = buddha.videoUrl, let url = URL(string:videoUrl) {
             //定义一个视频播放器
             let player = AVPlayer(url: url)
             let playerViewController = AVPlayerViewController()

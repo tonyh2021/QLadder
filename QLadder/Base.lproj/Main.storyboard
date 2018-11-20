@@ -184,7 +184,7 @@
                     </view>
                     <navigationItem key="navigationItem" id="uHW-CM-jzQ"/>
                     <connections>
-                        <outlet property="passwdTextField" destination="iLb-xN-0R9" id="Ob7-JQ-wdI"/>
+                        <outlet property="textField" destination="iLb-xN-0R9" id="Mh9-mG-2FO"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="8bw-x9-Gjo" userLabel="First Responder" sceneMemberID="firstResponder"/>

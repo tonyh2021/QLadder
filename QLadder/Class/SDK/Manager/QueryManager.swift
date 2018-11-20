@@ -44,8 +44,6 @@ class QueryManager {
     var dataTask: URLSessionDataTask?
     var buddhas: [Buddha] = []
     
-    private let pageSize = 20
-    
     private var headers: HTTPHeaders {
         get {
             let ip = "\(arc4random_uniform(255) + 1).\(arc4random_uniform(255) + 1).\(arc4random_uniform(255) + 1).\(arc4random_uniform(255) + 1)"
@@ -67,7 +65,11 @@ class QueryManager {
                 url = "http://91porn.com/v.php?category=rf&viewtype=basic&page=\(page)"
             }
         } else {
-            url = "https://www.pornhub.com/recommended"
+            if page <= 0 {
+                url = "https://www.pornhub.com/video?o=mv&cc=us"
+            } else {
+                url = "https://www.pornhub.com/video?o=mv&cc=us&page=\(page)"
+            }
         }
         
         Alamofire.request(url)
@@ -113,7 +115,7 @@ class QueryManager {
                 let addTime:String = ""
                 let user: String = ""
                 
-                if let a = item.xpath("div/a[@class='img js-viewTrack ']").first {
+                if let a = item.xpath("div/a[@class='img ']").first {
                     url = a["href"] ?? ""
                 
                     if let img = a.xpath("img").first {
@@ -330,7 +332,7 @@ class QueryManager {
             return nil
         }
         
-//        saveToFile(htmlString as String)
+        saveToFile(htmlString as String)
         
         do {
             var newBuddha = buddha.mutableCopy()

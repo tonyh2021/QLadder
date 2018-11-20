@@ -9,6 +9,7 @@
 import UIKit
 
 public enum BuddhaType {
+    case porn_none
     case porn_91
     case porn_hub
 }

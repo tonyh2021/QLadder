@@ -10,7 +10,7 @@ import UIKit
 
 class QLAboutViewController: QLBaseViewController {
 
-    @IBOutlet weak var passwdTextField: UITextField!
+    @IBOutlet weak var textField: UITextField!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -23,7 +23,7 @@ class QLAboutViewController: QLBaseViewController {
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        passwdTextField.text = nil
+        textField.text = nil
         view.endEditing(true)
     }
     
@@ -33,29 +33,23 @@ class QLAboutViewController: QLBaseViewController {
     
     @objc private func rightBarButtonItemDidClick() {
         
-        guard let passwd = passwdTextField.text, passwd == "porn" else {
+        guard let typeText = textField.text else {
             return
         }
         
-        let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
-        let button1 = UIAlertAction(title: "91 Porn", style: .default) { (action: UIAlertAction!) -> Void in
-            let vc = QLBuddhaListViewController(buddhaType: .porn_91)
+        var buddhaType:BuddhaType = .porn_none
+        
+        if typeText == "91" {
+            buddhaType = .porn_91
+        } else if typeText == "hub" {
+            buddhaType = .porn_hub
+        }
+        
+        if buddhaType != .porn_none {
+            let vc = QLBuddhaListViewController(buddhaType: buddhaType)
             vc.hidesBottomBarWhenPushed = true
             self.navigationController?.pushViewController(vc, animated: true)
         }
-        alertController.addAction(button1)
-        
-        let button2 = UIAlertAction(title: "PornHub", style: .default) { (action: UIAlertAction!) -> Void in
-            let vc = QLBuddhaListViewController(buddhaType: .porn_hub)
-            vc.hidesBottomBarWhenPushed = true
-            self.navigationController?.pushViewController(vc, animated: true)
-        }
-        alertController.addAction(button2)
-        
-        let button3 = UIAlertAction(title: "取消", style: .cancel, handler: nil)
-        alertController.addAction(button3)
-        
-        present(alertController, animated: true, completion: nil)
     }
 
 }

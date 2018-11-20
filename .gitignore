@@ -1,37 +1,67 @@
-# VSCode
-.vscode/
-jsconfig.json
+# Xcode
+#
+# gitignore contributors: remember to update Global/Xcode.gitignore, Objective-C.gitignore & Swift.gitignore
 
-# IntelliJ/Webstorm
-.idea
+## Build generated
+build/
+DerivedData/
 
-# NodeJS
-npm-debug.log
-lib-rn
-yarn-error.log
-
-# OS X
+####################################
+######## OS generated files ########
+####################################
 .DS_Store
+.DS_Store?
+*.swp
+._*
+.Spotlight-V100
+.Trashes
+Icon?
+ehthumbs.db
+Thumbs.db
+####################################
+############# packages #############
+####################################
+*.7z  
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+####################################
+############# xcode #############
+####################################
+*.xcuserstate
+project.xcworkspace
 xcuserdata
+UserInterfaceState.xcuserstate
+project.xcworkspace/
+xcuserdata/
+UserInterface.xcuserstate% 
+Appia.xcodeproj/xcuserdata/
+Pods/Pods.xcodeproj/xcuserdata/
 
-# Exponent
-.exponent
+####################################
+###### Pods settings  ###########
+####################################
+Pods/
 
-# Jest
-coverage
+####################################
+###### Various settings  ###########
+####################################
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+xcuserdata/
 
-# build
-build
-
-*.map
-*.iml
-/android/.gradle
-/android/.idea
-/android/app/app.iml
-/android/local.properties
-/node_modules
-/android/app/.project
-/android/.project
-/android/.settings
-/android/app/.settings
-/android/app/.classpath
+####################################
+############ Other #################
+####################################
+*.moved-aside
+*.xccheckout
+*.xcscmblueprint

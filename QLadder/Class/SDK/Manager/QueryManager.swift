@@ -64,38 +64,51 @@ class QueryManager {
             } else {
                 url = "http://91porn.com/v.php?category=rf&viewtype=basic&page=\(page)"
             }
+            
+            Alamofire.request(url)
+                .responseData { response in
+                    if let error = response.error {
+                        print(error)
+                        DispatchQueue.main.async {
+                            completion(self.buddhas, error.localizedDescription)
+                        }
+                    } else {
+                        if let data = response.data {
+                            let htmlString = String(data: data, encoding: .utf8) ?? String(decoding: data, as: UTF8.self)
+                            self.updateBuddhasIn91(htmlString as NSString)
+                        }
+                        DispatchQueue.main.async {
+                            completion(self.buddhas, nil)
+                        }
+                    }
+            }
         } else {
             if page <= 0 {
                 url = "https://www.pornhub.com/video?o=mv&cc=us"
             } else {
                 url = "https://www.pornhub.com/video?o=mv&cc=us&page=\(page)"
             }
-        }
-        
-        Alamofire.request(url)
-            .responseString { response in
-                
-                if let error = response.error {
-                    print(error)
-                    DispatchQueue.main.async {
-                        completion(self.buddhas, error.localizedDescription)
-                    }
-                } else {
-                    if buddhaType == .porn_91 {
-                        self.updateBuddhasIn91(response.result.value! as NSString)
+            
+            Alamofire.request(url)
+                .responseString { response in
+                    if let error = response.error {
+                        print(error)
+                        DispatchQueue.main.async {
+                            completion(self.buddhas, error.localizedDescription)
+                        }
                     } else {
                         self.updateBuddhasInHub(response.result.value! as NSString)
+                        DispatchQueue.main.async {
+                            completion(self.buddhas, nil)
+                        }
                     }
-                    DispatchQueue.main.async {
-                        completion(self.buddhas, nil)
-                    }
-                }
+            }
         }
     }
     
     fileprivate func updateBuddhasInHub(_ htmlString: NSString) {
         
-        saveToFile(htmlString as String)
+//        saveToFile(htmlString as String)
         
         if htmlString == "" {
             return
@@ -122,6 +135,10 @@ class QueryManager {
                         name = img["title"] ?? ""
                         imgUrl = img["src"] ?? ""
                     }
+                }
+                
+                if imgUrl == "" || !imgUrl.hasPrefix("http") {
+                    continue
                 }
                 
                 if let textArray = item.text?.components(separatedBy: "\n") {
@@ -346,6 +363,10 @@ class QueryManager {
                 newBuddha.videoUrl = matchInfo(script, "videoUrl")
             }
             
+            if newBuddha.videoUrl == "" {
+                print(newBuddha)
+            }
+            
             newBuddha.detailImgUrl = newBuddha.imgUrl
             
             if let fromItem = doc.xpath("//div[@class='video-info-row']/div/a").first {
@@ -377,8 +398,11 @@ class QueryManager {
         // - 3、开始匹配A
         let res = regex1.matches(in: string, options: NSRegularExpression.MatchingOptions.init(rawValue: 0), range: NSMakeRange(0, string.count))
         // 输出结果
-        if let checkingRes = res.first {
+        for checkingRes in res.reversed() {
             result = (string as NSString).substring(with: checkingRes.range)
+            if result != "" {
+                break
+            }
         }
         result = result.replacingOccurrences(of: "\\", with: "")
         return result

@@ -57,6 +57,7 @@ class QLBuddhaListViewController: QLBaseViewController {
         navigationItem.rightBarButtonItem = rightBarButtonItem
         rightSwitch.setOn(true, animated: false)
         rightSwitch.addTarget(self, action: #selector(rightSwitchDidClick(_:)), for: .valueChanged)
+        QueryManager.shared.covertMode = rightSwitch.isOn
         
         tableView.separatorStyle = .none;
         tableView.showsVerticalScrollIndicator = false;

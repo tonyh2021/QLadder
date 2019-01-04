@@ -2,7 +2,7 @@
 
 Demo for bolg [Building a Network Extension Project](http://ibloodline.com/articles/2017/11/15/NetworkExtension-02.html).
 
-Xcode 9 and Swift 4.
+Xcode 10 and Swift 4.2.
 
 Use `carthage update --no-use-binaries --platform mac,ios` to install all frameworks.
 
@@ -21,7 +21,7 @@ Any question is welcome.
 
 The MIT License (MIT)
 
-Copyright (c) 2015-2017, [Tony Han](https://github.com/lettleprince).
+Copyright (c) 2017-2019, [Tony Han](https://github.com/lettleprince).
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
